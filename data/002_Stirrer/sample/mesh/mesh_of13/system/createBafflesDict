@@ -1,0 +1,91 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  13
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    object      createBafflesDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+// OpenFOAM13(Foundation版)には patchPairs が無いため、owner/neighbour を
+// それぞれ明示的に指定する。
+
+internalFacesOnly true;
+
+baffles
+{
+    wall_wing
+    {
+        type        faceZone;
+        zoneName    wingFaceZone;
+
+        owner
+        {
+            name        wall_wing_master;
+            type        wall;
+        }
+        neighbour
+        {
+            name        wall_wing_slave;
+            type        wall;
+        }
+    }
+
+    wall_wing2
+    {
+        type        faceZone;
+        zoneName    wingFaceZone2;
+
+        owner
+        {
+            name        wall_wing2_master;
+            type        wall;
+        }
+        neighbour
+        {
+            name        wall_wing2_slave;
+            type        wall;
+        }
+    }
+
+    wall_circ_z015
+    {
+        type        faceZone;
+        zoneName    circularFaceZone_z015;
+
+        owner
+        {
+            name        wall_circ_z015_master;
+            type        wall;
+        }
+        neighbour
+        {
+            name        wall_circ_z015_slave;
+            type        wall;
+        }
+    }
+
+    wall_circ_z035
+    {
+        type        faceZone;
+        zoneName    circularFaceZone_z035;
+
+        owner
+        {
+            name        wall_circ_z035_master;
+            type        wall;
+        }
+        neighbour
+        {
+            name        wall_circ_z035_slave;
+            type        wall;
+        }
+    }
+}
+
+// ************************************************************************* //

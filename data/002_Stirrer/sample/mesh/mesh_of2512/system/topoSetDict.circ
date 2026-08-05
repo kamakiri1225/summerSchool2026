@@ -1,0 +1,115 @@
+// z=0.015 円形フェイスゾーン
+{
+    name    circFaces;
+    type    faceSet;
+    action  new;
+    source  cylinderToFace;
+    sourceInfo
+    {
+        p1      (0 0 -1);
+        p2      (0 0  1);
+        radius  0.015;
+    }
+}
+{
+    name    circFaces;
+    type    faceSet;
+    action  subset;
+    source  clipPlaneToFace;
+    sourceInfo
+    {
+        point   (0 0 0.0149);
+        normal  (0 0 1);
+    }
+}
+{
+    name    circFaces;
+    type    faceSet;
+    action  subset;
+    source  clipPlaneToFace;
+    sourceInfo
+    {
+        point   (0 0 0.0151);
+        normal  (0 0 -1);
+    }
+}
+{
+    name    circFaces;
+    type    faceSet;
+    action  subset;
+    source  normalToFace;
+    sourceInfo
+    {
+        normal  (0 0 1);
+        cos     0.2;
+    }
+}
+{
+    name    circularFaceZone_z015;
+    type    faceZoneSet;
+    action  new;
+    source  setToFaceZone;
+    sourceInfo
+    {
+        faceSet circFaces;
+    }
+}
+
+// z=0.035 円形フェイスゾーン
+{
+    name    circFaces2;
+    type    faceSet;
+    action  new;
+    source  cylinderToFace;
+    sourceInfo
+    {
+        p1      (0 0 -1);
+        p2      (0 0  1);
+        radius  0.015;
+    }
+}
+{
+    name    circFaces2;
+    type    faceSet;
+    action  subset;
+    source  clipPlaneToFace;
+    sourceInfo
+    {
+        point   (0 0 0.0349);
+        normal  (0 0 1);
+    }
+}
+{
+    name    circFaces2;
+    type    faceSet;
+    action  subset;
+    source  clipPlaneToFace;
+    sourceInfo
+    {
+        point   (0 0 0.0351);
+        normal  (0 0 -1);
+    }
+}
+
+{
+    name    circFaces2;
+    type    faceSet;
+    action  subset;
+    source  normalToFace;
+    sourceInfo
+    {
+        normal  (0 0 -1);
+        cos     0.2;
+    }
+}
+
+{
+    name    circularFaceZone_z035;
+    type    faceZoneSet;
+    action  new;
+    source  setToFaceZone;
+    sourceInfo
+    {
+        faceSet circFaces2;
+    }
+}

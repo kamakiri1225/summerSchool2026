@@ -1,0 +1,44 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  13
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      functions;
+}
+
+#includeFunc residuals(name=residuals, fields=(p U))
+
+inletFlowRate
+{
+    type            surfaceFieldValue;
+    libs            ("libfieldFunctionObjects.so");
+    log             true;
+    writeFields     false;
+    writeControl    timeStep;
+    writeInterval   1;
+    patch           inlet;
+    operation       sum;
+    fields          (phi);
+}
+
+outletFlowRate
+{
+    type            surfaceFieldValue;
+    libs            ("libfieldFunctionObjects.so");
+    log             true;
+    writeFields     false;
+    writeControl    timeStep;
+    writeInterval   1;
+    patch           outlet;
+    operation       sum;
+    fields          (phi);
+}
+
+// ************************************************************************* //

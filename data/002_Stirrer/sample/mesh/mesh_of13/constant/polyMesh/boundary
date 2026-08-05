@@ -1,0 +1,131 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  13
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    format      ascii;
+    class       polyBoundaryMesh;
+    location    "constant/polyMesh";
+    object      boundary;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+9
+(
+    defaultFaces
+    {
+        type            patch;
+        nFaces          28464;
+        startFace       655015;
+    }
+    wall_wing_master
+    {
+        type            wall;
+        inGroups        List<word> 
+2
+(
+wall
+wall_wing
+)
+;
+        nFaces          462;
+        startFace       683479;
+    }
+    wall_wing_slave
+    {
+        type            wall;
+        inGroups        List<word> 
+2
+(
+wall
+wall_wing
+)
+;
+        nFaces          462;
+        startFace       683941;
+    }
+    wall_wing2_master
+    {
+        type            wall;
+        inGroups        List<word> 
+2
+(
+wall
+wall_wing2
+)
+;
+        nFaces          467;
+        startFace       684403;
+    }
+    wall_wing2_slave
+    {
+        type            wall;
+        inGroups        List<word> 
+2
+(
+wall
+wall_wing2
+)
+;
+        nFaces          467;
+        startFace       684870;
+    }
+    wall_circ_z015_master
+    {
+        type            wall;
+        inGroups        List<word> 
+2
+(
+wall
+wall_circ_z015
+)
+;
+        nFaces          576;
+        startFace       685337;
+    }
+    wall_circ_z015_slave
+    {
+        type            wall;
+        inGroups        List<word> 
+2
+(
+wall
+wall_circ_z015
+)
+;
+        nFaces          576;
+        startFace       685913;
+    }
+    wall_circ_z035_master
+    {
+        type            wall;
+        inGroups        List<word> 
+2
+(
+wall
+wall_circ_z035
+)
+;
+        nFaces          576;
+        startFace       686489;
+    }
+    wall_circ_z035_slave
+    {
+        type            wall;
+        inGroups        List<word> 
+2
+(
+wall
+wall_circ_z035
+)
+;
+        nFaces          576;
+        startFace       687065;
+    }
+)
+
+// ************************************************************************* //

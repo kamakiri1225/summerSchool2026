@@ -1,0 +1,85 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    arch        "LSB;label=32;scalar=64";
+    class       polyBoundaryMesh;
+    location    "constant/polyMesh";
+    object      boundary;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+9
+(
+    defaultFaces
+    {
+        type            patch;
+        nFaces          31110;
+        startFace       830982;
+    }
+    wall_wing_master
+    {
+        type            wall;
+        inGroups        2(wall wall_wing);
+        nFaces          444;
+        startFace       862092;
+    }
+    wall_wing_slave
+    {
+        type            wall;
+        inGroups        2(wall wall_wing);
+        nFaces          444;
+        startFace       862536;
+    }
+    wall_wing2_master
+    {
+        type            wall;
+        inGroups        2(wall wall_wing2);
+        nFaces          444;
+        startFace       862980;
+    }
+    wall_wing2_slave
+    {
+        type            wall;
+        inGroups        2(wall wall_wing2);
+        nFaces          444;
+        startFace       863424;
+    }
+    wall_circ_z015_master
+    {
+        type            wall;
+        inGroups        2(wall wall_circ_z015);
+        nFaces          1200;
+        startFace       863868;
+    }
+    wall_circ_z015_slave
+    {
+        type            wall;
+        inGroups        2(wall wall_circ_z015);
+        nFaces          1200;
+        startFace       865068;
+    }
+    wall_circ_z035_master
+    {
+        type            wall;
+        inGroups        2(wall wall_circ_z035);
+        nFaces          1200;
+        startFace       866268;
+    }
+    wall_circ_z035_slave
+    {
+        type            wall;
+        inGroups        2(wall wall_circ_z035);
+        nFaces          1200;
+        startFace       867468;
+    }
+)
+
+// ************************************************************************* //

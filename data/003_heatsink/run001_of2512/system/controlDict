@@ -1,0 +1,172 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2512                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      controlDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+application     chtMultiRegionFoam;
+
+startFrom       latestTime;
+
+startTime       0.001;
+
+stopAt          endTime;
+
+endTime         60;
+
+deltaT          0.001;
+
+writeControl    adjustable;
+
+writeInterval   2;
+
+purgeWrite      0;
+
+writeFormat     ascii;
+
+writePrecision  7;
+
+writeCompression off;
+
+timeFormat      general;
+
+timePrecision   6;
+
+runTimeModifiable true;
+
+maxCo           100.0;
+
+maxDi           100.0;
+
+adjustTimeStep  yes;
+
+functions
+{
+    // クーラン数分布（流体のみ。固体は流れがないため定義されない）
+    CourantNo_box
+    {
+        type            CourantNo;
+        libs            ("libfieldFunctionObjects.so");
+        region          box;
+        writeControl    writeTime;
+    }
+
+    // 固体の拡散数（クーラン数相当）分布 DiNum
+    DiNum_heatSink
+    {
+        #include        "solidDiffNo"
+        region          heatSink;
+    }
+
+    DiNum_heatSource
+    {
+        #include        "solidDiffNo"
+        region          heatSource;
+    }
+
+    DiNum_basis
+    {
+        #include        "solidDiffNo"
+        region          basis;
+    }
+
+    wallHeatFlux_box
+    {
+        type            wallHeatFlux;
+        libs            ("libfieldFunctionObjects.so");
+        region          box;
+        patches         (box_to_heatSink box_to_heatSource box_to_basis);
+        writeControl    writeTime;
+    }
+
+    wallHeatFlux_heatSink
+    {
+        $wallHeatFlux_box
+        region          heatSink;
+        patches         (heatSink_to_box heatSink_to_heatSource);
+    }
+
+    wallHeatFlux_heatSource
+    {
+        $wallHeatFlux_box
+        region          heatSource;
+        patches         (heatSource_to_heatSink heatSource_to_box heatSource_to_basis);
+    }
+
+    qInt_box_to_heatSink
+    {
+        type            surfaceFieldValue;
+        libs            ("libfieldFunctionObjects.so");
+        region          box;
+        enabled         true;
+        log             true;
+        writeControl    timeStep;
+        writeInterval   1;
+        writeFields     false;
+        regionType      patch;
+        name            box_to_heatSink;
+        operation       areaIntegrate;
+        fields          (wallHeatFlux);
+    }
+
+    qInt_heatSink_to_box
+    {
+        $qInt_box_to_heatSink
+        region          heatSink;
+        name            heatSink_to_box;
+    }
+
+    qInt_heatSource_to_heatSink
+    {
+        $qInt_box_to_heatSink
+        region          heatSource;
+        name            heatSource_to_heatSink;
+    }
+
+    qInt_heatSink_to_heatSource
+    {
+        $qInt_box_to_heatSink
+        region          heatSink;
+        name            heatSink_to_heatSource;
+    }
+
+    Tavg_box_to_heatSink
+    {
+        $qInt_box_to_heatSink
+        operation       areaAverage;
+        fields          (T);
+    }
+
+    Tavg_heatSink_to_box
+    {
+        $Tavg_box_to_heatSink
+        region          heatSink;
+        name            heatSink_to_box;
+    }
+
+    Tavg_heatSource_to_heatSink
+    {
+        $Tavg_box_to_heatSink
+        region          heatSource;
+        name            heatSource_to_heatSink;
+    }
+
+    Tavg_heatSink_to_heatSource
+    {
+        $Tavg_box_to_heatSink
+        region          heatSink;
+        name            heatSink_to_heatSource;
+    }
+}
+
+// ************************************************************************* //

@@ -1,0 +1,43 @@
+// 新しいMesh_1.unvはセクターが0〜60degで再出力されており、
+// 羽根(wing)パーティション面はセクターの二等分線(30deg)上にある。
+// そのため軸に沿ったboxToFaceではなく、30deg回転させたrotatedBoxToFaceで選択する。
+
+    // まずfaceSetを作成
+    {
+        name    wingFaceSet;
+        type    faceSet;
+        action  new;
+        source  rotatedBoxToFace;
+        origin  (0.008684388 0.004956199 0.0125);
+        i       (0.012991334 0.007500550 0);
+        j       (-0.00005 0.0000866025 0);
+        k       (0 0 0.005);
+    }
+    // それを元に羽根の形状のfaceZoneを作成
+    {
+        name    wingFaceZone;
+        type    faceZoneSet;
+        action  new;
+        source  setToFaceZone;
+        faceSet wingFaceSet;
+    }
+
+        // まずfaceSetを作成
+    {
+        name    wingFaceSet2;
+        type    faceSet;
+        action  new;
+        source  rotatedBoxToFace;
+        origin  (0.008684388 0.004956199 0.0325);
+        i       (0.012991334 0.007500550 0);
+        j       (-0.00005 0.0000866025 0);
+        k       (0 0 0.005);
+    }
+    // それを元に羽根の形状のfaceZoneを作成
+    {
+        name    wingFaceZone2;
+        type    faceZoneSet;
+        action  new;
+        source  setToFaceZone;
+        faceSet wingFaceSet2;
+    }

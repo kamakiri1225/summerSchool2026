@@ -1,0 +1,41 @@
+// 回転領域セルゾーン (r=0.035, z=0.01~0.02)
+{
+    name    rotorSet1;
+    type    cellSet;
+    action  new;
+    source  cylinderToCell;
+    sourceInfo
+    {
+        p1      (0 0 0.01);
+        p2      (0 0 0.02);
+        radius  0.035;
+    }
+}
+{
+    name    rotor1;
+    type    cellZoneSet;
+    action  new;
+    source  setToCellZone;
+    set     rotorSet1;
+}
+
+// 回転領域セルゾーン (r=0.035, z=0.03~0.04)
+{
+    name    rotorSet2;
+    type    cellSet;
+    action  new;
+    source  cylinderToCell;
+    sourceInfo
+    {
+        p1      (0 0 0.03);
+        p2      (0 0 0.04);
+        radius  0.035;
+    }
+}
+{
+    name    rotor2;
+    type    cellZoneSet;
+    action  new;
+    source  setToCellZone;
+    set     rotorSet2;
+}

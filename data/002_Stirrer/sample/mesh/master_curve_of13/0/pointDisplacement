@@ -1,0 +1,61 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2512                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       pointVectorField;
+    object      pointDisplacement;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [0 1 0 0 0 0 0];
+
+internalField   uniform (0 0 0);
+
+boundaryField
+{
+    ".*"
+    {
+        type            fixedValue;
+        value           uniform (0 0 0);
+    }
+
+    "wall_wing.*"
+    {
+        type            codedFixedValue;
+        name            makecurve;
+        value           uniform (0 0 0);
+
+        code
+        #{
+            const scalar& t = this->db().time().value();
+            const vectorField& pos = patch().localPoints();
+            vectorField f(pos.size(), vector(0,0,0));
+
+            forAll(f, i)
+            {
+                const scalar x = pos[i][0];
+                const scalar height = 4e-3;
+                const scalar x0 = 15.0e-3;
+                const scalar x1 = 25.0e-3;
+
+                scalar y = 0.0;
+                if(x > x0) {
+                    const scalar r = (pow((x1 - x0), 2) + pow(height, 2)) / 2.0 / height;
+                    y = r - sqrt(pow(r, 2) - pow((x - x0), 2));
+                }
+                f[i] = vector(0.0, y*t, 0.0);
+            }
+            operator==(f);
+        #};
+
+    }
+}
+
+// ************************************************************************* //

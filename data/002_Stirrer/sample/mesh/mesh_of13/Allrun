@@ -1,0 +1,16 @@
+#!/bin/sh
+cd "${0%/*}" || exit                                # Run from this directory
+. ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions        # Tutorial run functions
+#------------------------------------------------------------------------------
+
+runApplication ideasUnvToFoam Mesh_1.unv
+runApplication transformPoints "scale=(0.001 0.001 0.001)"
+runApplication -s initial checkMesh
+
+runApplication topoSet
+runApplication createBaffles -overwrite
+runApplication -s final checkMesh
+
+touch post.foam
+
+#------------------------------------------------------------------------------

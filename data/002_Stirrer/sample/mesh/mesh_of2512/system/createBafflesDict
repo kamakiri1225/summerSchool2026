@@ -1,0 +1,66 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2512                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      createBafflesDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+internalFacesOnly true;
+
+baffles
+{
+    wall_wing
+    {
+        type        faceZone;
+        zoneName    wingFaceZone;
+
+        patchPairs
+        {
+            type            wall;
+        }
+    }
+
+    wall_wing2
+    {
+        type        faceZone;
+        zoneName    wingFaceZone2;
+
+        patchPairs
+        {
+            type            wall;
+        }
+    }
+
+    wall_circ_z015
+    {
+        type        faceZone;
+        zoneName    circularFaceZone_z015;
+
+        patchPairs
+        {
+            type            wall;
+        }
+    }
+
+    wall_circ_z035
+    {
+        type        faceZone;
+        zoneName    circularFaceZone_z035;
+
+        patchPairs
+        {
+            type            wall;
+        }
+    }
+}
+
+// ************************************************************************* //

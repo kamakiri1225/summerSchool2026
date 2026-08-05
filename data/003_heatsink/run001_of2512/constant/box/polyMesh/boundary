@@ -1,0 +1,96 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    arch        "LSB;label=32;scalar=64";
+    class       polyBoundaryMesh;
+    location    "constant/box/polyMesh";
+    object      boundary;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+
+8
+(
+    YMin
+    {
+        type            patch;
+        nFaces          350;
+        startFace       126456;
+    }
+
+    ZMax
+    {
+        type            wall;
+        nFaces          564;
+        startFace       126806;
+        inGroups        1 ( wall );
+    }
+
+    XMax
+    {
+        type            wall;
+        nFaces          608;
+        startFace       127370;
+        inGroups        1 ( wall );
+    }
+
+    YMax
+    {
+        type            patch;
+        nFaces          374;
+        startFace       127978;
+    }
+
+    XMin
+    {
+        type            wall;
+        nFaces          534;
+        startFace       128352;
+        inGroups        1 ( wall );
+    }
+
+    box_to_basis
+    {
+        type            mappedWall;
+        inGroups        1 ( wall );
+        nFaces          1132;
+        startFace       128886;
+        sampleMode      nearestPatchFace;
+        sampleRegion    basis;
+        samplePatch     basis_to_box;
+    }
+
+    box_to_heatSource
+    {
+        type            mappedWall;
+        inGroups        1 ( wall );
+        nFaces          164;
+        startFace       130018;
+        sampleMode      nearestPatchFace;
+        sampleRegion    heatSource;
+        samplePatch     heatSource_to_box;
+    }
+
+    box_to_heatSink
+    {
+        type            mappedWall;
+        inGroups        1 ( wall );
+        nFaces          5818;
+        startFace       130182;
+        sampleMode      nearestPatchFace;
+        sampleRegion    heatSink;
+        samplePatch     heatSink_to_box;
+    }
+
+)
+
+
+// ************************************************************************* //

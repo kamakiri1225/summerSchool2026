@@ -1,0 +1,70 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2512                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    arch        "LSB;label=32;scalar=64";
+    class       volScalarField;
+    location    "0/box";
+    object      k;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [ 0 2 -2 0 0 0 0 ];
+
+internalField   uniform 0.001;
+
+boundaryField
+{
+    YMin
+    {
+        type            inletOutlet;
+        value           uniform 0.001;
+        inletValue      uniform 0.001;
+    }
+    ZMax
+    {
+        type            kqRWallFunction;
+        value           uniform 0.001;
+    }
+    XMax
+    {
+        type            kqRWallFunction;
+        value           uniform 0.001;
+    }
+    YMax
+    {
+        type            turbulentIntensityKineticEnergyInlet;
+        value           uniform 0.001;
+        intensity       0.05;
+    }
+    XMin
+    {
+        type            kqRWallFunction;
+        value           uniform 0.001;
+    }
+    box_to_basis
+    {
+        type            kqRWallFunction;
+        value           uniform 0.001;
+    }
+    box_to_heatSource
+    {
+        type            kqRWallFunction;
+        value           uniform 0.001;
+    }
+    box_to_heatSink
+    {
+        type            kqRWallFunction;
+        value           uniform 0.001;
+    }
+}
+
+
+// ************************************************************************* //

@@ -1,0 +1,72 @@
+// z=0.015 円形フェイスゾーン
+// OpenFOAM13には clipPlaneToFace が無いため、cylinderToFace の p1/p2 を
+// 薄いz範囲に直接指定することで同等の絞り込みを行う。
+{
+    name    circFaces;
+    type    faceSet;
+    action  new;
+    source  cylinderToFace;
+    sourceInfo
+    {
+        p1      (0 0 0.0149);
+        p2      (0 0 0.0151);
+        radius  0.015;
+    }
+}
+{
+    name    circFaces;
+    type    faceSet;
+    action  subset;
+    source  normalToFace;
+    sourceInfo
+    {
+        normal  (0 0 1);
+        cos     0.2;
+    }
+}
+{
+    name    circularFaceZone_z015;
+    type    faceZoneSet;
+    action  new;
+    source  setToFaceZone;
+    sourceInfo
+    {
+        faceSet circFaces;
+    }
+}
+
+// z=0.035 円形フェイスゾーン
+{
+    name    circFaces2;
+    type    faceSet;
+    action  new;
+    source  cylinderToFace;
+    sourceInfo
+    {
+        p1      (0 0 0.0349);
+        p2      (0 0 0.0351);
+        radius  0.015;
+    }
+}
+{
+    name    circFaces2;
+    type    faceSet;
+    action  subset;
+    source  normalToFace;
+    sourceInfo
+    {
+        normal  (0 0 -1);
+        cos     0.2;
+    }
+}
+
+{
+    name    circularFaceZone_z035;
+    type    faceZoneSet;
+    action  new;
+    source  setToFaceZone;
+    sourceInfo
+    {
+        faceSet circFaces2;
+    }
+}

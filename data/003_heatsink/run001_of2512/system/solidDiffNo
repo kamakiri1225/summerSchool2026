@@ -1,0 +1,113 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2512                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+// 固体リージョン用の拡散数（DiNum）分布フィールドを計算する
+// DiNum = alpha * deltaT * deltaCoeffs^2 のセルごとの最大値
+// （chtMultiRegionFoam の solidRegionDiffNo.H と同じ定義）
+//
+// 使い方:
+//   postProcess -region heatSink -func solidDiffNo -time '2,4'
+
+type            coded;
+libs            (utilityFunctionObjects);
+name            solidDiffNo;
+
+executeControl  writeTime;
+writeControl    writeTime;
+
+codeExecute
+#{
+    const auto& mesh = refCast<const fvMesh>(obr_);
+
+    // 物性値を thermophysicalProperties から読む（固体は定数物性）
+    IOdictionary thermoDict
+    (
+        IOobject
+        (
+            "thermophysicalProperties",
+            mesh.time().constant(),
+            mesh,
+            IOobject::MUST_READ,
+            IOobject::NO_WRITE,
+            IOobject::NO_REGISTER
+        )
+    );
+
+    const dictionary& mix = thermoDict.subDict("mixture");
+    const scalar kappa = mix.subDict("transport").get<scalar>("kappa");
+    const scalar Cp    = mix.subDict("thermodynamics").get<scalar>("Cp");
+    const scalar rho   = mix.subDict("equationOfState").get<scalar>("rho");
+
+    // deltaT: 実行中ソルバーでは現在値、postProcess では
+    // <time>/uniform/time に保存された値を優先して使う
+    scalar deltaT = mesh.time().deltaTValue();
+    {
+        IOobject timeIO
+        (
+            "time",
+            mesh.time().timeName(),
+            "uniform",
+            mesh.time(),
+            IOobject::READ_IF_PRESENT,
+            IOobject::NO_WRITE,
+            IOobject::NO_REGISTER
+        );
+        if (timeIO.typeHeaderOk<IOdictionary>(true))
+        {
+            IOdictionary timeDict(timeIO);
+            timeDict.readIfPresent("deltaT", deltaT);
+        }
+    }
+
+    const scalar alphaDt = kappa/(rho*Cp)*deltaT;
+
+    volScalarField DiNum
+    (
+        IOobject
+        (
+            "DiNum",
+            mesh.time().timeName(),
+            mesh,
+            IOobject::NO_READ,
+            IOobject::NO_WRITE,
+            IOobject::NO_REGISTER
+        ),
+        mesh,
+        dimensionedScalar(dimless, Zero)
+    );
+
+    const surfaceScalarField& dc = mesh.surfaceInterpolation::deltaCoeffs();
+    const labelUList& own = mesh.owner();
+    const labelUList& nei = mesh.neighbour();
+    scalarField& di = DiNum.primitiveFieldRef();
+
+    forAll(own, facei)
+    {
+        const scalar d = alphaDt*sqr(dc[facei]);
+        di[own[facei]] = max(di[own[facei]], d);
+        di[nei[facei]] = max(di[nei[facei]], d);
+    }
+
+    forAll(mesh.boundary(), patchi)
+    {
+        const labelUList& fc = mesh.boundary()[patchi].faceCells();
+        const scalarField& pdc = dc.boundaryField()[patchi];
+        forAll(fc, facei)
+        {
+            di[fc[facei]] = max(di[fc[facei]], alphaDt*sqr(pdc[facei]));
+        }
+    }
+
+    DiNum.correctBoundaryConditions();
+    DiNum.write();
+
+    Info<< "solidDiffNo (" << mesh.name() << "): deltaT = " << deltaT
+        << ", DiNum min/max/mean = " << gMin(di) << " / " << gMax(di)
+        << " / " << gAverage(di) << endl;
+#};
+
+// ************************************************************************* //
