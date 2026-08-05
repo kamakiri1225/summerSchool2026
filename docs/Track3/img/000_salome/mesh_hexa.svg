@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 220" font-family="sans-serif">
+  <rect x="0" y="0" width="320" height="220" fill="#ffffff"/>
+  <!-- hexahedron (cube) in isometric view -->
+  <g stroke="#1f3a5f" stroke-width="2" stroke-linejoin="round">
+    <!-- top face -->
+    <polygon points="120,40 200,40 240,70 160,70" fill="#eef3fa" fill-opacity="0.8"/>
+    <!-- front face -->
+    <polygon points="80,90 160,90 160,170 80,170" fill="#dce6f2" fill-opacity="0.8"/>
+    <!-- right face -->
+    <polygon points="160,90 240,70 240,150 160,170" fill="#c3d5ea" fill-opacity="0.8"/>
+    <!-- hidden back edges -->
+    <line x1="80" y1="90" x2="120" y2="40" stroke-dasharray="5,4"/>
+    <line x1="120" y1="40" x2="200" y2="40" stroke-dasharray="5,4"/>
+    <line x1="200" y1="40" x2="160" y2="90" stroke-dasharray="5,4"/>
+    <!-- visible edges -->
+    <polygon points="80,90 160,90 240,70 160,40" fill="none" stroke="none"/>
+    <line x1="80" y1="90" x2="160" y2="90"/>
+    <line x1="160" y1="90" x2="240" y2="70"/>
+    <line x1="240" y1="70" x2="200" y2="40"/>
+    <line x1="80" y1="90" x2="80" y2="170"/>
+    <line x1="160" y1="90" x2="160" y2="170"/>
+    <line x1="240" y1="70" x2="240" y2="150"/>
+    <line x1="80" y1="170" x2="160" y2="170"/>
+    <line x1="160" y1="170" x2="240" y2="150"/>
+  </g>
+  <text x="160" y="200" text-anchor="middle" font-size="16" fill="#1f3a5f">六面体（1セル）</text>
+</svg>

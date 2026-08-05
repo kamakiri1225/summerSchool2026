@@ -1,0 +1,115 @@
+/* Track3 講義スライド用カスタムCSS */
+
+.reveal {
+  font-size: 32px;
+}
+
+.reveal .slides section {
+  text-align: left;
+}
+
+/* 章タイトル（h1のみのスライド）は縦横中央に大きく表示する */
+.reveal .slides section.title-slide {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.reveal .slides section.title-slide h1 {
+  font-size: 2.2em;
+}
+
+/* reveal.js の white/black テーマは見出しを自動で大文字化するため無効化する
+   （"OpenFOAM" が "OPENFOAM" になってしまう問題への対処） */
+.reveal h1,
+.reveal h2,
+.reveal h3,
+.reveal h4 {
+  text-transform: none !important;
+  text-align: left;
+  letter-spacing: normal;
+}
+
+.reveal h1 { font-size: 1.7em; }
+.reveal h2 { font-size: 1.35em; }
+.reveal h3 { font-size: 1.1em; }
+.reveal h4 { font-size: 0.95em; }
+
+.reveal p,
+.reveal li {
+  font-size: 0.8em;
+  line-height: 1.4;
+}
+
+.reveal ul,
+.reveal ol {
+  margin-left: 0.6em;
+}
+
+/* スライドキャンバスは 1280x800 固定。px指定で確実に収める */
+.reveal .slides section img {
+  display: block;
+  max-width: 90%;
+  max-height: 500px;
+  width: auto;
+  height: auto;
+  margin: 0.3em auto;
+  border: 1px solid #ccc;
+  background: #fff;
+}
+
+/* 図キャプションは見出しと重複するため表示しない */
+.reveal figure > figcaption {
+  display: none;
+}
+
+.reveal figure {
+  margin: 0;
+}
+
+.reveal pre {
+  width: 95%;
+  margin: 0.5em auto;
+  max-height: 52vh;
+  overflow: auto;
+  box-shadow: none;
+}
+
+.reveal pre code {
+  font-size: 0.5em;
+  max-height: 52vh;
+  padding: 0.6em 0.8em;
+}
+
+.reveal code {
+  font-size: 0.85em;
+}
+
+.reveal table {
+  font-size: 0.65em;
+  margin: 0.5em auto;
+}
+
+.reveal table th,
+.reveal table td {
+  padding: 0.3em 0.5em;
+  border: 1px solid #bbb;
+}
+
+.reveal .progress {
+  color: #1f3a5f;
+}
+
+/* ページ番号は右下の矢印ボタンと重ならないよう左下に置く */
+.reveal .slide-number {
+  right: auto;
+  left: 16px;
+  bottom: 12px;
+  font-size: 20px;
+  background-color: rgba(255, 255, 255, 0.85);
+  color: #1f3a5f;
+  padding: 0.2em 0.5em;
+}

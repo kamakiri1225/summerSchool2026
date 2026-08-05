@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>001 Box: SALOMEでOpenFOAM用メッシュを作る</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="pandoc.css" />
+</head>
+<body>
+<h1 id="box-salomeでopenfoam用メッシュを作る">001 Box:
+SALOMEでOpenFOAM用メッシュを作る</h1>
+<h2 id="この演習で目指すこと">この演習で目指すこと</h2>
+<p>SALOMEで直方体モデルを作成し、OpenFOAMで使える境界名つきメッシュとしてUNV出力する。基本形状を題材に、メッシュ作成で頻繁に使う操作を一通り確認する。</p>
+<ul>
+<li>直方体形状を作成する</li>
+<li>辺・面・境界に名前を付ける</li>
+<li>テトラメッシュとヘキサメッシュを作成する</li>
+<li>各辺で分割数を変える</li>
+<li>特定の面だけメッシュを細分化する</li>
+<li>境界層メッシュを入れる</li>
+<li>OpenFOAM用にUNVを書き出す</li>
+</ul>
+<hr />
+<h2 id="モデル作成">モデル作成</h2>
+<hr />
+<h3 id="geometryモジュールへ切り替える">1.
+Geometryモジュールへ切り替える</h3>
+<figure>
+<img src="img/001_box/page_004.svg"
+alt="1. Geometryモジュールへ切り替える" />
+<figcaption aria-hidden="true">1.
+Geometryモジュールへ切り替える</figcaption>
+</figure>
+<ul>
+<li><ol type="1">
+<li><code>Geometry</code> に変更し、Geometry画面へ切り替える。</li>
+</ol></li>
+</ul>
+<hr />
+<h3 id="box形状を作成する">2. Box形状を作成する</h3>
+<figure>
+<img src="img/001_box/page_005.svg" alt="2. Box形状を作成する" />
+<figcaption aria-hidden="true">2. Box形状を作成する</figcaption>
+</figure>
+<ul>
+<li><ol start="2" type="1">
+<li><code>Create a box</code> をクリックする。</li>
+</ol></li>
+<li><ol start="3" type="1">
+<li>寸法を <code>100 x 60 x 10</code>
+として入力する。ここではmm単位で形状を作る。</li>
+</ol></li>
+<li><ol start="4" type="1">
+<li><code>Apply and Close</code> でBoxを作成する。</li>
+</ol></li>
+</ul>
+<hr />
+<h3 id="box作成結果を確認する">3. Box作成結果を確認する</h3>
+<figure>
+<img src="img/001_box/page_006.svg" alt="3. Box作成結果を確認する" />
+<figcaption aria-hidden="true">3. Box作成結果を確認する</figcaption>
+</figure>
+<ul>
+<li>確認: 作成した直方体がビュー上に表示されていることを確認する。</li>
+<li>確認: ツリー上にBoxオブジェクトが作成されていることを確認する。</li>
+</ul>
+<hr />
+<h3 id="辺方向を抽出する">4. 辺方向を抽出する</h3>
+<figure>
+<img src="img/001_box/page_007.svg" alt="4. 辺方向を抽出する" />
+<figcaption aria-hidden="true">4. 辺方向を抽出する</figcaption>
+</figure>
+<ul>
+<li><ol start="5" type="1">
+<li><code>Operations &gt; Blocks &gt; Propagate</code>
+をクリックする。</li>
+</ol></li>
+<li><ol start="6" type="1">
+<li><code>Box_1</code> を選択する。</li>
+</ol></li>
+<li><ol start="7" type="1">
+<li><code>Apply and Close</code> で確定する。</li>
+</ol></li>
+</ul>
+<hr />
+<h3 id="propagateで作られるcompoundを確認する">5.
+Propagateで作られるCompoundを確認する</h3>
+<figure>
+<img src="img/001_box/page_008.svg"
+alt="5. Propagateで作られるCompoundを確認する" />
+<figcaption aria-hidden="true">5.
+Propagateで作られるCompoundを確認する</figcaption>
+</figure>
+<ul>
+<li>確認: <code>Compound_1</code>, <code>Compound_2</code>,
+<code>Compound_3</code> が作成される。</li>
+<li>確認:
+これらはBoxの各方向の辺グループとして、後で方向別の分割数指定に使える。</li>
+</ul>
+<hr />
+<h3 id="compoundを方向名に変更する">6. Compoundを方向名に変更する</h3>
+<figure>
+<img src="img/001_box/page_009.svg"
+alt="6. Compoundを方向名に変更する" />
+<figcaption aria-hidden="true">6.
+Compoundを方向名に変更する</figcaption>
+</figure>
+<ul>
+<li><ol start="8" type="1">
+<li><code>Compound_3</code> をクリックし、Groupsが
+<code>Compound_3</code> になっていることを確認する。</li>
+</ol></li>
+<li><ol start="9" type="1">
+<li>Nameを <code>x</code> に変更する。</li>
+</ol></li>
+</ul>
+<hr />
+<h3 id="線グループの考え方">7. 線グループの考え方</h3>
+<figure>
+<img src="img/001_box/page_010.svg" alt="7. 線グループの考え方" />
+<figcaption aria-hidden="true">7. 線グループの考え方</figcaption>
+</figure>
+<ul>
+<li>確認: 線グループは、方向ごとの分割数を指定するために使う。</li>
+<li>確認:
+OpenFOAMの境界条件には通常使わないが、SALOME内のメッシュ制御では重要になる。</li>
+</ul>
+<hr />
+<h3 id="面グループを作成する準備">8. 面グループを作成する準備</h3>
+<figure>
+<img src="img/001_box/page_011.svg" alt="8. 面グループを作成する準備" />
+<figcaption aria-hidden="true">8. 面グループを作成する準備</figcaption>
+</figure>
+<ul>
+<li><ol start="10" type="1">
+<li><code>Box_1</code> を選択した状態で
+<code>New Entity &gt; Group &gt; Create Group</code> を開く。</li>
+</ol></li>
+</ul>
+<hr />
+<h3 id="inlet面グループを作成する">9. inlet面グループを作成する</h3>
+<figure>
+<img src="img/001_box/page_012.svg"
+alt="9. inlet面グループを作成する" />
+<figcaption aria-hidden="true">9. inlet面グループを作成する</figcaption>
+</figure>
+<ul>
+<li><ol start="11" type="1">
+<li>面グループ作成画面で、対象が <code>Box_1</code>
+であることを確認する。</li>
+</ol></li>
+<li><ol start="12" type="1">
+<li>面の名前を <code>inlet</code> にする。</li>
+</ol></li>
+<li><ol start="13" type="1">
+<li>inletにしたい面を選択する。</li>
+</ol></li>
+<li><ol start="14" type="1">
+<li><code>Add</code> で選択面をグループに追加する。</li>
+</ol></li>
+<li><ol start="15" type="1">
+<li><code>Apply</code> をクリックする。</li>
+</ol></li>
+</ul>
+<hr />
+<h3 id="面選択の確認">10. 面選択の確認</h3>
+<figure>
+<img src="img/001_box/page_013.svg" alt="10. 面選択の確認" />
+<figcaption aria-hidden="true">10. 面選択の確認</figcaption>
+</figure>
+<ul>
+<li>確認: 選択した面が意図した入口面になっているか確認する。</li>
+<li>確認:
+境界名はOpenFOAMのパッチ名になるため、ここでの選択ミスは解析条件のミスにつながる。</li>
+</ul>
+<hr />
+<h3 id="他の境界面も作成する">11. 他の境界面も作成する</h3>
+<figure>
+<img src="img/001_box/page_014.svg" alt="11. 他の境界面も作成する" />
+<figcaption aria-hidden="true">11. 他の境界面も作成する</figcaption>
+</figure>
+<ul>
+<li>確認: <code>outlet</code>, <code>side</code>,
+<code>topAndbottom</code> など、解析に必要な面グループを作成する。</li>
+<li>確認: 2D解析に使う前後面は、OpenFOAM側で <code>empty</code>
+にする。</li>
+</ul>
+<hr />
+<h3 id="面グループ作成を確定する">12. 面グループ作成を確定する</h3>
+<figure>
+<img src="img/001_box/page_015.svg"
+alt="12. 面グループ作成を確定する" />
+<figcaption aria-hidden="true">12. 面グループ作成を確定する</figcaption>
+</figure>
+<ul>
+<li><ol start="16" type="1">
+<li>必要な面グループを作成したら <code>Apply and Close</code>
+で閉じる。</li>
+</ol></li>
+</ul>
+<hr />
+<h3 id="geometryファイルを保存する">13. Geometryファイルを保存する</h3>
+<figure>
+<img src="img/001_box/page_016.svg"
+alt="13. Geometryファイルを保存する" />
+<figcaption aria-hidden="true">13.
+Geometryファイルを保存する</figcaption>
+</figure>
+<ul>
+<li><ol start="17" type="1">
+<li><code>Save as ...</code> をクリックする。</li>
+</ol></li>
+<li><ol start="18" type="1">
+<li><code>Save</code>
+をクリックし、SALOMEのプロジェクトファイルとして保存する。</li>
+</ol></li>
+</ul>
+<hr />
+<h3 id="線グループと面グループの役割">14.
+線グループと面グループの役割</h3>
+<figure>
+<img src="img/001_box/page_017.svg"
+alt="14. 線グループと面グループの役割" />
+<figcaption aria-hidden="true">14.
+線グループと面グループの役割</figcaption>
+</figure>
+<ul>
+<li>確認: 線グループはメッシュ分割数を制御するために使う。</li>
+<li>確認: 面グループはOpenFOAMの境界パッチ名に対応する。</li>
+<li>確認: OpenFOAMへ渡す境界は、面グループとして作成しておく。</li>
+</ul>
+<hr />
+<h2 id="メッシュ作成">メッシュ作成</h2>
+<hr />
+<h3 id="テトラメッシュの作成">テトラメッシュの作成</h3>
+<hr />
+<h4 id="meshモジュールへ切り替える">1. Meshモジュールへ切り替える</h4>
+<figure>
+<img src="img/001_box/page_018.svg" alt="Meshモジュールへ切り替える" />
+<figcaption aria-hidden="true">Meshモジュールへ切り替える</figcaption>
+</figure>
+<ul>
+<li><ol type="1">
+<li>SALOMEのモジュールを <code>Mesh</code> に切り替える。</li>
+</ol></li>
+</ul>
+<hr />
+<h4 id="新規メッシュを作成する">2. 新規メッシュを作成する</h4>
+<figure>
+<img src="img/001_box/page_019.svg" alt="新規メッシュを作成する" />
+<figcaption aria-hidden="true">新規メッシュを作成する</figcaption>
+</figure>
+<ul>
+<li><ol start="2" type="1">
+<li><code>Box_1</code> を選択した状態で <code>Create Mesh</code>
+をクリックする。</li>
+</ol></li>
+</ul>
+<hr />
+<h4 id="テトラメッシュを設定する">3. テトラメッシュを設定する</h4>
+<figure>
+<img src="img/001_box/page_020.svg" alt="テトラメッシュを設定する" />
+<figcaption aria-hidden="true">テトラメッシュを設定する</figcaption>
+</figure>
+<ul>
+<li><ol start="3" type="1">
+<li><code>Box_1</code> が選択されていることを確認する。</li>
+</ol></li>
+<li><ol start="4" type="1">
+<li>3Dテトラメッシュを選択する。</li>
+</ol></li>
+<li><ol start="5" type="1">
+<li>メッシュサイズを <code>5 mm</code> に設定する。</li>
+</ol></li>
+<li><ol start="6" type="1">
+<li>アルゴリズムとパラメータを確認する。</li>
+</ol></li>
+<li><ol start="7" type="1">
+<li><code>Apply and Close</code> で設定を保存する。</li>
+</ol></li>
+</ul>
+<hr />
+<h4 id="テトラメッシュを計算する">4. テトラメッシュを計算する</h4>
+<figure>
+<img src="img/001_box/page_021.svg" alt="テトラメッシュを計算する" />
+<figcaption aria-hidden="true">テトラメッシュを計算する</figcaption>
+</figure>
+<ul>
+<li><ol start="8" type="1">
+<li><code>Mesh_1</code> を選択した状態で <code>Compute</code>
+をクリックし、メッシュを作成する。</li>
+</ol></li>
+<li>確認: メッシュ情報を確認し、セル数や品質を把握する。</li>
+</ul>
+<hr />
+<h4 id="テトラメッシュ結果を確認する">5.
+テトラメッシュ結果を確認する</h4>
+<figure>
+<img src="img/001_box/page_022.svg"
+alt="テトラメッシュ結果を確認する" />
+<figcaption aria-hidden="true">テトラメッシュ結果を確認する</figcaption>
+</figure>
+<ul>
+<li>確認: 生成されたテトラメッシュの見た目を確認する。</li>
+<li>確認:
+複雑形状には使いやすいが、直方体ではヘキサメッシュも比較する。</li>
+</ul>
+<hr />
+<h3 id="ヘキサメッシュの作成">ヘキサメッシュの作成</h3>
+<hr />
+<h4 id="ヘキサメッシュを設定する">1. ヘキサメッシュを設定する</h4>
+<figure>
+<img src="img/001_box/page_023.svg" alt="ヘキサメッシュを設定する" />
+<figcaption aria-hidden="true">ヘキサメッシュを設定する</figcaption>
+</figure>
+<ul>
+<li><ol type="1">
+<li><code>Box_1</code> が選択されていることを確認する。</li>
+</ol></li>
+<li><ol start="2" type="1">
+<li>3Dヘキサメッシュを選択する。</li>
+</ol></li>
+<li><ol start="3" type="1">
+<li>分割数を <code>15</code> にする。</li>
+</ol></li>
+<li><ol start="4" type="1">
+<li>設定内容を確認して <code>Apply and Close</code> する。</li>
+</ol></li>
+</ul>
+<hr />
+<h4 id="ヘキサメッシュを計算する">2. ヘキサメッシュを計算する</h4>
+<figure>
+<img src="img/001_box/page_024.svg" alt="ヘキサメッシュを計算する" />
+<figcaption aria-hidden="true">ヘキサメッシュを計算する</figcaption>
+</figure>
+<ul>
+<li><ol start="5" type="1">
+<li><code>Mesh_2</code> を選択した状態で <code>Compute</code>
+をクリックし、メッシュを作成する。</li>
+</ol></li>
+<li>確認: ヘキサメッシュのセル数と分割の入り方を確認する。</li>
+</ul>
+<hr />
+<h3
+id="d2d3dを指定してメッシュを制御する">1D/2D/3Dを指定してメッシュを制御する</h3>
+<hr />
+<h4 id="d分割数を指定する">1. 1D分割数を指定する</h4>
+<figure>
+<img src="img/001_box/page_025.svg" alt="1D分割数を指定する" />
+<figcaption aria-hidden="true">1D分割数を指定する</figcaption>
+</figure>
+<ul>
+<li><ol type="1">
+<li><code>Box_1</code> が選択されていることを確認する。</li>
+</ol></li>
+<li><ol start="2" type="1">
+<li><code>1D</code> タブを開く。</li>
+</ol></li>
+<li><ol start="3" type="1">
+<li><code>Number of Segments</code> をクリックし、分割数を
+<code>5</code> にする。</li>
+</ol></li>
+</ul>
+<hr />
+<h4 id="d面メッシュサイズを指定する">2.
+2D面メッシュサイズを指定する</h4>
+<figure>
+<img src="img/001_box/page_026.svg"
+alt="2D面メッシュサイズを指定する" />
+<figcaption aria-hidden="true">2D面メッシュサイズを指定する</figcaption>
+</figure>
+<ul>
+<li><ol start="4" type="1">
+<li><code>2D</code> タブを開く。</li>
+</ol></li>
+<li><ol start="5" type="1">
+<li><code>NETGEN 2D Parameters</code>
+をクリックし、<code>Max. Size = 5</code>, <code>Min. Size = 1</code>
+を指定する。</li>
+</ol></li>
+</ul>
+<hr />
+<h4 id="d体積メッシュサイズを指定する">3.
+3D体積メッシュサイズを指定する</h4>
+<figure>
+<img src="img/001_box/page_027.svg"
+alt="3D体積メッシュサイズを指定する" />
+<figcaption
+aria-hidden="true">3D体積メッシュサイズを指定する</figcaption>
+</figure>
+<ul>
+<li><ol start="7" type="1">
+<li><code>3D</code> タブを開く。</li>
+</ol></li>
+<li><ol start="8" type="1">
+<li><code>NETGEN 3D Parameters</code>
+をクリックし、<code>Max. Size = 2</code>, <code>Min. Size = 1</code>
+を指定する。</li>
+</ol></li>
+</ul>
+<hr />
+<h4 id="d2d3d指定メッシュを計算する">4.
+1D/2D/3D指定メッシュを計算する</h4>
+<figure>
+<img src="img/001_box/page_028.svg"
+alt="1D/2D/3D指定メッシュを計算する" />
+<figcaption
+aria-hidden="true">1D/2D/3D指定メッシュを計算する</figcaption>
+</figure>
+<ul>
+<li><ol start="9" type="1">
+<li><code>Mesh_3</code> を選択した状態で <code>Compute</code>
+をクリックし、メッシュを作成する。</li>
+</ol></li>
+<li>確認: 1D, 2D, 3D
+の設定がメッシュに反映されていることを確認する。</li>
+</ul>
+<hr />
+<h4 id="断面表示で内部メッシュを確認する">5.
+断面表示で内部メッシュを確認する</h4>
+<figure>
+<img src="img/001_box/page_029.svg"
+alt="断面表示で内部メッシュを確認する" />
+<figcaption
+aria-hidden="true">断面表示で内部メッシュを確認する</figcaption>
+</figure>
+<ul>
+<li><ol type="1">
+<li>右クリックから <code>Clipping</code> をクリックする。</li>
+</ol></li>
+<li><ol start="2" type="1">
+<li><code>New &gt; Relative</code> を選択する。</li>
+</ol></li>
+<li><ol start="3" type="1">
+<li><code>Y-Z</code> 面で断面を作り、<code>Apply</code>
+をクリックする。</li>
+</ol></li>
+</ul>
+<hr />
+<h4 id="断面結果を確認する">6. 断面結果を確認する</h4>
+<figure>
+<img src="img/001_box/page_030.svg" alt="断面結果を確認する" />
+<figcaption aria-hidden="true">断面結果を確認する</figcaption>
+</figure>
+<ul>
+<li>確認: 断面表示により、内部のセル分布を確認する。</li>
+<li>確認: 表面だけでは分からないメッシュ密度の偏りを確認できる。</li>
+</ul>
+<hr />
+<h3 id="各辺で分割数を変える">各辺で分割数を変える</h3>
+<hr />
+<h4 id="方向別分割数の設定準備">1. 方向別分割数の設定準備</h4>
+<figure>
+<img src="img/001_box/page_031.svg" alt="方向別分割数の設定準備" />
+<figcaption aria-hidden="true">方向別分割数の設定準備</figcaption>
+</figure>
+<ul>
+<li><ol type="1">
+<li><code>Box_1</code> が選択されていることを確認する。</li>
+</ol></li>
+<li><ol start="2" type="1">
+<li>3Dヘキサメッシュを選択する。</li>
+</ol></li>
+<li><ol start="3" type="1">
+<li>分割数を <code>15</code> にする。</li>
+</ol></li>
+<li><ol start="4" type="1">
+<li>設定内容を確認して <code>Apply and Close</code> する。</li>
+</ol></li>
+</ul>
+<hr />
+<h4 id="サブメッシュを作成する">2. サブメッシュを作成する</h4>
+<figure>
+<img src="img/001_box/page_032.svg" alt="サブメッシュを作成する" />
+<figcaption aria-hidden="true">サブメッシュを作成する</figcaption>
+</figure>
+<ul>
+<li><ol start="5" type="1">
+<li><code>Mesh_4</code> を選択した状態で <code>Create Sub-mesh</code>
+をクリックする。</li>
+</ol></li>
+</ul>
+<hr />
+<h4 id="x方向の分割数を増やす">3. x方向の分割数を増やす</h4>
+<figure>
+<img src="img/001_box/page_033.svg" alt="x方向の分割数を増やす" />
+<figcaption aria-hidden="true">x方向の分割数を増やす</figcaption>
+</figure>
+<ul>
+<li><ol start="6" type="1">
+<li>Geometryとして線グループ <code>x</code> を選択する。</li>
+</ol></li>
+<li><ol start="7" type="1">
+<li><code>1D</code> を選択する。</li>
+</ol></li>
+<li><ol start="8" type="1">
+<li><code>Wire Discretisation</code> を選択する。</li>
+</ol></li>
+<li><ol start="9" type="1">
+<li><code>Number of Segments</code> を選択する。</li>
+</ol></li>
+<li><ol start="10" type="1">
+<li>分割数を <code>40</code> にする。</li>
+</ol></li>
+</ul>
+<hr />
+<h4 id="サブメッシュ設定を確認する">4. サブメッシュ設定を確認する</h4>
+<figure>
+<img src="img/001_box/page_034.svg" alt="サブメッシュ設定を確認する" />
+<figcaption aria-hidden="true">サブメッシュ設定を確認する</figcaption>
+</figure>
+<ul>
+<li>確認: 選択した線グループが正しいか確認する。</li>
+<li>確認:
+サブメッシュは全体設定より優先されるため、対象の選択が重要になる。</li>
+</ul>
+<hr />
+<h4 id="方向別分割の考え方">5. 方向別分割の考え方</h4>
+<figure>
+<img src="img/001_box/page_035.svg" alt="方向別分割の考え方" />
+<figcaption aria-hidden="true">方向別分割の考え方</figcaption>
+</figure>
+<ul>
+<li>確認: 全体メッシュ設定とサブメッシュ設定を組み合わせて使う。</li>
+<li>確認: 流れ方向や勾配が大きい方向だけ分割数を増やせる。</li>
+</ul>
+<hr />
+<h4 id="方向別分割メッシュを計算する">6.
+方向別分割メッシュを計算する</h4>
+<figure>
+<img src="img/001_box/page_036.svg"
+alt="方向別分割メッシュを計算する" />
+<figcaption aria-hidden="true">方向別分割メッシュを計算する</figcaption>
+</figure>
+<ul>
+<li><ol start="11" type="1">
+<li><code>Mesh_4</code> を選択した状態で <code>Compute</code>
+をクリックし、メッシュを作成する。</li>
+</ol></li>
+<li>確認:
+1分割、12分割、40分割の違いを比較し、方向別分割の効果を確認する。</li>
+</ul>
+<hr />
+<h4 id="分割結果を確認する">7. 分割結果を確認する</h4>
+<figure>
+<img src="img/001_box/page_037.svg" alt="分割結果を確認する" />
+<figcaption aria-hidden="true">分割結果を確認する</figcaption>
+</figure>
+<ul>
+<li>確認: メッシュ密度が方向ごとに変わっていることを確認する。</li>
+<li>確認: 流れ方向・壁面近傍・勾配の大きい場所で分割を調整する。</li>
+</ul>
+<hr />
+<h4 id="メッシュ品質を確認する">8. メッシュ品質を確認する</h4>
+<figure>
+<img src="img/001_box/page_038.svg" alt="メッシュ品質を確認する" />
+<figcaption aria-hidden="true">メッシュ品質を確認する</figcaption>
+</figure>
+<ul>
+<li>確認: サブメッシュ設定後のセル形状を確認する。</li>
+<li>確認: 極端なアスペクト比や不自然なセルがないかを見る。</li>
+</ul>
+<hr />
+<h3 id="特定の面を細分化する">特定の面を細分化する</h3>
+<hr />
+<h4 id="特定面だけ細分化する準備">1. 特定面だけ細分化する準備</h4>
+<figure>
+<img src="img/001_box/page_039.svg" alt="特定面だけ細分化する準備" />
+<figcaption aria-hidden="true">特定面だけ細分化する準備</figcaption>
+</figure>
+<ul>
+<li><ol type="1">
+<li><code>Box_1</code> が選択されていることを確認する。</li>
+</ol></li>
+<li><ol start="2" type="1">
+<li><code>3D</code> タブを開く。</li>
+</ol></li>
+<li><ol start="3" type="1">
+<li>3Dテトラメッシュを選択する。</li>
+</ol></li>
+<li><ol start="4" type="1">
+<li>メッシュサイズを <code>10 mm</code> にする。</li>
+</ol></li>
+<li><ol start="5" type="1">
+<li>設定内容を確認して <code>Apply and Close</code> する。</li>
+</ol></li>
+</ul>
+<hr />
+<h4 id="面サブメッシュを作成する">2. 面サブメッシュを作成する</h4>
+<figure>
+<img src="img/001_box/page_040.svg" alt="面サブメッシュを作成する" />
+<figcaption aria-hidden="true">面サブメッシュを作成する</figcaption>
+</figure>
+<ul>
+<li><ol start="6" type="1">
+<li><code>Mesh_5</code> を選択した状態で <code>Create Sub-mesh</code>
+をクリックする。</li>
+</ol></li>
+</ul>
+<hr />
+<h4 id="inlet面だけ細分化する">3. inlet面だけ細分化する</h4>
+<figure>
+<img src="img/001_box/page_041.svg" alt="inlet面だけ細分化する" />
+<figcaption aria-hidden="true">inlet面だけ細分化する</figcaption>
+</figure>
+<ul>
+<li><ol start="7" type="1">
+<li>Geometryとして <code>inlet</code> を選択する。</li>
+</ol></li>
+<li><ol start="8" type="1">
+<li><code>2D</code> を選択する。</li>
+</ol></li>
+<li><ol start="9" type="1">
+<li>2Dテトラメッシュを選択する。</li>
+</ol></li>
+<li><ol start="10" type="1">
+<li>メッシュサイズを <code>2 mm</code> にする。</li>
+</ol></li>
+<li><ol start="11" type="1">
+<li><code>Apply and Close</code> で確定する。</li>
+</ol></li>
+</ul>
+<hr />
+<h4 id="局所細分化メッシュを計算する">4.
+局所細分化メッシュを計算する</h4>
+<figure>
+<img src="img/001_box/page_042.svg"
+alt="局所細分化メッシュを計算する" />
+<figcaption aria-hidden="true">局所細分化メッシュを計算する</figcaption>
+</figure>
+<ul>
+<li><ol start="12" type="1">
+<li><code>Mesh_5</code> を選択した状態で <code>Compute</code>
+をクリックし、メッシュを作成する。</li>
+</ol></li>
+<li>確認: <code>inlet</code> 周辺だけメッシュサイズが <code>2 mm</code>
+になっていることを確認する。</li>
+</ul>
+<hr />
+<h4 id="局所細分化結果を確認する">5. 局所細分化結果を確認する</h4>
+<figure>
+<img src="img/001_box/page_043.svg" alt="局所細分化結果を確認する" />
+<figcaption aria-hidden="true">局所細分化結果を確認する</figcaption>
+</figure>
+<ul>
+<li>確認: 細分化した面とその周辺のセル接続を確認する。</li>
+<li>確認: 局所細分化は計算コストと精度のバランスを取るために使う。</li>
+</ul>
+<hr />
+<h3 id="境界層メッシュを入れる">境界層メッシュを入れる</h3>
+<hr />
+<h4 id="境界層メッシュを設定する">1. 境界層メッシュを設定する</h4>
+<figure>
+<img src="img/001_box/page_044.svg" alt="境界層メッシュを設定する" />
+<figcaption aria-hidden="true">境界層メッシュを設定する</figcaption>
+</figure>
+<ul>
+<li><ol type="1">
+<li><code>Box_1</code> が選択されていることを確認する。</li>
+</ol></li>
+<li><ol start="2" type="1">
+<li><code>3D</code> タブを開く。</li>
+</ol></li>
+<li><ol start="3" type="1">
+<li>3Dテトラメッシュを選択する。</li>
+</ol></li>
+<li><ol start="4" type="1">
+<li>メッシュサイズを <code>5 mm</code> にする。</li>
+</ol></li>
+<li><ol start="5" type="1">
+<li><code>Viscous Layers</code> をクリックする。</li>
+</ol></li>
+</ul>
+<hr />
+<h4 id="境界層パラメータを指定する">2. 境界層パラメータを指定する</h4>
+<figure>
+<img src="img/001_box/page_045.svg" alt="境界層パラメータを指定する" />
+<figcaption aria-hidden="true">境界層パラメータを指定する</figcaption>
+</figure>
+<ul>
+<li><ol start="6" type="1">
+<li>トータル厚みを <code>2 mm</code>、レイヤー数を <code>3層</code>
+に設定する。</li>
+</ol></li>
+<li>補足: パターン1は何も設定しない例、パターン2は <code>inlet</code>
+面を選択して追加する例を示している。</li>
+</ul>
+<hr />
+<h4 id="境界層対象面を確認する">3. 境界層対象面を確認する</h4>
+<figure>
+<img src="img/001_box/page_046.svg" alt="境界層対象面を確認する" />
+<figcaption aria-hidden="true">境界層対象面を確認する</figcaption>
+</figure>
+<ul>
+<li>確認: 境界層を入れる面、または除外する面を確認する。</li>
+<li>確認: 壁面近傍を解きたい場合は、壁面側に境界層を入れる。</li>
+</ul>
+<hr />
+<h2 id="openfoam側での計算">OpenFOAM側での計算</h2>
+<p>SALOMEで作成したメッシュをOpenFOAMへ渡すには、UNV形式で書き出し、OpenFOAMのケースフォルダへ変換・配置する必要がある。</p>
+<hr />
+<h3 id="openfoam用にunv出力する">OpenFOAM用にUNV出力する</h3>
+<hr />
+<h4 id="openfoam計算で使うメッシュを選ぶ">1.
+OpenFOAM計算で使うメッシュを選ぶ</h4>
+<figure>
+<img src="img/001_box/page_047.svg"
+alt="OpenFOAM計算で使うメッシュを選ぶ" />
+<figcaption
+aria-hidden="true">OpenFOAM計算で使うメッシュを選ぶ</figcaption>
+</figure>
+<ul>
+<li>確認: 今回のOpenFOAM計算では <code>Mesh_4</code> を使う。</li>
+<li>確認: <code>Mesh_4</code>
+は方向別分割を設定したヘキサメッシュで、直方体流路の基礎計算に使いやすい。</li>
+</ul>
+<hr />
+<h4 id="openfoamへ渡すグループを整理する">2.
+OpenFOAMへ渡すグループを整理する</h4>
+<figure>
+<img src="img/001_box/page_048.svg"
+alt="OpenFOAMへ渡すグループを整理する" />
+<figcaption
+aria-hidden="true">OpenFOAMへ渡すグループを整理する</figcaption>
+</figure>
+<ul>
+<li><ol type="1">
+<li><code>Groups of Edges</code> は削除する。</li>
+</ol></li>
+<li>補足: <code>Groups of Faces</code>
+がOpenFOAMの境界面の名前になる。</li>
+<li>補足:
+不要な線グループやCompoundグループをUNVに含めると、<code>ideasUnvToFoam</code>でエラーになることがある。</li>
+</ul>
+<hr />
+<h4 id="unv形式でエクスポートする">3. UNV形式でエクスポートする</h4>
+<figure>
+<img src="img/001_box/page_049.svg" alt="UNV形式でエクスポートする" />
+<figcaption aria-hidden="true">UNV形式でエクスポートする</figcaption>
+</figure>
+<ul>
+<li><ol start="2" type="1">
+<li><code>Mesh_4</code>
+上で右クリックし、<code>Export &gt; UNV file</code> を選ぶ。</li>
+</ol></li>
+<li><ol start="3" type="1">
+<li>ファイル名を <code>Mesh_4</code> として保存する。</li>
+</ol></li>
+</ul>
+<hr />
+<h4 id="エクスポート結果を確認する">4. エクスポート結果を確認する</h4>
+<figure>
+<img src="img/001_box/page_050.svg" alt="エクスポート結果を確認する" />
+<figcaption aria-hidden="true">エクスポート結果を確認する</figcaption>
+</figure>
+<ul>
+<li>確認: 指定した場所に <code>Mesh_4.unv</code>
+が作成されたことを確認する。</li>
+<li>確認: OpenFOAMケース側へコピーまたは参照して変換する。</li>
+</ul>
+<hr />
+<h4 id="geometryからメッシュグループを作る">5.
+Geometryからメッシュグループを作る</h4>
+<figure>
+<img src="img/001_box/page_051.svg"
+alt="Geometryからメッシュグループを作る" />
+<figcaption
+aria-hidden="true">Geometryからメッシュグループを作る</figcaption>
+</figure>
+<ul>
+<li><ol type="1">
+<li><code>Mesh_4</code> を選択した状態で
+<code>Create Groups from Geometry</code> をクリックする。</li>
+</ol></li>
+<li><ol start="2" type="1">
+<li>Geometryに面を追加する。</li>
+</ol></li>
+<li><ol start="3" type="1">
+<li><code>Apply and Close</code>
+で確定し、OpenFOAMに渡すパッチ名を整える。</li>
+</ol></li>
+<li>補足:
+メッシュを作成した後にGeometry側で面グループを作成した場合も、<code>Create Groups from Geometry</code>
+を使うと、Geometryの面グループをメッシュ側のグループとして割り当てることができる。</li>
+</ul>
+<hr />
+<h3 id="openfoamを用いた流体解析">OpenFOAMを用いた流体解析</h3>
+<p>OpenFOAMでは、メッシュだけでは計算できない。計算には、初期条件を入れる
+<code>0</code>、物性やメッシュを入れる
+<code>constant</code>、計算条件を入れる <code>system</code>
+が必要になる。</p>
+<p>今回は定常・非圧縮流れの計算を行うため、OpenFOAM 13のチュートリアル
+<code>incompressibleFluid/pitzDailySteady</code> をベースにする。</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> data/001_box/run001_of13</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cp</span> <span class="at">-r</span> /opt/openfoam13/tutorials/incompressibleFluid/pitzDailySteady/<span class="dt">{0</span><span class="op">,</span><span class="dt">constant</span><span class="op">,</span><span class="dt">system}</span> .</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span> <span class="at">-f</span> system/blockMeshDict</span></code></pre></div>
+<ul>
+<li><code>pitzDailySteady</code>
+は、非圧縮流体の定常解析用チュートリアルである。</li>
+<li><code>system/controlDict</code>
+では、<code>solver incompressibleFluid</code>
+を使う設定になっている。</li>
+<li><code>system/fvSchemes</code> では、時間微分を
+<code>steadyState</code> として扱う。</li>
+<li><code>system/fvSolution</code>
+では、定常解析で使うSIMPLE法の設定が入っている。</li>
+<li><code>system/blockMeshDict</code>
+はチュートリアル付属のメッシュ作成用ファイルである。今回はSALOMEで作成したUNVメッシュを使うため削除する。</li>
+</ul>
+<hr />
+<h4 id="openfoamへの変換">OpenFOAMへの変換</h4>
+<p>UNVを書き出した後は、OpenFOAM側で以下の計算フォルダへ移動して作業する。</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> data/001_box/run001_of13</span></code></pre></div>
+<ul>
+<li>計算フォルダは <code>data/001_box/run001_of13</code> とする。</li>
+<li><code>Mesh_4.unv</code> は
+<code>data/001_box/run001_of13/Mesh_4.unv</code> に保存する。</li>
+<li><code>0</code>、<code>constant</code>、<code>system</code>
+も、この計算フォルダ内に置く。</li>
+</ul>
+<p>計算フォルダに入った後、OpenFOAM
+13を読み込み、SALOMEから出力したUNVメッシュをOpenFOAM形式へ変換する。</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="bu">.</span> /opt/openfoam13/etc/bashrc</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">ideasUnvToFoam</span> Mesh_4.unv <span class="op">&gt;</span> log.ideasUnvToFoam.of13 <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ex">transformPoints</span> <span class="st">&quot;scale=(0.001 0.001 0.001)&quot;</span> <span class="op">&gt;</span> log.transformPoints.of13 <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="ex">checkMesh</span> <span class="op">&gt;</span> log.checkMesh.of13 <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span></code></pre></div>
+<ul>
+<li><code>. /opt/openfoam13/etc/bashrc</code> は、OpenFOAM
+13のコマンドを使えるようにする。</li>
+<li><code>ideasUnvToFoam Mesh_4.unv</code>
+は、SALOMEから出力したUNVメッシュをOpenFOAMの
+<code>constant/polyMesh</code> 形式へ変換する。</li>
+<li><code>&gt; log.ideasUnvToFoam.of13 2&gt;&amp;1</code>
+は、変換時の標準出力とエラー出力をログファイルへ保存する。</li>
+<li><code>transformPoints "scale=(0.001 0.001 0.001)"</code>
+は、座標をx, y, zすべて <code>1/1000</code>
+倍する。SALOMEでmm単位の形状を作った場合、OpenFOAMで使うm単位へ変換するために使う。</li>
+<li><code>checkMesh</code>
+は、変換後のメッシュ品質、境界面、セル数、寸法などを確認する。</li>
+<li><code>log.checkMesh.of13</code> を確認し、<code>Mesh OK</code>
+が出ていれば、基本的なメッシュチェックは通っている。</li>
+</ul>
+<hr />
+<h4 id="openfoamの計算結果確認">OpenFOAMの計算結果確認</h4>
+<p>OpenFOAMで計算した後は、<code>post.foam</code>
+を作成してParaViewで結果を確認する。</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">touch</span> post.foam</span></code></pre></div>
+<figure>
+<img src="img/001_box/paraview_result_001.png"
+alt="OpenFOAM計算結果のParaView可視化" />
+<figcaption
+aria-hidden="true">OpenFOAM計算結果のParaView可視化</figcaption>
+</figure>
+<ul>
+<li>境界条件: <code>inlet</code> は <code>U = (0.01 0 0) m/s</code>
+とし、x方向へ <code>0.01 m/s</code> の一様流入を与える。</li>
+<li>表示内容: ParaViewでは <code>U Magnitude</code>
+を表示している。これは速度ベクトル <code>U</code>
+の大きさであり、入口付近ではおおよそ <code>0.01 m/s</code> になる。</li>
+<li>境界条件: <code>outlet</code> は自然流出として扱う。速度
+<code>U</code> は <code>zeroGradient</code>、圧力 <code>p</code>
+は基準圧として <code>fixedValue 0</code> を与える。</li>
+<li>境界条件: <code>topAndbottom</code> は <code>empty</code>
+とし、2次元解析として厚み方向を解かない。</li>
+<li>境界条件: <code>side</code> は <code>wall</code>
+とし、壁面では流速が0になるため、壁近傍で <code>U Magnitude</code>
+が小さくなる。</li>
+<li>確認:
+矢印表示を追加すると、流速ベクトルの向きが入口から出口方向へ向かっていることを確認しやすい。</li>
+</ul>
+</body>
+</html>

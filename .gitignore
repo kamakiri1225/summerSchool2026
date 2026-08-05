@@ -1,0 +1,13 @@
+/*
+!/.gitignore
+!/docs
+/docs/*
+!/docs/Track3
+/docs/Track3/*
+!/docs/Track3/*.html
+!/docs/Track3/*.css
+!/docs/Track3/reveal.js
+!/docs/Track3/img
+/docs/Track3/img/*.pdf
+/docs/Track3/img/*.svg
+/docs/Track3/img/**/*.pdf

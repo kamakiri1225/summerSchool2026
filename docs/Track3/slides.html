@@ -1,0 +1,3928 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <title>Track3: SALOMEを使ったOpenFOAMメッシュ作成</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="reveal.js/dist/reset.css">
+  <link rel="stylesheet" href="reveal.js/dist/reveal.css">
+  <style>
+    .reveal .sourceCode {  /* see #7635 */
+      overflow: visible;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="reveal.js/dist/theme/white.css" id="theme">
+  <link rel="stylesheet" href="slides.css"/>
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide">
+  <h1 class="title">Track3: SALOMEを使ったOpenFOAMメッシュ作成</h1>
+</section>
+
+<section>
+<section id="salomeとは" class="title-slide slide level1">
+<h1>SALOMEとは</h1>
+
+</section>
+<section id="概要" class="slide level2">
+<h2>概要</h2>
+<p>SALOME
+はフランス電力（EDF）が中心となって開発しているオープンソースの CAE
+プリ・ポスト処理プラットフォーム。
+ジオメトリ作成からメッシュ生成・結果可視化まで一貫して行える。</p>
+<ul>
+<li>ライセンス: LGPL（無料・商用利用可）</li>
+<li>開発元: EDF（Électricité de France）</li>
+<li>対応OS: Linux / Windows</li>
+</ul>
+</section>
+<section id="主なモジュール" class="slide level2">
+<h2>主なモジュール</h2>
+<table>
+<thead>
+<tr class="header">
+<th>モジュール</th>
+<th>役割</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Shaper</td>
+<td>パラメトリック CAD（スケッチ・フィーチャーベース）</td>
+</tr>
+<tr class="even">
+<td>Geometry（GEOM）</td>
+<td>直接モデリング・Python スクリプト対応</td>
+</tr>
+<tr class="odd">
+<td>Mesh</td>
+<td>メッシュ生成（テトラ・ヘキサ・境界層など）</td>
+</tr>
+<tr class="even">
+<td>ParaVis</td>
+<td>結果の可視化（ParaView ベース）</td>
+</tr>
+<tr class="odd">
+<td>YACS</td>
+<td>ワークフロー管理</td>
+</tr>
+</tbody>
+</table>
+<p>SALOME起動後は、画面左上のプルダウンから使用するモジュールを切り替える。</p>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/000_salome/page_017.svg"
+alt="モジュールを切り替える" />
+<figcaption aria-hidden="true">モジュールを切り替える</figcaption>
+</figure>
+</section>
+<section id="shaper-モジュール" class="slide level2">
+<h2>Shaper モジュール</h2>
+<p>SALOMEのツールバーには、下図のように数多くのモジュールが並んでいる。ただし本講義で実際に使うのは、ジオメトリ作成の
+<strong>Shaper</strong>、直接モデリングの
+<strong>Geometry（GEOM）</strong>、メッシュ生成の <strong>Mesh</strong>
+の3つだけである。</p>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/000_salome/page_018.svg"
+alt="SALOMEの主なモジュール一覧" />
+<figcaption aria-hidden="true">SALOMEの主なモジュール一覧</figcaption>
+</figure>
+<p>パラメトリック CAD モジュール。従来の Geometry（GEOM）の後継。</p>
+</section>
+<section class="slide level2">
+
+<h3 id="できること">できること</h3>
+<ul>
+<li>スケッチベースモデリング（2D スケッチ → 押し出し・回転で 3D
+化）</li>
+<li>フィーチャーツリーによる履歴管理（後から寸法変更が容易）</li>
+<li>ブーリアン演算（和・差・積）</li>
+<li>プリミティブ（Box・円柱・球など）</li>
+<li>変換（移動・回転・ミラー・スケール）</li>
+<li>アセンブリ（複数パーツの組み立て）</li>
+</ul>
+<p>例えば、2Dスケッチを描いて押し出すと、以下のように3D形状が作られる。</p>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/000_salome/page_019.svg"
+alt="スケッチから押し出しで3D化する" />
+<figcaption
+aria-hidden="true">スケッチから押し出しで3D化する</figcaption>
+</figure>
+</section>
+<section class="slide level2">
+
+<h3 id="geomgeometryモジュールとは">GEOM（Geometry）モジュールとは</h3>
+<p>GEOM は Shaper
+より前からある直接モデリング（ダイレクトモデリング）方式のジオメトリモジュールで、CAD
+モデルの作成・編集を行う。Shaper
+のようなフィーチャーツリーに基づく履歴は持たないが、Box・円柱などのプリミティブ生成やブーリアン演算（Fuse・Cut・Common）、Python
+スクリプトによる自動化に強く、SALOME では現在も広く使われている。</p>
+<p>例えば、2つの Box
+をブーリアン演算（Fuse）で結合すると、以下のように1つの形状にまとまる。</p>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/000_salome/page_020.svg"
+alt="Box_1とBox_2をFuse（結合）する" />
+<figcaption
+aria-hidden="true">Box_1とBox_2をFuse（結合）する</figcaption>
+</figure>
+</section>
+<section class="slide level2">
+
+<h3 id="geom-モジュールとの比較">GEOM モジュールとの比較</h3>
+<table>
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 28%" />
+<col style="width: 60%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th>Shaper</th>
+<th>Geometry（GEOM）</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>モデリング方式</td>
+<td>パラメトリック（履歴あり）</td>
+<td>直接モデリング（履歴なし）</td>
+</tr>
+<tr class="even">
+<td>後からの変更</td>
+<td>容易</td>
+<td>難しい</td>
+</tr>
+<tr class="odd">
+<td>成熟度</td>
+<td>新しい（機能追加中）</td>
+<td>枯れている</td>
+</tr>
+<tr class="even">
+<td>Python スクリプト</td>
+<td>対応（発展中）</td>
+<td>充実</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="mesh-モジュール" class="slide level2">
+<h2>Mesh モジュール</h2>
+<p>Shaper / GEOM
+で作成したジオメトリからメッシュを生成するモジュール。</p>
+</section>
+<section class="slide level2">
+
+<h3 id="メッシュの種類">メッシュの種類</h3>
+<table>
+<colgroup>
+<col style="width: 27%" />
+<col style="width: 27%" />
+<col style="width: 45%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>種類</th>
+<th>説明</th>
+<th>セルの形</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>テトラメッシュ</td>
+<td>四面体。複雑形状に自動生成しやすい</td>
+<td>4つの三角形の面で囲まれた最もシンプルな立体。NETGEN
+などのアルゴリズムで複雑な形状にも自動で敷き詰められる</td>
+</tr>
+<tr class="even">
+<td>ヘキサメッシュ</td>
+<td>六面体。計算精度が高く OpenFOAM と相性が良い</td>
+<td>直方体（サイコロ状）のセル。同じ体積ならテトラよりセル数が少なく、面が壁に沿いやすいため数値誤差が小さい</td>
+</tr>
+<tr class="odd">
+<td>プリズム（境界層）</td>
+<td>壁面付近に層状に生成。境界層の解像度を上げる</td>
+<td>壁に沿って薄い層を積み重ねた三角柱／四角柱状のセル。壁に近いほど薄く、離れるほど厚くする</td>
+</tr>
+<tr class="even">
+<td>ハイブリッド</td>
+<td>ヘキサ＋テトラの混在</td>
+<td>形状が単純な部分はヘキサ、複雑な部分はテトラというように、領域ごとに異なる種類のセルを組み合わせる</td>
+</tr>
+</tbody>
+</table>
+<div
+style="display:flex; flex-wrap:wrap; gap:1.2rem; justify-content:center; margin:1.5rem 0;">
+<figure style="margin:0; text-align:center;">
+<img src="img/000_salome/mesh_tetra.svg" alt="四面体セル" style="display:block; width:260px; max-width:100%; margin:0; border:1px solid #ddd; background:#fff;">
+<figcaption>
+テトラメッシュ
+</figcaption>
+</figure>
+<figure style="margin:0; text-align:center;">
+<img src="img/000_salome/mesh_hexa.svg" alt="六面体セル" style="display:block; width:260px; max-width:100%; margin:0; border:1px solid #ddd; background:#fff;">
+<figcaption>
+ヘキサメッシュ
+</figcaption>
+</figure>
+<figure style="margin:0; text-align:center;">
+<img src="img/000_salome/mesh_prism.svg" alt="境界層セル" style="display:block; width:260px; max-width:100%; margin:0; border:1px solid #ddd; background:#fff;">
+<figcaption>
+プリズム（境界層）
+</figcaption>
+</figure>
+<figure style="margin:0; text-align:center;">
+<img src="img/000_salome/mesh_hybrid.svg" alt="ハイブリッドメッシュ" style="display:block; width:260px; max-width:100%; margin:0; border:1px solid #ddd; background:#fff;">
+<figcaption>
+ハイブリッド
+</figcaption>
+</figure>
+</div>
+</section>
+<section class="slide level2">
+
+<h3 id="分割の設定階層">分割の設定階層</h3>
+<p>メッシュの細かさは 1D → 2D → 3D
+の順に設定する。1D（辺）の分割が2D（面）のメッシュの粗さを決め、2D（面）のメッシュが3D（体積）のメッシュの粗さを決める、という積み上げの関係になっている。</p>
+<table>
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 33%" />
+<col style="width: 26%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>階層</th>
+<th>対象</th>
+<th>設定内容</th>
+<th>具体例</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1D</td>
+<td>エッジ（辺）</td>
+<td>分割数・分割比（グレーディング）</td>
+<td><code>Wire Discretisation</code> で
+<code>Number of Segments</code>（分割数）を指定する</td>
+</tr>
+<tr class="even">
+<td>2D</td>
+<td>フェイス（面）</td>
+<td>面メッシュのアルゴリズム</td>
+<td><code>NETGEN 2D Parameters</code> で <code>Max. Size</code> /
+<code>Min. Size</code>（面メッシュの最大・最小サイズ）を指定する</td>
+</tr>
+<tr class="odd">
+<td>3D</td>
+<td>ソリッド（体積）</td>
+<td>体積メッシュのアルゴリズム</td>
+<td><code>NETGEN 3D Parameters</code> で <code>Max. Size</code> /
+<code>Min. Size</code>（セルの最大・最小サイズ）を指定する</td>
+</tr>
+</tbody>
+</table>
+<p>1D・2D・3D
+をすべて指定すると、辺の分割数を優先しつつ、面・体積は指定したサイズ範囲でメッシュが生成される。具体的な操作手順は
+<a href="001_box.md">001_box.md</a>
+の「1D/2D/3Dを指定してメッシュを制御する」を参照。</p>
+</section>
+<section class="slide level2">
+
+<h3 id="主なアルゴリズム">主なアルゴリズム</h3>
+<table>
+<thead>
+<tr class="header">
+<th>アルゴリズム</th>
+<th>次元</th>
+<th>特徴</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Wire Discretization</td>
+<td>1D</td>
+<td>エッジを指定分割数で均等分割</td>
+</tr>
+<tr class="even">
+<td>Quadrangle（Mapping）</td>
+<td>2D</td>
+<td>四角形メッシュ。ヘキサ化に必須</td>
+</tr>
+<tr class="odd">
+<td>Hexahedron（i,j,k）</td>
+<td>3D</td>
+<td>構造ヘキサメッシュ。規則的な形状に使用</td>
+</tr>
+<tr class="even">
+<td>NETGEN 1D-2D-3D</td>
+<td>3D</td>
+<td>テトラ自動生成</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section class="slide level2">
+
+<h3 id="境界層viscous-layers">境界層（Viscous Layers）</h3>
+<p>壁面付近に薄い層状のプリズムメッシュを追加する機能。</p>
+<ul>
+<li><strong>層数</strong>: 積層する枚数</li>
+<li><strong>厚み</strong>: 最初の層の厚さ</li>
+<li><strong>伸長率</strong>: 層ごとの厚みの増加比率</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="サブメッシュ">サブメッシュ</h3>
+<p>特定のフェイスやエッジだけ分割設定を変えたい場合に使用。
+部分的に細かくしたり、境界条件ごとに名前（グループ）をつけるのに使う。</p>
+</section>
+<section class="slide level2">
+
+<h3 id="グループ">グループ</h3>
+<p>OpenFOAM
+のパッチ（境界条件）に対応させるため、フェイスに名前をつける機能。
+メッシュ生成前にグループを設定しておくと UNV
+エクスポート後もパッチ名が引き継がれる。</p>
+</section>
+<section id="openfoam-との連携" class="slide level2">
+<h2>OpenFOAM との連携</h2>
+<p>SALOME で作成したメッシュを OpenFOAM 形式に変換して利用する。</p>
+<pre><code>SALOME（Shaper でジオメトリ作成）
+  ↓
+SALOME（Mesh モジュールでメッシュ生成）
+  ↓
+UNV 形式でエクスポート
+  ↓
+ideasUnvToFoam コマンドで OpenFOAM 形式に変換</code></pre>
+</section>
+<section id="ダウンロード" class="slide level2">
+<h2>ダウンロード</h2>
+<table style="width:100%;">
+<colgroup>
+<col style="width: 42%" />
+<col style="width: 26%" />
+<col style="width: 31%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>配布元</th>
+<th>URL</th>
+<th>特徴</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Code_Aster 付属版</td>
+<td>https://www.code-aster.org/</td>
+<td>構造解析ソフト Code_Aster
+とセット。<strong>通常はこちら</strong></td>
+</tr>
+<tr class="even">
+<td>Salome Platform（EDF）</td>
+<td>https://www.salome-platform.org/</td>
+<td>開発元 EDF のサイト。Code_Aster は含まないが最新版を入手可能</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section class="slide level2">
+
+</section></section>
+<section>
+<section id="box-salomeでopenfoam用メッシュを作る"
+class="title-slide slide level1">
+<h1>001 Box: SALOMEでOpenFOAM用メッシュを作る</h1>
+
+</section>
+<section id="この演習で目指すこと" class="slide level2">
+<h2>この演習で目指すこと</h2>
+<p>SALOMEで直方体モデルを作成し、OpenFOAMで使える境界名つきメッシュとしてUNV出力する。基本形状を題材に、メッシュ作成で頻繁に使う操作を一通り確認する。</p>
+<ul>
+<li>直方体形状を作成する</li>
+<li>辺・面・境界に名前を付ける</li>
+<li>テトラメッシュとヘキサメッシュを作成する</li>
+<li>各辺で分割数を変える</li>
+<li>特定の面だけメッシュを細分化する</li>
+<li>境界層メッシュを入れる</li>
+<li>OpenFOAM用にUNVを書き出す</li>
+</ul>
+</section>
+<section id="モデル作成" class="slide level2">
+<h2>モデル作成</h2>
+</section>
+<section class="slide level2">
+
+<h3 id="geometryモジュールへ切り替える">1.
+Geometryモジュールへ切り替える</h3>
+<figure>
+<img data-src="img/001_box/page_004.svg"
+alt="1. Geometryモジュールへ切り替える" />
+<figcaption aria-hidden="true">1.
+Geometryモジュールへ切り替える</figcaption>
+</figure>
+<ul>
+<li><ol type="1">
+<li><code>Geometry</code> に変更し、Geometry画面へ切り替える。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="box形状を作成する">2. Box形状を作成する</h3>
+<figure>
+<img data-src="img/001_box/page_005.svg" alt="2. Box形状を作成する" />
+<figcaption aria-hidden="true">2. Box形状を作成する</figcaption>
+</figure>
+<ul>
+<li><ol start="2" type="1">
+<li><code>Create a box</code> をクリックする。</li>
+</ol></li>
+<li><ol start="3" type="1">
+<li>寸法を <code>100 x 60 x 10</code>
+として入力する。ここではmm単位で形状を作る。</li>
+</ol></li>
+<li><ol start="4" type="1">
+<li><code>Apply and Close</code> でBoxを作成する。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="box作成結果を確認する">3. Box作成結果を確認する</h3>
+<figure>
+<img data-src="img/001_box/page_006.svg"
+alt="3. Box作成結果を確認する" />
+<figcaption aria-hidden="true">3. Box作成結果を確認する</figcaption>
+</figure>
+<ul>
+<li>確認: 作成した直方体がビュー上に表示されていることを確認する。</li>
+<li>確認: ツリー上にBoxオブジェクトが作成されていることを確認する。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="辺方向を抽出する">4. 辺方向を抽出する</h3>
+<figure>
+<img data-src="img/001_box/page_007.svg" alt="4. 辺方向を抽出する" />
+<figcaption aria-hidden="true">4. 辺方向を抽出する</figcaption>
+</figure>
+<ul>
+<li><ol start="5" type="1">
+<li><code>Operations &gt; Blocks &gt; Propagate</code>
+をクリックする。</li>
+</ol></li>
+<li><ol start="6" type="1">
+<li><code>Box_1</code> を選択する。</li>
+</ol></li>
+<li><ol start="7" type="1">
+<li><code>Apply and Close</code> で確定する。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="propagateで作られるcompoundを確認する">5.
+Propagateで作られるCompoundを確認する</h3>
+<figure>
+<img data-src="img/001_box/page_008.svg"
+alt="5. Propagateで作られるCompoundを確認する" />
+<figcaption aria-hidden="true">5.
+Propagateで作られるCompoundを確認する</figcaption>
+</figure>
+<ul>
+<li>確認: <code>Compound_1</code>, <code>Compound_2</code>,
+<code>Compound_3</code> が作成される。</li>
+<li>確認:
+これらはBoxの各方向の辺グループとして、後で方向別の分割数指定に使える。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="compoundを方向名に変更する">6. Compoundを方向名に変更する</h3>
+<figure>
+<img data-src="img/001_box/page_009.svg"
+alt="6. Compoundを方向名に変更する" />
+<figcaption aria-hidden="true">6.
+Compoundを方向名に変更する</figcaption>
+</figure>
+<ul>
+<li><ol start="8" type="1">
+<li><code>Compound_3</code> をクリックし、Groupsが
+<code>Compound_3</code> になっていることを確認する。</li>
+</ol></li>
+<li><ol start="9" type="1">
+<li>Nameを <code>x</code> に変更する。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="線グループの考え方">7. 線グループの考え方</h3>
+<figure>
+<img data-src="img/001_box/page_010.svg" alt="7. 線グループの考え方" />
+<figcaption aria-hidden="true">7. 線グループの考え方</figcaption>
+</figure>
+<ul>
+<li>確認: 線グループは、方向ごとの分割数を指定するために使う。</li>
+<li>確認:
+OpenFOAMの境界条件には通常使わないが、SALOME内のメッシュ制御では重要になる。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="面グループを作成する準備">8. 面グループを作成する準備</h3>
+<figure>
+<img data-src="img/001_box/page_011.svg"
+alt="8. 面グループを作成する準備" />
+<figcaption aria-hidden="true">8. 面グループを作成する準備</figcaption>
+</figure>
+<ul>
+<li><ol start="10" type="1">
+<li><code>Box_1</code> を選択した状態で
+<code>New Entity &gt; Group &gt; Create Group</code> を開く。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="inlet面グループを作成する">9. inlet面グループを作成する</h3>
+<figure>
+<img data-src="img/001_box/page_012.svg"
+alt="9. inlet面グループを作成する" />
+<figcaption aria-hidden="true">9. inlet面グループを作成する</figcaption>
+</figure>
+<ul>
+<li><ol start="11" type="1">
+<li>面グループ作成画面で、対象が <code>Box_1</code>
+であることを確認する。</li>
+</ol></li>
+<li><ol start="12" type="1">
+<li>面の名前を <code>inlet</code> にする。</li>
+</ol></li>
+<li><ol start="13" type="1">
+<li>inletにしたい面を選択する。</li>
+</ol></li>
+<li><ol start="14" type="1">
+<li><code>Add</code> で選択面をグループに追加する。</li>
+</ol></li>
+<li><ol start="15" type="1">
+<li><code>Apply</code> をクリックする。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="面選択の確認">10. 面選択の確認</h3>
+<figure>
+<img data-src="img/001_box/page_013.svg" alt="10. 面選択の確認" />
+<figcaption aria-hidden="true">10. 面選択の確認</figcaption>
+</figure>
+<ul>
+<li>確認: 選択した面が意図した入口面になっているか確認する。</li>
+<li>確認:
+境界名はOpenFOAMのパッチ名になるため、ここでの選択ミスは解析条件のミスにつながる。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="他の境界面も作成する">11. 他の境界面も作成する</h3>
+<figure>
+<img data-src="img/001_box/page_014.svg"
+alt="11. 他の境界面も作成する" />
+<figcaption aria-hidden="true">11. 他の境界面も作成する</figcaption>
+</figure>
+<ul>
+<li>確認: <code>outlet</code>, <code>side</code>,
+<code>topAndbottom</code> など、解析に必要な面グループを作成する。</li>
+<li>確認: 2D解析に使う前後面は、OpenFOAM側で <code>empty</code>
+にする。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="面グループ作成を確定する">12. 面グループ作成を確定する</h3>
+<figure>
+<img data-src="img/001_box/page_015.svg"
+alt="12. 面グループ作成を確定する" />
+<figcaption aria-hidden="true">12. 面グループ作成を確定する</figcaption>
+</figure>
+<ul>
+<li><ol start="16" type="1">
+<li>必要な面グループを作成したら <code>Apply and Close</code>
+で閉じる。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="geometryファイルを保存する">13. Geometryファイルを保存する</h3>
+<figure>
+<img data-src="img/001_box/page_016.svg"
+alt="13. Geometryファイルを保存する" />
+<figcaption aria-hidden="true">13.
+Geometryファイルを保存する</figcaption>
+</figure>
+<ul>
+<li><ol start="17" type="1">
+<li><code>Save as ...</code> をクリックする。</li>
+</ol></li>
+<li><ol start="18" type="1">
+<li><code>Save</code>
+をクリックし、SALOMEのプロジェクトファイルとして保存する。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="線グループと面グループの役割">14.
+線グループと面グループの役割</h3>
+<figure>
+<img data-src="img/001_box/page_017.svg"
+alt="14. 線グループと面グループの役割" />
+<figcaption aria-hidden="true">14.
+線グループと面グループの役割</figcaption>
+</figure>
+<ul>
+<li>確認: 線グループはメッシュ分割数を制御するために使う。</li>
+<li>確認: 面グループはOpenFOAMの境界パッチ名に対応する。</li>
+<li>確認: OpenFOAMへ渡す境界は、面グループとして作成しておく。</li>
+</ul>
+</section>
+<section id="メッシュ作成" class="slide level2">
+<h2>メッシュ作成</h2>
+</section>
+<section class="slide level2">
+
+<h3 id="テトラメッシュの作成">テトラメッシュの作成</h3>
+</section>
+<section class="slide level2">
+
+<h4 id="meshモジュールへ切り替える">1. Meshモジュールへ切り替える</h4>
+<figure>
+<img data-src="img/001_box/page_018.svg"
+alt="Meshモジュールへ切り替える" />
+<figcaption aria-hidden="true">Meshモジュールへ切り替える</figcaption>
+</figure>
+<ul>
+<li><ol type="1">
+<li>SALOMEのモジュールを <code>Mesh</code> に切り替える。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h4 id="新規メッシュを作成する">2. 新規メッシュを作成する</h4>
+<figure>
+<img data-src="img/001_box/page_019.svg" alt="新規メッシュを作成する" />
+<figcaption aria-hidden="true">新規メッシュを作成する</figcaption>
+</figure>
+<ul>
+<li><ol start="2" type="1">
+<li><code>Box_1</code> を選択した状態で <code>Create Mesh</code>
+をクリックする。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h4 id="テトラメッシュを設定する">3. テトラメッシュを設定する</h4>
+<figure>
+<img data-src="img/001_box/page_020.svg"
+alt="テトラメッシュを設定する" />
+<figcaption aria-hidden="true">テトラメッシュを設定する</figcaption>
+</figure>
+<ul>
+<li><ol start="3" type="1">
+<li><code>Box_1</code> が選択されていることを確認する。</li>
+</ol></li>
+<li><ol start="4" type="1">
+<li>3Dテトラメッシュを選択する。</li>
+</ol></li>
+<li><ol start="5" type="1">
+<li>メッシュサイズを <code>5 mm</code> に設定する。</li>
+</ol></li>
+<li><ol start="6" type="1">
+<li>アルゴリズムとパラメータを確認する。</li>
+</ol></li>
+<li><ol start="7" type="1">
+<li><code>Apply and Close</code> で設定を保存する。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h4 id="テトラメッシュを計算する">4. テトラメッシュを計算する</h4>
+<figure>
+<img data-src="img/001_box/page_021.svg"
+alt="テトラメッシュを計算する" />
+<figcaption aria-hidden="true">テトラメッシュを計算する</figcaption>
+</figure>
+<ul>
+<li><ol start="8" type="1">
+<li><code>Mesh_1</code> を選択した状態で <code>Compute</code>
+をクリックし、メッシュを作成する。</li>
+</ol></li>
+<li>確認: メッシュ情報を確認し、セル数や品質を把握する。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h4 id="テトラメッシュ結果を確認する">5.
+テトラメッシュ結果を確認する</h4>
+<figure>
+<img data-src="img/001_box/page_022.svg"
+alt="テトラメッシュ結果を確認する" />
+<figcaption aria-hidden="true">テトラメッシュ結果を確認する</figcaption>
+</figure>
+<ul>
+<li>確認: 生成されたテトラメッシュの見た目を確認する。</li>
+<li>確認:
+複雑形状には使いやすいが、直方体ではヘキサメッシュも比較する。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="ヘキサメッシュの作成">ヘキサメッシュの作成</h3>
+</section>
+<section class="slide level2">
+
+<h4 id="ヘキサメッシュを設定する">1. ヘキサメッシュを設定する</h4>
+<figure>
+<img data-src="img/001_box/page_023.svg"
+alt="ヘキサメッシュを設定する" />
+<figcaption aria-hidden="true">ヘキサメッシュを設定する</figcaption>
+</figure>
+<ul>
+<li><ol type="1">
+<li><code>Box_1</code> が選択されていることを確認する。</li>
+</ol></li>
+<li><ol start="2" type="1">
+<li>3Dヘキサメッシュを選択する。</li>
+</ol></li>
+<li><ol start="3" type="1">
+<li>分割数を <code>15</code> にする。</li>
+</ol></li>
+<li><ol start="4" type="1">
+<li>設定内容を確認して <code>Apply and Close</code> する。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h4 id="ヘキサメッシュを計算する">2. ヘキサメッシュを計算する</h4>
+<figure>
+<img data-src="img/001_box/page_024.svg"
+alt="ヘキサメッシュを計算する" />
+<figcaption aria-hidden="true">ヘキサメッシュを計算する</figcaption>
+</figure>
+<ul>
+<li><ol start="5" type="1">
+<li><code>Mesh_2</code> を選択した状態で <code>Compute</code>
+をクリックし、メッシュを作成する。</li>
+</ol></li>
+<li>確認: ヘキサメッシュのセル数と分割の入り方を確認する。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3
+id="d2d3dを指定してメッシュを制御する">1D/2D/3Dを指定してメッシュを制御する</h3>
+</section>
+<section class="slide level2">
+
+<h4 id="d分割数を指定する">1. 1D分割数を指定する</h4>
+<figure>
+<img data-src="img/001_box/page_025.svg" alt="1D分割数を指定する" />
+<figcaption aria-hidden="true">1D分割数を指定する</figcaption>
+</figure>
+<ul>
+<li><ol type="1">
+<li><code>Box_1</code> が選択されていることを確認する。</li>
+</ol></li>
+<li><ol start="2" type="1">
+<li><code>1D</code> タブを開く。</li>
+</ol></li>
+<li><ol start="3" type="1">
+<li><code>Number of Segments</code> をクリックし、分割数を
+<code>5</code> にする。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h4 id="d面メッシュサイズを指定する">2.
+2D面メッシュサイズを指定する</h4>
+<figure>
+<img data-src="img/001_box/page_026.svg"
+alt="2D面メッシュサイズを指定する" />
+<figcaption aria-hidden="true">2D面メッシュサイズを指定する</figcaption>
+</figure>
+<ul>
+<li><ol start="4" type="1">
+<li><code>2D</code> タブを開く。</li>
+</ol></li>
+<li><ol start="5" type="1">
+<li><code>NETGEN 2D Parameters</code>
+をクリックし、<code>Max. Size = 5</code>, <code>Min. Size = 1</code>
+を指定する。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h4 id="d体積メッシュサイズを指定する">3.
+3D体積メッシュサイズを指定する</h4>
+<figure>
+<img data-src="img/001_box/page_027.svg"
+alt="3D体積メッシュサイズを指定する" />
+<figcaption
+aria-hidden="true">3D体積メッシュサイズを指定する</figcaption>
+</figure>
+<ul>
+<li><ol start="7" type="1">
+<li><code>3D</code> タブを開く。</li>
+</ol></li>
+<li><ol start="8" type="1">
+<li><code>NETGEN 3D Parameters</code>
+をクリックし、<code>Max. Size = 2</code>, <code>Min. Size = 1</code>
+を指定する。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h4 id="d2d3d指定メッシュを計算する">4.
+1D/2D/3D指定メッシュを計算する</h4>
+<figure>
+<img data-src="img/001_box/page_028.svg"
+alt="1D/2D/3D指定メッシュを計算する" />
+<figcaption
+aria-hidden="true">1D/2D/3D指定メッシュを計算する</figcaption>
+</figure>
+<ul>
+<li><ol start="9" type="1">
+<li><code>Mesh_3</code> を選択した状態で <code>Compute</code>
+をクリックし、メッシュを作成する。</li>
+</ol></li>
+<li>確認: 1D, 2D, 3D
+の設定がメッシュに反映されていることを確認する。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h4 id="断面表示で内部メッシュを確認する">5.
+断面表示で内部メッシュを確認する</h4>
+<figure>
+<img data-src="img/001_box/page_029.svg"
+alt="断面表示で内部メッシュを確認する" />
+<figcaption
+aria-hidden="true">断面表示で内部メッシュを確認する</figcaption>
+</figure>
+<ul>
+<li><ol type="1">
+<li>右クリックから <code>Clipping</code> をクリックする。</li>
+</ol></li>
+<li><ol start="2" type="1">
+<li><code>New &gt; Relative</code> を選択する。</li>
+</ol></li>
+<li><ol start="3" type="1">
+<li><code>Y-Z</code> 面で断面を作り、<code>Apply</code>
+をクリックする。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h4 id="断面結果を確認する">6. 断面結果を確認する</h4>
+<figure>
+<img data-src="img/001_box/page_030.svg" alt="断面結果を確認する" />
+<figcaption aria-hidden="true">断面結果を確認する</figcaption>
+</figure>
+<ul>
+<li>確認: 断面表示により、内部のセル分布を確認する。</li>
+<li>確認: 表面だけでは分からないメッシュ密度の偏りを確認できる。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="各辺で分割数を変える">各辺で分割数を変える</h3>
+</section>
+<section class="slide level2">
+
+<h4 id="方向別分割数の設定準備">1. 方向別分割数の設定準備</h4>
+<figure>
+<img data-src="img/001_box/page_031.svg" alt="方向別分割数の設定準備" />
+<figcaption aria-hidden="true">方向別分割数の設定準備</figcaption>
+</figure>
+<ul>
+<li><ol type="1">
+<li><code>Box_1</code> が選択されていることを確認する。</li>
+</ol></li>
+<li><ol start="2" type="1">
+<li>3Dヘキサメッシュを選択する。</li>
+</ol></li>
+<li><ol start="3" type="1">
+<li>分割数を <code>15</code> にする。</li>
+</ol></li>
+<li><ol start="4" type="1">
+<li>設定内容を確認して <code>Apply and Close</code> する。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h4 id="サブメッシュを作成する">2. サブメッシュを作成する</h4>
+<figure>
+<img data-src="img/001_box/page_032.svg" alt="サブメッシュを作成する" />
+<figcaption aria-hidden="true">サブメッシュを作成する</figcaption>
+</figure>
+<ul>
+<li><ol start="5" type="1">
+<li><code>Mesh_4</code> を選択した状態で <code>Create Sub-mesh</code>
+をクリックする。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h4 id="x方向の分割数を増やす">3. x方向の分割数を増やす</h4>
+<figure>
+<img data-src="img/001_box/page_033.svg" alt="x方向の分割数を増やす" />
+<figcaption aria-hidden="true">x方向の分割数を増やす</figcaption>
+</figure>
+<ul>
+<li><ol start="6" type="1">
+<li>Geometryとして線グループ <code>x</code> を選択する。</li>
+</ol></li>
+<li><ol start="7" type="1">
+<li><code>1D</code> を選択する。</li>
+</ol></li>
+<li><ol start="8" type="1">
+<li><code>Wire Discretisation</code> を選択する。</li>
+</ol></li>
+<li><ol start="9" type="1">
+<li><code>Number of Segments</code> を選択する。</li>
+</ol></li>
+<li><ol start="10" type="1">
+<li>分割数を <code>40</code> にする。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h4 id="サブメッシュ設定を確認する">4. サブメッシュ設定を確認する</h4>
+<figure>
+<img data-src="img/001_box/page_034.svg"
+alt="サブメッシュ設定を確認する" />
+<figcaption aria-hidden="true">サブメッシュ設定を確認する</figcaption>
+</figure>
+<ul>
+<li>確認: 選択した線グループが正しいか確認する。</li>
+<li>確認:
+サブメッシュは全体設定より優先されるため、対象の選択が重要になる。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h4 id="方向別分割の考え方">5. 方向別分割の考え方</h4>
+<figure>
+<img data-src="img/001_box/page_035.svg" alt="方向別分割の考え方" />
+<figcaption aria-hidden="true">方向別分割の考え方</figcaption>
+</figure>
+<ul>
+<li>確認: 全体メッシュ設定とサブメッシュ設定を組み合わせて使う。</li>
+<li>確認: 流れ方向や勾配が大きい方向だけ分割数を増やせる。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h4 id="方向別分割メッシュを計算する">6.
+方向別分割メッシュを計算する</h4>
+<figure>
+<img data-src="img/001_box/page_036.svg"
+alt="方向別分割メッシュを計算する" />
+<figcaption aria-hidden="true">方向別分割メッシュを計算する</figcaption>
+</figure>
+<ul>
+<li><ol start="11" type="1">
+<li><code>Mesh_4</code> を選択した状態で <code>Compute</code>
+をクリックし、メッシュを作成する。</li>
+</ol></li>
+<li>確認:
+1分割、12分割、40分割の違いを比較し、方向別分割の効果を確認する。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h4 id="分割結果を確認する">7. 分割結果を確認する</h4>
+<figure>
+<img data-src="img/001_box/page_037.svg" alt="分割結果を確認する" />
+<figcaption aria-hidden="true">分割結果を確認する</figcaption>
+</figure>
+<ul>
+<li>確認: メッシュ密度が方向ごとに変わっていることを確認する。</li>
+<li>確認: 流れ方向・壁面近傍・勾配の大きい場所で分割を調整する。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h4 id="メッシュ品質を確認する">8. メッシュ品質を確認する</h4>
+<figure>
+<img data-src="img/001_box/page_038.svg" alt="メッシュ品質を確認する" />
+<figcaption aria-hidden="true">メッシュ品質を確認する</figcaption>
+</figure>
+<ul>
+<li>確認: サブメッシュ設定後のセル形状を確認する。</li>
+<li>確認: 極端なアスペクト比や不自然なセルがないかを見る。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="特定の面を細分化する">特定の面を細分化する</h3>
+</section>
+<section class="slide level2">
+
+<h4 id="特定面だけ細分化する準備">1. 特定面だけ細分化する準備</h4>
+<figure>
+<img data-src="img/001_box/page_039.svg"
+alt="特定面だけ細分化する準備" />
+<figcaption aria-hidden="true">特定面だけ細分化する準備</figcaption>
+</figure>
+<ul>
+<li><ol type="1">
+<li><code>Box_1</code> が選択されていることを確認する。</li>
+</ol></li>
+<li><ol start="2" type="1">
+<li><code>3D</code> タブを開く。</li>
+</ol></li>
+<li><ol start="3" type="1">
+<li>3Dテトラメッシュを選択する。</li>
+</ol></li>
+<li><ol start="4" type="1">
+<li>メッシュサイズを <code>10 mm</code> にする。</li>
+</ol></li>
+<li><ol start="5" type="1">
+<li>設定内容を確認して <code>Apply and Close</code> する。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h4 id="面サブメッシュを作成する">2. 面サブメッシュを作成する</h4>
+<figure>
+<img data-src="img/001_box/page_040.svg"
+alt="面サブメッシュを作成する" />
+<figcaption aria-hidden="true">面サブメッシュを作成する</figcaption>
+</figure>
+<ul>
+<li><ol start="6" type="1">
+<li><code>Mesh_5</code> を選択した状態で <code>Create Sub-mesh</code>
+をクリックする。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h4 id="inlet面だけ細分化する">3. inlet面だけ細分化する</h4>
+<figure>
+<img data-src="img/001_box/page_041.svg" alt="inlet面だけ細分化する" />
+<figcaption aria-hidden="true">inlet面だけ細分化する</figcaption>
+</figure>
+<ul>
+<li><ol start="7" type="1">
+<li>Geometryとして <code>inlet</code> を選択する。</li>
+</ol></li>
+<li><ol start="8" type="1">
+<li><code>2D</code> を選択する。</li>
+</ol></li>
+<li><ol start="9" type="1">
+<li>2Dテトラメッシュを選択する。</li>
+</ol></li>
+<li><ol start="10" type="1">
+<li>メッシュサイズを <code>2 mm</code> にする。</li>
+</ol></li>
+<li><ol start="11" type="1">
+<li><code>Apply and Close</code> で確定する。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h4 id="局所細分化メッシュを計算する">4.
+局所細分化メッシュを計算する</h4>
+<figure>
+<img data-src="img/001_box/page_042.svg"
+alt="局所細分化メッシュを計算する" />
+<figcaption aria-hidden="true">局所細分化メッシュを計算する</figcaption>
+</figure>
+<ul>
+<li><ol start="12" type="1">
+<li><code>Mesh_5</code> を選択した状態で <code>Compute</code>
+をクリックし、メッシュを作成する。</li>
+</ol></li>
+<li>確認: <code>inlet</code> 周辺だけメッシュサイズが <code>2 mm</code>
+になっていることを確認する。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h4 id="局所細分化結果を確認する">5. 局所細分化結果を確認する</h4>
+<figure>
+<img data-src="img/001_box/page_043.svg"
+alt="局所細分化結果を確認する" />
+<figcaption aria-hidden="true">局所細分化結果を確認する</figcaption>
+</figure>
+<ul>
+<li>確認: 細分化した面とその周辺のセル接続を確認する。</li>
+<li>確認: 局所細分化は計算コストと精度のバランスを取るために使う。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="境界層メッシュを入れる">境界層メッシュを入れる</h3>
+</section>
+<section class="slide level2">
+
+<h4 id="境界層メッシュを設定する">1. 境界層メッシュを設定する</h4>
+<figure>
+<img data-src="img/001_box/page_044.svg"
+alt="境界層メッシュを設定する" />
+<figcaption aria-hidden="true">境界層メッシュを設定する</figcaption>
+</figure>
+<ul>
+<li><ol type="1">
+<li><code>Box_1</code> が選択されていることを確認する。</li>
+</ol></li>
+<li><ol start="2" type="1">
+<li><code>3D</code> タブを開く。</li>
+</ol></li>
+<li><ol start="3" type="1">
+<li>3Dテトラメッシュを選択する。</li>
+</ol></li>
+<li><ol start="4" type="1">
+<li>メッシュサイズを <code>5 mm</code> にする。</li>
+</ol></li>
+<li><ol start="5" type="1">
+<li><code>Viscous Layers</code> をクリックする。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h4 id="境界層パラメータを指定する">2. 境界層パラメータを指定する</h4>
+<figure>
+<img data-src="img/001_box/page_045.svg"
+alt="境界層パラメータを指定する" />
+<figcaption aria-hidden="true">境界層パラメータを指定する</figcaption>
+</figure>
+<ul>
+<li><ol start="6" type="1">
+<li>トータル厚みを <code>2 mm</code>、レイヤー数を <code>3層</code>
+に設定する。</li>
+</ol></li>
+<li>補足: パターン1は何も設定しない例、パターン2は <code>inlet</code>
+面を選択して追加する例を示している。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h4 id="境界層対象面を確認する">3. 境界層対象面を確認する</h4>
+<figure>
+<img data-src="img/001_box/page_046.svg" alt="境界層対象面を確認する" />
+<figcaption aria-hidden="true">境界層対象面を確認する</figcaption>
+</figure>
+<ul>
+<li>確認: 境界層を入れる面、または除外する面を確認する。</li>
+<li>確認: 壁面近傍を解きたい場合は、壁面側に境界層を入れる。</li>
+</ul>
+</section>
+<section id="openfoam側での計算" class="slide level2">
+<h2>OpenFOAM側での計算</h2>
+<p>SALOMEで作成したメッシュをOpenFOAMへ渡すには、UNV形式で書き出し、OpenFOAMのケースフォルダへ変換・配置する必要がある。</p>
+</section>
+<section class="slide level2">
+
+<h3 id="openfoam用にunv出力する">OpenFOAM用にUNV出力する</h3>
+</section>
+<section class="slide level2">
+
+<h4 id="openfoam計算で使うメッシュを選ぶ">1.
+OpenFOAM計算で使うメッシュを選ぶ</h4>
+<figure>
+<img data-src="img/001_box/page_047.svg"
+alt="OpenFOAM計算で使うメッシュを選ぶ" />
+<figcaption
+aria-hidden="true">OpenFOAM計算で使うメッシュを選ぶ</figcaption>
+</figure>
+<ul>
+<li>確認: 今回のOpenFOAM計算では <code>Mesh_4</code> を使う。</li>
+<li>確認: <code>Mesh_4</code>
+は方向別分割を設定したヘキサメッシュで、直方体流路の基礎計算に使いやすい。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h4 id="openfoamへ渡すグループを整理する">2.
+OpenFOAMへ渡すグループを整理する</h4>
+<figure>
+<img data-src="img/001_box/page_048.svg"
+alt="OpenFOAMへ渡すグループを整理する" />
+<figcaption
+aria-hidden="true">OpenFOAMへ渡すグループを整理する</figcaption>
+</figure>
+<ul>
+<li><ol type="1">
+<li><code>Groups of Edges</code> は削除する。</li>
+</ol></li>
+<li>補足: <code>Groups of Faces</code>
+がOpenFOAMの境界面の名前になる。</li>
+<li>補足:
+不要な線グループやCompoundグループをUNVに含めると、<code>ideasUnvToFoam</code>でエラーになることがある。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h4 id="unv形式でエクスポートする">3. UNV形式でエクスポートする</h4>
+<figure>
+<img data-src="img/001_box/page_049.svg"
+alt="UNV形式でエクスポートする" />
+<figcaption aria-hidden="true">UNV形式でエクスポートする</figcaption>
+</figure>
+<ul>
+<li><ol start="2" type="1">
+<li><code>Mesh_4</code>
+上で右クリックし、<code>Export &gt; UNV file</code> を選ぶ。</li>
+</ol></li>
+<li><ol start="3" type="1">
+<li>ファイル名を <code>Mesh_4</code> として保存する。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h4 id="エクスポート結果を確認する">4. エクスポート結果を確認する</h4>
+<figure>
+<img data-src="img/001_box/page_050.svg"
+alt="エクスポート結果を確認する" />
+<figcaption aria-hidden="true">エクスポート結果を確認する</figcaption>
+</figure>
+<ul>
+<li>確認: 指定した場所に <code>Mesh_4.unv</code>
+が作成されたことを確認する。</li>
+<li>確認: OpenFOAMケース側へコピーまたは参照して変換する。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h4 id="geometryからメッシュグループを作る">5.
+Geometryからメッシュグループを作る</h4>
+<figure>
+<img data-src="img/001_box/page_051.svg"
+alt="Geometryからメッシュグループを作る" />
+<figcaption
+aria-hidden="true">Geometryからメッシュグループを作る</figcaption>
+</figure>
+<ul>
+<li><ol type="1">
+<li><code>Mesh_4</code> を選択した状態で
+<code>Create Groups from Geometry</code> をクリックする。</li>
+</ol></li>
+<li><ol start="2" type="1">
+<li>Geometryに面を追加する。</li>
+</ol></li>
+<li><ol start="3" type="1">
+<li><code>Apply and Close</code>
+で確定し、OpenFOAMに渡すパッチ名を整える。</li>
+</ol></li>
+<li>補足:
+メッシュを作成した後にGeometry側で面グループを作成した場合も、<code>Create Groups from Geometry</code>
+を使うと、Geometryの面グループをメッシュ側のグループとして割り当てることができる。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="openfoamを用いた流体解析">OpenFOAMを用いた流体解析</h3>
+<p>OpenFOAMでは、メッシュだけでは計算できない。計算には、初期条件を入れる
+<code>0</code>、物性やメッシュを入れる
+<code>constant</code>、計算条件を入れる <code>system</code>
+が必要になる。</p>
+<p>今回は定常・非圧縮流れの計算を行うため、OpenFOAM 13のチュートリアル
+<code>incompressibleFluid/pitzDailySteady</code> をベースにする。</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> data/001_box/run001_of13</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cp</span> <span class="at">-r</span> /opt/openfoam13/tutorials/incompressibleFluid/pitzDailySteady/<span class="dt">{0</span><span class="op">,</span><span class="dt">constant</span><span class="op">,</span><span class="dt">system}</span> .</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span> <span class="at">-f</span> system/blockMeshDict</span></code></pre></div>
+<ul>
+<li><code>pitzDailySteady</code>
+は、非圧縮流体の定常解析用チュートリアルである。</li>
+<li><code>system/controlDict</code>
+では、<code>solver incompressibleFluid</code>
+を使う設定になっている。</li>
+<li><code>system/fvSchemes</code> では、時間微分を
+<code>steadyState</code> として扱う。</li>
+<li><code>system/fvSolution</code>
+では、定常解析で使うSIMPLE法の設定が入っている。</li>
+<li><code>system/blockMeshDict</code>
+はチュートリアル付属のメッシュ作成用ファイルである。今回はSALOMEで作成したUNVメッシュを使うため削除する。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h4 id="openfoamへの変換">OpenFOAMへの変換</h4>
+<p>UNVを書き出した後は、OpenFOAM側で以下の計算フォルダへ移動して作業する。</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> data/001_box/run001_of13</span></code></pre></div>
+<ul>
+<li>計算フォルダは <code>data/001_box/run001_of13</code> とする。</li>
+<li><code>Mesh_4.unv</code> は
+<code>data/001_box/run001_of13/Mesh_4.unv</code> に保存する。</li>
+<li><code>0</code>、<code>constant</code>、<code>system</code>
+も、この計算フォルダ内に置く。</li>
+</ul>
+<p>計算フォルダに入った後、OpenFOAM
+13を読み込み、SALOMEから出力したUNVメッシュをOpenFOAM形式へ変換する。</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="bu">.</span> /opt/openfoam13/etc/bashrc</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">ideasUnvToFoam</span> Mesh_4.unv <span class="op">&gt;</span> log.ideasUnvToFoam.of13 <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="ex">transformPoints</span> <span class="st">&quot;scale=(0.001 0.001 0.001)&quot;</span> <span class="op">&gt;</span> log.transformPoints.of13 <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="ex">checkMesh</span> <span class="op">&gt;</span> log.checkMesh.of13 <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span></code></pre></div>
+<ul>
+<li><code>. /opt/openfoam13/etc/bashrc</code> は、OpenFOAM
+13のコマンドを使えるようにする。</li>
+<li><code>ideasUnvToFoam Mesh_4.unv</code>
+は、SALOMEから出力したUNVメッシュをOpenFOAMの
+<code>constant/polyMesh</code> 形式へ変換する。</li>
+<li><code>&gt; log.ideasUnvToFoam.of13 2&gt;&amp;1</code>
+は、変換時の標準出力とエラー出力をログファイルへ保存する。</li>
+<li><code>transformPoints "scale=(0.001 0.001 0.001)"</code>
+は、座標をx, y, zすべて <code>1/1000</code>
+倍する。SALOMEでmm単位の形状を作った場合、OpenFOAMで使うm単位へ変換するために使う。</li>
+<li><code>checkMesh</code>
+は、変換後のメッシュ品質、境界面、セル数、寸法などを確認する。</li>
+<li><code>log.checkMesh.of13</code> を確認し、<code>Mesh OK</code>
+が出ていれば、基本的なメッシュチェックは通っている。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h4 id="openfoamの計算結果確認">OpenFOAMの計算結果確認</h4>
+<p>OpenFOAMで計算した後は、<code>post.foam</code>
+を作成してParaViewで結果を確認する。</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">touch</span> post.foam</span></code></pre></div>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/001_box/paraview_result_001.png"
+alt="OpenFOAM計算結果のParaView可視化" />
+<figcaption
+aria-hidden="true">OpenFOAM計算結果のParaView可視化</figcaption>
+</figure>
+<ul>
+<li>境界条件: <code>inlet</code> は <code>U = (0.01 0 0) m/s</code>
+とし、x方向へ <code>0.01 m/s</code> の一様流入を与える。</li>
+<li>表示内容: ParaViewでは <code>U Magnitude</code>
+を表示している。これは速度ベクトル <code>U</code>
+の大きさであり、入口付近ではおおよそ <code>0.01 m/s</code> になる。</li>
+<li>境界条件: <code>outlet</code> は自然流出として扱う。速度
+<code>U</code> は <code>zeroGradient</code>、圧力 <code>p</code>
+は基準圧として <code>fixedValue 0</code> を与える。</li>
+<li>境界条件: <code>topAndbottom</code> は <code>empty</code>
+とし、2次元解析として厚み方向を解かない。</li>
+<li>境界条件: <code>side</code> は <code>wall</code>
+とし、壁面では流速が0になるため、壁近傍で <code>U Magnitude</code>
+が小さくなる。</li>
+<li>確認:
+矢印表示を追加すると、流速ベクトルの向きが入口から出口方向へ向かっていることを確認しやすい。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+</section></section>
+<section>
+<section id="stirrer-salomeで撹拌機のヘキサメッシュを作る"
+class="title-slide slide level1">
+<h1>002 Stirrer: SALOMEで撹拌機のヘキサメッシュを作る</h1>
+
+</section>
+<section id="この演習で目指すこと-1" class="slide level2">
+<h2>この演習で目指すこと</h2>
+<p>撹拌機形状を題材に、Shaperで断面形状を作成し、Geometryで回転・押し出し・分割を行い、Meshでヘキサメッシュを作成する。</p>
+<ul>
+<li>Shaperでスケッチを作成する</li>
+<li>寸法拘束と幾何拘束で形状を確定する</li>
+<li>ShellをGeometryへエクスポートする</li>
+<li>回転、押し出し、Partitionでブロック分割する</li>
+<li>グループを整理してOpenFOAMへ渡す境界名を作る</li>
+<li>ヘキサメッシュとサブメッシュを作成する</li>
+</ul>
+<p>この撹拌槽モデルは、オープンCAEサマースクール2020
+Track3で扱った題材でもある。2020年の演習では、<code>blockMesh</code>
+で扇形の6ブロックを作成し、<code>stitchMesh</code>
+で貼り合わせ、<code>mergeMesh</code>
+で組み合わせることで、羽根付きの撹拌槽形状をヘキサメッシュとして作り上げていた。</p>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/2020_track3_p013.svg"
+alt="Track3-4 OpenFOAMによる形状の組み立て（サマースクール2020資料より）" />
+<figcaption aria-hidden="true">Track3-4
+OpenFOAMによる形状の組み立て（サマースクール2020資料より）</figcaption>
+</figure>
+<p>この2020年の手法（blockMesh・stitchMesh・mergeMesh）は、技術書典で販売されている技術書「OpenFOAMでメッシュ作成」にも解説されている。</p>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/技術書_OpenFOAMメッシュ作成.png"
+alt="技術書「OpenFOAMでメッシュ作成」" />
+<figcaption
+aria-hidden="true">技術書「OpenFOAMでメッシュ作成」</figcaption>
+</figure>
+<ul>
+<li>技術書典: <a
+href="https://techbookfest.org/product/5752199185432576"
+class="uri">https://techbookfest.org/product/5752199185432576</a></li>
+</ul>
+<p>今回の演習では、同じ撹拌槽形状を題材にしつつ、<code>blockMesh</code>
+手組みではなく <strong>SALOME</strong>
+でジオメトリとメッシュを作成する方法を扱う。</p>
+</section>
+<section class="slide level2">
+
+<h3 id="この演習のゴール">この演習のゴール</h3>
+<p>今回の演習のゴールは、下図のように、羽根形状を含む1/4セクター分の撹拌槽形状に対して、SALOMEでヘキサメッシュを作成することである。実際のOpenFOAM計算では、このセクターメッシュを回転コピー・結合して、全周の撹拌槽形状を組み立てる。</p>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_140.svg"
+alt="今回作成するヘキサメッシュのゴール（1/4セクター）" />
+<figcaption
+aria-hidden="true">今回作成するヘキサメッシュのゴール（1/4セクター）</figcaption>
+</figure>
+</section>
+<section id="モデル作成-1" class="slide level2">
+<h2>モデル作成</h2>
+</section>
+<section class="slide level2">
+
+<h3 id="shaperで断面スケッチを開始する">1.
+Shaperで断面スケッチを開始する</h3>
+<figure>
+<img data-src="img/002_stirrer/page_073.svg" alt="Geometryへ変更する" />
+<figcaption aria-hidden="true">Geometryへ変更する</figcaption>
+</figure>
+<ul>
+<li><ol type="1">
+<li><code>Geometry</code> に変更し、<code>Shaper</code>
+の画面へ切り替える。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_074.svg"
+alt="スケッチ平面を選択する" />
+<figcaption aria-hidden="true">スケッチ平面を選択する</figcaption>
+</figure>
+<ul>
+<li><ol start="2" type="1">
+<li><code>Sketch</code> をクリックする。</li>
+</ol></li>
+<li><ol start="3" type="1">
+<li><code>Z-X</code> 平面を選択する。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_075.svg"
+alt="FRONT表示へ切り替える" />
+<figcaption aria-hidden="true">FRONT表示へ切り替える</figcaption>
+</figure>
+<ul>
+<li><ol start="4" type="1">
+<li><code>FRONT</code> をクリックし、スケッチしやすい向きにする。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="最初のスケッチを描く">2. 最初のスケッチを描く</h3>
+<figure>
+<img data-src="img/002_stirrer/page_076.svg" alt="線で概形を描く" />
+<figcaption aria-hidden="true">線で概形を描く</figcaption>
+</figure>
+<ul>
+<li><ol start="5" type="1">
+<li><code>線</code> を使い、まずは大まかな形状を描く。</li>
+</ol></li>
+<li>最初は正確な寸法よりも、必要な線分を作ることを優先する。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_077.svg"
+alt="寸法拘束と平行拘束を入れる" />
+<figcaption aria-hidden="true">寸法拘束と平行拘束を入れる</figcaption>
+</figure>
+<ul>
+<li><ol start="6" type="1">
+<li>寸法拘束を行う。</li>
+</ol></li>
+<li>必要な線は平行拘束で向きをそろえる。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_078.svg" alt="寸法拘束を確定する" />
+<figcaption aria-hidden="true">寸法拘束を確定する</figcaption>
+</figure>
+<ul>
+<li>寸法拘束を入力し、チェックをクリックして確定する。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_079.svg" alt="拘束完了を確認する" />
+<figcaption aria-hidden="true">拘束完了を確認する</figcaption>
+</figure>
+<ul>
+<li>すべての拘束が完了すると、スケッチ線が緑色になる。</li>
+<li>緑色になっていない場合は、寸法拘束または幾何拘束が不足している。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_080.svg" alt="追加の線を描く" />
+<figcaption aria-hidden="true">追加の線を描く</figcaption>
+</figure>
+<ul>
+<li><ol start="7" type="1">
+<li><code>線</code>
+をクリックして、追加のスケッチと寸法拘束を行う。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_081.svg" alt="スケッチを終了する" />
+<figcaption aria-hidden="true">スケッチを終了する</figcaption>
+</figure>
+<ul>
+<li><ol start="8" type="1">
+<li>スケッチが完了したら、チェックをクリックしてスケッチを終了する。</li>
+</ol></li>
+</ul>
+</section>
+<section id="追加断面のスケッチ" class="slide level2">
+<h2>追加断面のスケッチ</h2>
+</section>
+<section class="slide level2">
+
+<h3 id="つ目のスケッチを開始する">1. 2つ目のスケッチを開始する</h3>
+<figure>
+<img data-src="img/002_stirrer/page_082.svg"
+alt="XY平面でスケッチを開始する" />
+<figcaption aria-hidden="true">XY平面でスケッチを開始する</figcaption>
+</figure>
+<ul>
+<li><ol type="1">
+<li><code>Sketch</code> をクリックする。</li>
+</ol></li>
+<li><ol start="2" type="1">
+<li><code>X-Y</code> 平面を選択する。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_083.svg"
+alt="TOP表示へ切り替える" />
+<figcaption aria-hidden="true">TOP表示へ切り替える</figcaption>
+</figure>
+<ul>
+<li><ol start="3" type="1">
+<li><code>TOP</code> をクリックして、上面からスケッチする。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_084.svg" alt="原点から線を描く" />
+<figcaption aria-hidden="true">原点から線を描く</figcaption>
+</figure>
+<ul>
+<li><ol start="4" type="1">
+<li><code>線</code> をクリックし、原点から右方向へ線を描く。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_085.svg" alt="斜め線を描く" />
+<figcaption aria-hidden="true">斜め線を描く</figcaption>
+</figure>
+<ul>
+<li><ol start="5" type="1">
+<li>原点から斜め方向へ線を描く。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_086.svg" alt="端点を一致拘束する" />
+<figcaption aria-hidden="true">端点を一致拘束する</figcaption>
+</figure>
+<ul>
+<li><ol start="6" type="1">
+<li>端点どうしが拘束されていない場合は、<code>Coincident</code>
+で端点を一致拘束する。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_087.svg" alt="角度拘束を入れる" />
+<figcaption aria-hidden="true">角度拘束を入れる</figcaption>
+</figure>
+<ul>
+<li><ol start="7" type="1">
+<li>2点を選択し、角度拘束を入れる。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_088.svg" alt="円弧を描く" />
+<figcaption aria-hidden="true">円弧を描く</figcaption>
+</figure>
+<ul>
+<li><ol start="8" type="1">
+<li>3点を選択して円弧を描く。</li>
+</ol></li>
+<li>原点、端点、線上の点を使い、円弧の位置を決める。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_089.svg" alt="一致拘束を入れる" />
+<figcaption aria-hidden="true">一致拘束を入れる</figcaption>
+</figure>
+<ul>
+<li><ol start="9" type="1">
+<li>必要な点に一致拘束を入れ、線と円弧を接続する。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_090.svg" alt="半径拘束を入れる" />
+<figcaption aria-hidden="true">半径拘束を入れる</figcaption>
+</figure>
+<ul>
+<li><ol start="10" type="1">
+<li>円弧に半径拘束を入れる。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_091.svg" alt="スケッチを終了する" />
+<figcaption aria-hidden="true">スケッチを終了する</figcaption>
+</figure>
+<ul>
+<li><ol start="11" type="1">
+<li>スケッチを終了する。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_092.svg" alt="ファイルを保存する" />
+<figcaption aria-hidden="true">ファイルを保存する</figcaption>
+</figure>
+<ul>
+<li><ol start="12" type="1">
+<li><code>File &gt; Save As...</code> で名前を付けて保存する。</li>
+</ol></li>
+<li><ol start="13" type="1">
+<li><code>Save</code> をクリックする。</li>
+</ol></li>
+</ul>
+</section>
+<section id="羽根形状のスケッチ" class="slide level2">
+<h2>羽根形状のスケッチ</h2>
+</section>
+<section class="slide level2">
+
+<h3 id="円弧と補助線を作成する">1. 円弧と補助線を作成する</h3>
+<figure>
+<img data-src="img/002_stirrer/page_093.svg"
+alt="円弧と半径拘束を作る" />
+<figcaption aria-hidden="true">円弧と半径拘束を作る</figcaption>
+</figure>
+<ul>
+<li><ol type="1">
+<li>円弧を描く。</li>
+</ol></li>
+<li><ol start="2" type="1">
+<li>半径拘束を入れる。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_094.svg" alt="追加の円弧を作る" />
+<figcaption aria-hidden="true">追加の円弧を作る</figcaption>
+</figure>
+<ul>
+<li><ol start="3" type="1">
+<li>さらに円弧を描く。</li>
+</ol></li>
+<li><ol start="4" type="1">
+<li>半径拘束を入れる。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_095.svg" alt="補助線へ変更する" />
+<figcaption aria-hidden="true">補助線へ変更する</figcaption>
+</figure>
+<ul>
+<li><ol start="5" type="1">
+<li>半径 <code>1.5</code> の線をクリックし、<code>Auxiliary</code>
+にチェックを入れる。</li>
+</ol></li>
+<li>線が補助線になる。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_096.svg" alt="線を追加する" />
+<figcaption aria-hidden="true">線を追加する</figcaption>
+</figure>
+<ul>
+<li><ol start="6" type="1">
+<li><code>線</code> をクリックして追加スケッチを描く。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_097.svg"
+alt="水平方向の寸法拘束を入れる" />
+<figcaption aria-hidden="true">水平方向の寸法拘束を入れる</figcaption>
+</figure>
+<ul>
+<li><ol start="7" type="1">
+<li>2点の水平方向寸法拘束を入れる。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_098.svg" alt="拡大して線を描く" />
+<figcaption aria-hidden="true">拡大して線を描く</figcaption>
+</figure>
+<ul>
+<li><ol start="8" type="1">
+<li>拡大し、<code>線</code> で細部をスケッチする。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_099.svg" alt="平行拘束を入れる" />
+<figcaption aria-hidden="true">平行拘束を入れる</figcaption>
+</figure>
+<ul>
+<li><ol start="9" type="1">
+<li>2本ずつ線を選択し、平行拘束を入れる。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_100.svg" alt="寸法拘束を入れる" />
+<figcaption aria-hidden="true">寸法拘束を入れる</figcaption>
+</figure>
+<ul>
+<li><ol start="10" type="1">
+<li>寸法拘束を入れ、形状を確定する。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_101.svg" alt="直線を補助線にする" />
+<figcaption aria-hidden="true">直線を補助線にする</figcaption>
+</figure>
+<ul>
+<li><ol start="11" type="1">
+<li>直線をクリックし、<code>Auxiliary</code> にチェックを入れる。</li>
+</ol></li>
+<li>線が補助線になる。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_102.svg" alt="細部を確認する" />
+<figcaption aria-hidden="true">細部を確認する</figcaption>
+</figure>
+<ul>
+<li>拡大表示で、拘束と接続が意図通りになっていることを確認する。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="shellを作成する">2. Shellを作成する</h3>
+<figure>
+<img data-src="img/002_stirrer/page_103.svg"
+alt="SketchからShellを作成する" />
+<figcaption aria-hidden="true">SketchからShellを作成する</figcaption>
+</figure>
+<ul>
+<li><ol start="12" type="1">
+<li><code>Shell</code> をクリックし、<code>Sketch_1</code>
+を選択する。</li>
+</ol></li>
+<li><ol start="13" type="1">
+<li>チェックをクリックし、スケッチからShellを作成する。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_104.svg"
+alt="もう一つのShellを作成する" />
+<figcaption aria-hidden="true">もう一つのShellを作成する</figcaption>
+</figure>
+<ul>
+<li><ol start="14" type="1">
+<li><code>Shell</code> をクリックし、<code>Sketch_1</code>
+を選択する。</li>
+</ol></li>
+<li><ol start="15" type="1">
+<li>チェックをクリックし、スケッチからShellを作成する。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_105.svg"
+alt="Geometryへエクスポートする" />
+<figcaption aria-hidden="true">Geometryへエクスポートする</figcaption>
+</figure>
+<ul>
+<li><ol start="16" type="1">
+<li><code>Export to GEOM</code>
+をクリックし、Geometryへエクスポートする。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_106.svg" alt="保存する" />
+<figcaption aria-hidden="true">保存する</figcaption>
+</figure>
+<ul>
+<li><ol start="17" type="1">
+<li><code>File &gt; Save As...</code> で名前を付けて保存する。</li>
+</ol></li>
+<li><ol start="18" type="1">
+<li><code>Save</code> をクリックする。</li>
+</ol></li>
+</ul>
+</section>
+<section id="geometryで形状を作る" class="slide level2">
+<h2>Geometryで形状を作る</h2>
+</section>
+<section class="slide level2">
+
+<h3 id="geometryへ切り替える">1. Geometryへ切り替える</h3>
+<figure>
+<img data-src="img/002_stirrer/page_107.svg"
+alt="Geometryへ切り替える" />
+<figcaption aria-hidden="true">Geometryへ切り替える</figcaption>
+</figure>
+<ul>
+<li><ol type="1">
+<li><code>Geometry</code> に変更し、Geometry画面へ切り替える。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_108.svg"
+alt="必要なShellを表示する" />
+<figcaption aria-hidden="true">必要なShellを表示する</figcaption>
+</figure>
+<ul>
+<li><ol start="2" type="1">
+<li>背景上で右クリックし、<code>Hide All</code> をクリックする。</li>
+</ol></li>
+<li><ol start="3" type="1">
+<li><code>Shell_1</code> と <code>Shell_2</code> を表示する。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_109.svg" alt="軸を表示する" />
+<figcaption aria-hidden="true">軸を表示する</figcaption>
+</figure>
+<ul>
+<li><ol start="4" type="1">
+<li><code>Create an origin and base Vector</code>
+をクリックし、軸を表示する。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="回転と押し出しを行う">2. 回転と押し出しを行う</h3>
+<figure>
+<img data-src="img/002_stirrer/page_110.svg" alt="回転を作成する" />
+<figcaption aria-hidden="true">回転を作成する</figcaption>
+</figure>
+<ul>
+<li><ol start="5" type="1">
+<li><code>Revolution</code> をクリックする。</li>
+</ol></li>
+<li><ol start="6" type="1">
+<li><code>Apply and Close</code> をクリックする。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_111.svg" alt="押し出しを作成する" />
+<figcaption aria-hidden="true">押し出しを作成する</figcaption>
+</figure>
+<ul>
+<li><ol start="6" type="1">
+<li><code>Extrusion</code> をクリックする。</li>
+</ol></li>
+<li><ol start="7" type="1">
+<li><code>Apply and Close</code> をクリックする。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_112.svg"
+alt="回転押し出しと押し出し結果" />
+<figcaption aria-hidden="true">回転押し出しと押し出し結果</figcaption>
+</figure>
+<ul>
+<li>回転押し出しと押し出しで、撹拌機の基本形状を作る。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="partitionで分割する">3. Partitionで分割する</h3>
+<figure>
+<img data-src="img/002_stirrer/page_113.svg"
+alt="Partitionを作成する" />
+<figcaption aria-hidden="true">Partitionを作成する</figcaption>
+</figure>
+<ul>
+<li><ol start="8" type="1">
+<li><code>Partition</code> をクリックする。</li>
+</ol></li>
+<li><ol start="9" type="1">
+<li><code>Apply and Close</code> をクリックする。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_114.svg" alt="分割結果を確認する" />
+<figcaption aria-hidden="true">分割結果を確認する</figcaption>
+</figure>
+<ul>
+<li>Partition後の形状を確認する。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_115.svg" alt="分割面を作成する" />
+<figcaption aria-hidden="true">分割面を作成する</figcaption>
+</figure>
+<ul>
+<li><ol start="10" type="1">
+<li>分割面を作成する。</li>
+</ol></li>
+<li><ol start="12" type="1">
+<li><code>Apply and Close</code> をクリックする。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_116.svg"
+alt="分割面を平行移動する" />
+<figcaption aria-hidden="true">分割面を平行移動する</figcaption>
+</figure>
+<ul>
+<li><ol start="13" type="1">
+<li>作成した <code>Face_1</code> を平行移動する。</li>
+</ol></li>
+<li><ol start="14" type="1">
+<li><code>Dz = 10</code> として <code>Apply</code> をクリックする。</li>
+</ol></li>
+<li><ol start="16" type="1">
+<li><code>Dz = 20</code>、(18) <code>Dz = 30</code>、(20)
+<code>Dz = 40</code> として分割面を複製する。</li>
+</ol></li>
+<li><ol start="21" type="1">
+<li><code>Apply and Close</code> をクリックする。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_117.svg" alt="分割面を押し出す" />
+<figcaption aria-hidden="true">分割面を押し出す</figcaption>
+</figure>
+<ul>
+<li><ol start="21" type="1">
+<li><code>Extrusion</code> をクリックする。</li>
+</ol></li>
+<li><ol start="22" type="1">
+<li><code>Apply and Close</code> をクリックする。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_118.svg"
+alt="押し出し結果を確認する" />
+<figcaption aria-hidden="true">押し出し結果を確認する</figcaption>
+</figure>
+<ul>
+<li>分割に使う押し出し面が作成されたことを確認する。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_119.svg"
+alt="Propagateを実行する" />
+<figcaption aria-hidden="true">Propagateを実行する</figcaption>
+</figure>
+<ul>
+<li><ol start="23" type="1">
+<li><code>Operations &gt; Blocks &gt; Propagate</code>
+をクリックする。</li>
+</ol></li>
+<li><ol start="24" type="1">
+<li><code>Apply and Close</code> をクリックする。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_120.svg" alt="保存する" />
+<figcaption aria-hidden="true">保存する</figcaption>
+</figure>
+<ul>
+<li><ol start="25" type="1">
+<li><code>File &gt; Save As...</code> で名前を付けて保存する。</li>
+</ol></li>
+<li><ol start="26" type="1">
+<li><code>Save</code> をクリックする。</li>
+</ol></li>
+</ul>
+</section>
+<section id="グループを整理する" class="slide level2">
+<h2>グループを整理する</h2>
+<p>OpenFOAMへ渡す面や線を整理するため、Geometry側でグループを作成する。境界条件に使う面、メッシュ分割に使う線を分かりやすい名前にしておく。</p>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_121.svg"
+alt="Union Groupsを作成する" />
+<figcaption aria-hidden="true">Union Groupsを作成する</figcaption>
+</figure>
+<ul>
+<li><ol type="1">
+<li><code>New Entity &gt; Group &gt; Union Groups</code>
+をクリックする。</li>
+</ol></li>
+<li><ol start="2" type="1">
+<li><code>Apply</code> をクリックする。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_122.svg" alt="グループを追加する" />
+<figcaption aria-hidden="true">グループを追加する</figcaption>
+</figure>
+<ul>
+<li><ol start="3" type="1">
+<li>必要なグループを作成し、<code>Apply</code> をクリックする。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_123.svg" alt="グループを追加する" />
+<figcaption aria-hidden="true">グループを追加する</figcaption>
+</figure>
+<ul>
+<li><ol start="4" type="1">
+<li>必要なグループを作成し、<code>Apply</code> をクリックする。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_124.svg" alt="グループを追加する" />
+<figcaption aria-hidden="true">グループを追加する</figcaption>
+</figure>
+<ul>
+<li><ol start="5" type="1">
+<li>必要なグループを作成し、<code>Apply</code> をクリックする。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_125.svg" alt="グループを追加する" />
+<figcaption aria-hidden="true">グループを追加する</figcaption>
+</figure>
+<ul>
+<li><ol start="6" type="1">
+<li>必要なグループを作成し、<code>Apply</code> をクリックする。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_126.svg" alt="グループを追加する" />
+<figcaption aria-hidden="true">グループを追加する</figcaption>
+</figure>
+<ul>
+<li><ol start="8" type="1">
+<li>必要なグループを作成し、<code>Apply</code> をクリックする。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_127.svg" alt="グループを追加する" />
+<figcaption aria-hidden="true">グループを追加する</figcaption>
+</figure>
+<ul>
+<li><ol start="9" type="1">
+<li>必要なグループを作成し、<code>Apply</code> をクリックする。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_128.svg" alt="グループを追加する" />
+<figcaption aria-hidden="true">グループを追加する</figcaption>
+</figure>
+<ul>
+<li><ol start="10" type="1">
+<li>必要なグループを作成し、<code>Apply</code> をクリックする。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_129.svg" alt="グループを追加する" />
+<figcaption aria-hidden="true">グループを追加する</figcaption>
+</figure>
+<ul>
+<li><ol start="11" type="1">
+<li>必要なグループを作成し、<code>Apply</code> をクリックする。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_130.svg" alt="グループを追加する" />
+<figcaption aria-hidden="true">グループを追加する</figcaption>
+</figure>
+<ul>
+<li><ol start="12" type="1">
+<li>必要なグループを作成し、<code>Apply</code> をクリックする。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_131.svg" alt="グループを追加する" />
+<figcaption aria-hidden="true">グループを追加する</figcaption>
+</figure>
+<ul>
+<li><ol start="13" type="1">
+<li>必要なグループを作成し、<code>Apply</code> をクリックする。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_132.svg"
+alt="グループ整理結果を確認する" />
+<figcaption aria-hidden="true">グループ整理結果を確認する</figcaption>
+</figure>
+<ul>
+<li>作成したグループを確認する。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_133.svg"
+alt="不要な線グループを削除する" />
+<figcaption aria-hidden="true">不要な線グループを削除する</figcaption>
+</figure>
+<ul>
+<li><ol start="14" type="1">
+<li>不要な線グループは削除する。</li>
+</ol></li>
+<li>OpenFOAM変換に不要なグループを減らし、境界名の混乱を避ける。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_134.svg" alt="保存する" />
+<figcaption aria-hidden="true">保存する</figcaption>
+</figure>
+<ul>
+<li><ol start="15" type="1">
+<li><code>File &gt; Save As...</code> で名前を付けて保存する。</li>
+</ol></li>
+<li><ol start="16" type="1">
+<li><code>Save</code> をクリックする。</li>
+</ol></li>
+</ul>
+</section>
+<section id="ヘキサメッシュ作成" class="slide level2">
+<h2>ヘキサメッシュ作成</h2>
+</section>
+<section class="slide level2">
+
+<h3 id="meshモジュールへ切り替える-1">1. Meshモジュールへ切り替える</h3>
+<figure>
+<img data-src="img/002_stirrer/page_135.svg" alt="Meshへ切り替える" />
+<figcaption aria-hidden="true">Meshへ切り替える</figcaption>
+</figure>
+<ul>
+<li><ol type="1">
+<li><code>Mesh</code> に変更し、Mesh画面へ切り替える。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_136.svg"
+alt="Partitionを表示する" />
+<figcaption aria-hidden="true">Partitionを表示する</figcaption>
+</figure>
+<ul>
+<li><ol start="2" type="1">
+<li><code>Partition_2</code> を表示する。</li>
+</ol></li>
+<li><ol start="3" type="1">
+<li>拡大し、メッシュ対象の形状を確認する。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_137.svg" alt="Create Meshを開く" />
+<figcaption aria-hidden="true">Create Meshを開く</figcaption>
+</figure>
+<ul>
+<li><ol start="4" type="1">
+<li><code>Mesh &gt; Create Mesh</code> をクリックする。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_138.svg"
+alt="ヘキサメッシュ条件を設定する" />
+<figcaption aria-hidden="true">ヘキサメッシュ条件を設定する</figcaption>
+</figure>
+<ul>
+<li><ol start="5" type="1">
+<li><code>Partition_2</code> が選択されていることを確認する。</li>
+</ol></li>
+<li><ol start="6" type="1">
+<li>3Dヘキサメッシュを設定する。</li>
+</ol></li>
+<li><ol start="7" type="1">
+<li>分割数を <code>15</code> とする。</li>
+</ol></li>
+<li><ol start="8" type="1">
+<li><code>Apply and Close</code> をクリックする。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_139.svg" alt="メッシュを計算する" />
+<figcaption aria-hidden="true">メッシュを計算する</figcaption>
+</figure>
+<ul>
+<li><ol start="9" type="1">
+<li><code>Mesh_1</code> を選択した状態で <code>Compute</code>
+をクリックし、メッシュを作成する。</li>
+</ol></li>
+<li>メッシュ情報を確認する。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_140.svg"
+alt="メッシュ結果を確認する" />
+<figcaption aria-hidden="true">メッシュ結果を確認する</figcaption>
+</figure>
+<ul>
+<li>作成されたヘキサメッシュを確認する。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_141.svg"
+alt="メッシュ拡大結果を確認する" />
+<figcaption aria-hidden="true">メッシュ拡大結果を確認する</figcaption>
+</figure>
+<ul>
+<li>細部のメッシュ品質を確認する。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_142.svg" alt="保存する" />
+<figcaption aria-hidden="true">保存する</figcaption>
+</figure>
+<ul>
+<li><ol start="10" type="1">
+<li><code>File &gt; Save As...</code> で名前を付けて保存する。</li>
+</ol></li>
+<li><ol start="11" type="1">
+<li><code>Save</code> をクリックする。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="サブメッシュで部分的に分割数を変える">2.
+サブメッシュで部分的に分割数を変える</h3>
+<figure>
+<img data-src="img/002_stirrer/page_143.svg"
+alt="Create Sub-meshを開く" />
+<figcaption aria-hidden="true">Create Sub-meshを開く</figcaption>
+</figure>
+<ul>
+<li><ol start="12" type="1">
+<li><code>Mesh_1</code> を選択した状態で <code>Create Sub-mesh</code>
+をクリックする。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_144.svg"
+alt="線グループへ分割数を設定する" />
+<figcaption aria-hidden="true">線グループへ分割数を設定する</figcaption>
+</figure>
+<ul>
+<li><ol start="12" type="1">
+<li><code>Mesh_1</code> が選択されていることを確認する。</li>
+</ol></li>
+<li><ol start="13" type="1">
+<li>線グループ <code>r1</code> を選択する。</li>
+</ol></li>
+<li><ol start="14" type="1">
+<li><code>Wire Discretisation</code> を選択する。</li>
+</ol></li>
+<li><ol start="15" type="1">
+<li><code>Number of Segments</code> を選択する。</li>
+</ol></li>
+<li><ol start="16" type="1">
+<li>分割数を <code>12</code> とする。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_145.svg"
+alt="サブメッシュ設定を確認する" />
+<figcaption aria-hidden="true">サブメッシュ設定を確認する</figcaption>
+</figure>
+<ul>
+<li>サブメッシュ条件が対象線グループに設定されていることを確認する。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_146.svg" alt="再計算する" />
+<figcaption aria-hidden="true">再計算する</figcaption>
+</figure>
+<ul>
+<li><ol start="17" type="1">
+<li><code>Mesh_1</code> を選択した状態で <code>Compute</code>
+をクリックし、メッシュを再計算する。</li>
+</ol></li>
+<li>メッシュ情報を確認する。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_147.svg"
+alt="再計算結果を確認する" />
+<figcaption aria-hidden="true">再計算結果を確認する</figcaption>
+</figure>
+<ul>
+<li>サブメッシュ指定により、対象部分の分割数が変わったことを確認する。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_148.svg"
+alt="最終メッシュを確認する" />
+<figcaption aria-hidden="true">最終メッシュを確認する</figcaption>
+</figure>
+<ul>
+<li>ここでは <code>r1</code>
+方向の分割数変更のみ確認したが、実際には他の方向（<code>r2</code>〜<code>r6</code>、<code>theta1</code>、<code>z3</code>）の線グループにも同様の手順でサブメッシュを設定する。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="全方向のサブメッシュを設定してメッシュを完成させる">3.
+全方向のサブメッシュを設定してメッシュを完成させる</h3>
+<figure>
+<img data-src="img/002_stirrer/page_150.svg"
+alt="サブメッシュ一覧を確認する" />
+<figcaption aria-hidden="true">サブメッシュ一覧を確認する</figcaption>
+</figure>
+<ul>
+<li><code>r1</code>〜<code>r6</code>、<code>theta1</code>、<code>z3</code>
+すべての線グループに対して、同様にサブメッシュ（<code>Number of Segments</code>）を設定する。</li>
+<li><code>SubMeshes on Compound</code>
+の下に、設定した数だけサブメッシュが並んでいることを確認する。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_151.svg" alt="全体を再計算する" />
+<figcaption aria-hidden="true">全体を再計算する</figcaption>
+</figure>
+<ul>
+<li><ol start="17" type="1">
+<li><code>Mesh_1</code> を選択した状態で <code>Compute</code>
+をクリックし、全方向のサブメッシュを反映してメッシュを再計算する。</li>
+</ol></li>
+<li>メッシュ情報を確認する（例: ノード数 238239、ヘキサヘドロン数
+223776）。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_152.svg"
+alt="拡大してメッシュ品質を確認する" />
+<figcaption
+aria-hidden="true">拡大してメッシュ品質を確認する</figcaption>
+</figure>
+<ul>
+<li>羽根の根本や角部を拡大し、メッシュが歪みなく生成されていることを確認する。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_153.svg" alt="Save Asで保存する" />
+<figcaption aria-hidden="true">Save Asで保存する</figcaption>
+</figure>
+<ul>
+<li><ol start="18" type="1">
+<li><code>File</code> &gt; <code>Save As...</code>
+で名前を付けて保存する。</li>
+</ol></li>
+<li><ol start="19" type="1">
+<li><code>Save</code> をクリックする。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="openfoam用にunv出力する-1">4. OpenFOAM用にUNV出力する</h3>
+<figure>
+<img data-src="img/002_stirrer/page_154.svg"
+alt="Groups of Edgesを削除する" />
+<figcaption aria-hidden="true">Groups of Edgesを削除する</figcaption>
+</figure>
+<ul>
+<li><ol type="1">
+<li><code>Groups of Edges</code> を削除する。</li>
+</ol></li>
+<li>補足:
+線グループ（サブメッシュ分割用）はOpenFOAM変換に不要なため、削除して境界名の混乱を避ける。<code>Groups of Faces</code>
+はOpenFOAMの境界パッチ名として引き継がれるため残す。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/page_155.svg"
+alt="UNV形式でエクスポートする" />
+<figcaption aria-hidden="true">UNV形式でエクスポートする</figcaption>
+</figure>
+<ul>
+<li><ol start="2" type="1">
+<li><code>Mesh_1</code> 上で右クリックし、<code>Export</code> &gt;
+<code>UNV file</code> を選ぶ。</li>
+</ol></li>
+<li><ol start="3" type="1">
+<li><code>Save</code> をクリックし、<code>Mesh_1.unv</code>
+として保存する。</li>
+</ol></li>
+</ul>
+</section>
+<section id="openfoam側での計算-1" class="slide level2">
+<h2>OpenFOAM側での計算</h2>
+<p>SALOMEから出力した <code>Mesh_1.unv</code>
+は、そのままではOpenFOAMで使えない。UNV形式からOpenFOAM形式へ変換し、スケール変換（mm→m）を行った上で、羽根（wing）と仕切り板（circ）の位置に
+<code>topoSet</code> + <code>createBaffles</code>
+でバッフル（厚みゼロの内部壁）を作成する。</p>
+<ul>
+<li>作業フォルダ:
+<code>data/002_Stirrer/sample/mesh/mesh_of13</code></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="メッシュ変換とバッフル作成">メッシュ変換とバッフル作成</h3>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> data/002_Stirrer/sample/mesh/mesh_of13</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="bu">.</span> /opt/openfoam13/etc/bashrc</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="ex">ideasUnvToFoam</span> Mesh_1.unv <span class="op">&gt;</span> log.ideasUnvToFoam <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="ex">transformPoints</span> <span class="st">&quot;scale=(0.001 0.001 0.001)&quot;</span> <span class="op">&gt;</span> log.transformPoints <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="ex">checkMesh</span> <span class="op">&gt;</span> log.checkMesh.initial <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="ex">topoSet</span> <span class="op">&gt;</span> log.topoSet <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="ex">createBaffles</span> <span class="at">-overwrite</span> <span class="op">&gt;</span> log.createBaffles <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="ex">checkMesh</span> <span class="op">&gt;</span> log.checkMesh.final <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span></code></pre></div>
+<ul>
+<li><code>ideasUnvToFoam</code> / <code>transformPoints</code>
+は、<code>001_box.md</code> や <code>003_heatsink.md</code>
+と同様に、UNVメッシュをOpenFOAM形式へ変換し、SALOMEのmm単位からOpenFOAMのm単位へスケール変換する。</li>
+<li><code>topoSet</code>（<code>system/topoSetDict</code>、<code>topoSetDict.wing</code>、<code>topoSetDict.circ</code>、<code>topoSetDict.rotor</code>
+を使用）で、次の3種類の領域を作成する。</li>
+</ul>
+<p><strong>羽根（wing）の面ゾーン</strong></p>
+<p><code>wingFaceZone</code> / <code>wingFaceZone2</code>
+は、羽根の位置にある面のゾーン（上下2枚分）。羽根のパーティション面はセクターの二等分線（30°）上にあるため、<code>rotatedBoxToFace</code>
+で30°回転させた薄い直方体を使って面を選び出す。</p>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/zone_wing.png"
+alt="topoSetで作成したwingFaceZone / wingFaceZone2" />
+<figcaption aria-hidden="true">topoSetで作成したwingFaceZone /
+wingFaceZone2</figcaption>
+</figure>
+<p><strong>仕切り板（circ）の面ゾーン</strong></p>
+<p><code>circularFaceZone_z015</code> /
+<code>circularFaceZone_z035</code>
+は、仕切り板の位置にある面のゾーン。<code>cylinderToFace</code>
+で薄いz範囲を直接指定して選び出す。</p>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/zone_circ.png"
+alt="topoSetで作成したcircularFaceZone_z015 / circularFaceZone_z035" />
+<figcaption aria-hidden="true">topoSetで作成したcircularFaceZone_z015 /
+circularFaceZone_z035</figcaption>
+</figure>
+<p><strong>回転領域のセルゾーン</strong></p>
+<p><code>rotor1</code> / <code>rotor2</code>
+は、羽根の周囲を囲む円柱状の回転領域のセルゾーン（MRFなど回転計算用）。</p>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/zone_rotor.png"
+alt="topoSetで作成したrotor1 / rotor2セルゾーン" />
+<figcaption aria-hidden="true">topoSetで作成したrotor1 /
+rotor2セルゾーン</figcaption>
+</figure>
+<ul>
+<li><code>createBaffles</code>（<code>system/createBafflesDict</code>）で、羽根・仕切り板の面ゾーンを厚みゼロの
+<code>wall</code>
+バッフルへ変換する。<code>owner</code>/<code>neighbour</code> それぞれに
+<code>_master</code> / <code>_slave</code>
+のパッチ名を与え、羽根・仕切り板の両面を表現する。</li>
+<li><code>checkMesh</code>
+で変換前後のメッシュ品質を確認し、<code>Mesh OK</code>
+になっていることを確認する。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3
+id="羽根の可動化テストmaster_curve_of13">羽根の可動化テスト（master_curve_of13）</h3>
+<p>羽根（<code>wall_wing.*</code>
+パッチ）に、コード化された点変位（<code>codedFixedValue</code>）でx位置に応じた曲線状の変位を与え、<code>displacementSBRStress</code>
+モーションソルバでメッシュ全体を滑らかに追従変形できるかを確認する。</p>
+<ul>
+<li>作業フォルダ:
+<code>data/002_Stirrer/sample/mesh/master_curve_of13</code>（<code>mesh_of13</code>
+で作成したバッフル済みメッシュを引き継ぐ）</li>
+</ul>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> data/002_Stirrer/sample/mesh/master_curve_of13</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="bu">.</span> /opt/openfoam13/etc/bashrc</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span> <span class="at">-rf</span> 0</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="fu">cp</span> <span class="at">-r</span> 0.orig 0</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="ex">moveDynamicMesh</span> <span class="op">&gt;</span> log.moveDynamicMesh <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="ex">checkMesh</span> <span class="at">-latestTime</span> <span class="op">&gt;</span> log.checkMesh <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span></code></pre></div>
+<ul>
+<li><code>constant/dynamicMeshDict</code> で
+<code>displacementSBRStress</code> モーションソルバを指定する。</li>
+<li><code>0.orig/pointDisplacement</code> の <code>wall_wing.*</code>
+境界に <code>codedFixedValue</code> を設定し、時刻 <code>t</code>
+に応じて羽根表面の点をy方向へ滑らかに変位させる。</li>
+<li><code>system/controlDict</code> で
+<code>application moveDynamicMesh</code>、<code>endTime 1</code>、<code>deltaT 0.1</code>
+として、10ステップに分けてメッシュを追従変形させる。</li>
+<li>各時刻（<code>0.1</code>〜<code>1</code>）でメッシュが破綻せず追従できているかを、最終時刻の
+<code>checkMesh</code> で確認する（<code>Mesh OK</code>）。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/deformed_result.png"
+alt="羽根の変位に追従して変形したメッシュ（t=1）" />
+<figcaption
+aria-hidden="true">羽根の変位に追従して変形したメッシュ（t=1）</figcaption>
+</figure>
+<ul>
+<li>羽根表面の変位に合わせて、周囲のメッシュも破綻せず滑らかに追従変形していることを確認する。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+</section></section>
+<section>
+<section
+id="heatsink-salomeでヒートシンクの熱流体固体連成メッシュを作る"
+class="title-slide slide level1">
+<h1>003 Heatsink:
+SALOMEでヒートシンクの熱流体・固体連成メッシュを作る</h1>
+
+</section>
+<section id="この演習で目指すこと-2" class="slide level2">
+<h2>この演習で目指すこと</h2>
+<p>ヒートシンクを題材に、流体領域（box）と固体領域（heatSink・heatSource・basis）を分けたマルチリージョン用メッシュを作成する。OpenFOAMのchtMultiRegionFoamで、流体と固体を同時に扱う熱流体・固体連成解析につなげる。</p>
+<ul>
+<li>STEPファイルを読み込み、ソリッド単位に分解して名前を整理する</li>
+<li>Partitionで4つの領域（box・heatSink・heatSource・basis）を分割する</li>
+<li>各領域の境界面にグループ名を付け、OpenFOAMへ渡すパッチ名を決める</li>
+<li>テトラメッシュを作成し、フィン周りに境界層（Viscous
+Layers）を追加する</li>
+<li>Sub-meshで流体領域だけメッシュサイズを調整する</li>
+<li>UNV形式でOpenFOAM用に出力する</li>
+</ul>
+<p>モデル構成は次の4リージョンからなる。</p>
+<ul>
+<li><code>box</code>: 周囲を流れる空気の流体領域（240 × 102 × 103
+mm）</li>
+<li><code>heatSink</code>: フィン部分の固体領域</li>
+<li><code>heatSource</code>: 発熱源となる底板の固体領域</li>
+<li><code>basis</code>: ヒートシンクを載せる土台の固体領域</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/003_heatsink/page_151.svg"
+alt="モデル構成（heatSink・heatSource・basis・box）" />
+<figcaption
+aria-hidden="true">モデル構成（heatSink・heatSource・basis・box）</figcaption>
+</figure>
+</section>
+<section id="geometry-stepファイルを読み込む" class="slide level2">
+<h2>Geometry: STEPファイルを読み込む</h2>
+</section>
+<section class="slide level2">
+
+<h3 id="geometryモジュールへ切り替える-1">1.
+Geometryモジュールへ切り替える</h3>
+<figure>
+<img data-src="img/003_heatsink/page_152.svg"
+alt="Geometryへ切り替える" />
+<figcaption aria-hidden="true">Geometryへ切り替える</figcaption>
+</figure>
+<ul>
+<li><ol type="1">
+<li><code>Geometry</code> に変更する。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="stepファイルをインポートする">2.
+STEPファイルをインポートする</h3>
+<figure>
+<img data-src="img/003_heatsink/page_153.svg"
+alt="STEPファイルをインポートする" />
+<figcaption aria-hidden="true">STEPファイルをインポートする</figcaption>
+</figure>
+<ul>
+<li><ol start="2" type="1">
+<li><code>File</code> &gt; <code>Import</code> &gt; <code>STEP</code>
+をクリックする。</li>
+</ol></li>
+<li><ol start="3" type="1">
+<li><code>model.step</code> を選択し <code>Open</code>
+をクリックする。</li>
+</ol></li>
+<li><ol start="4" type="1">
+<li>単位をmm前提で読み込むため、警告ダイアログでは <code>No</code>
+をクリックする（<code>Yes</code>にするとモデルのスケールが変わってしまう）。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="内部形状を確認する">3. 内部形状を確認する</h3>
+<figure>
+<img data-src="img/003_heatsink/page_154.svg"
+alt="透過表示で内部形状を確認する" />
+<figcaption aria-hidden="true">透過表示で内部形状を確認する</figcaption>
+</figure>
+<ul>
+<li><ol start="5" type="1">
+<li>背景上で右クリックし <code>Transparency</code> をクリックする。</li>
+</ol></li>
+<li><ol start="6" type="1">
+<li><code>Opaque</code> を <code>60%</code>
+にし、boxの中にあるheatSink・heatSourceの形状を確認する。</li>
+</ol></li>
+</ul>
+</section>
+<section id="geometry-ソリッドを分解して名前を付ける"
+class="slide level2">
+<h2>Geometry: ソリッドを分解して名前を付ける</h2>
+</section>
+<section class="slide level2">
+
+<h3 id="explodeでソリッド単位に分解する">1.
+Explodeでソリッド単位に分解する</h3>
+<figure>
+<img data-src="img/003_heatsink/page_155.svg"
+alt="Explodeでソリッドに分解する" />
+<figcaption aria-hidden="true">Explodeでソリッドに分解する</figcaption>
+</figure>
+<ul>
+<li><ol start="7" type="1">
+<li><code>Explode（要素に分解）</code> をクリックする。</li>
+</ol></li>
+<li>Sub-shapes Type を <code>Solid</code> にする。</li>
+<li><ol start="8" type="1">
+<li><code>Apply and Close</code> をクリックする。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="つのソリッドをリネームする">2. 4つのソリッドをリネームする</h3>
+<figure>
+<img data-src="img/003_heatsink/page_156.svg"
+alt="ソリッドをリネームする" />
+<figcaption aria-hidden="true">ソリッドをリネームする</figcaption>
+</figure>
+<ul>
+<li><ol start="9" type="1">
+<li>分解された4つのソリッドを右クリック &gt; <code>Rename</code>
+で、それぞれ <code>heatSource</code> / <code>heatSink</code> /
+<code>basis</code> / <code>box</code> に名前を変更する。</li>
+</ol></li>
+<li>リネームしておくことで、後の境界面グループ作成や、OpenFOAM側のリージョン設定で迷わなくなる。</li>
+</ul>
+</section>
+<section id="geometry-partitionで領域を分割する" class="slide level2">
+<h2>Geometry: Partitionで領域を分割する</h2>
+</section>
+<section class="slide level2">
+
+<h3 id="partitionを実行する">1. Partitionを実行する</h3>
+<figure>
+<img data-src="img/003_heatsink/page_157.svg"
+alt="Partitionを実行する" />
+<figcaption aria-hidden="true">Partitionを実行する</figcaption>
+</figure>
+<ul>
+<li><ol start="10" type="1">
+<li><code>Partition（分割）</code> をクリックする。</li>
+</ol></li>
+<li>Objects
+に4つのソリッド（heatSource・heatSink・basis・box）を指定する。</li>
+<li>Resulting Type を <code>Solid</code> にする。</li>
+<li><ol start="11" type="1">
+<li><code>Apply and Close</code> をクリックする。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/003_heatsink/page_158.svg"
+alt="Partition_1の生成を確認する" />
+<figcaption aria-hidden="true">Partition_1の生成を確認する</figcaption>
+</figure>
+<ul>
+<li><code>Partition_1</code>
+の下に、4つのソリッドが子要素として作られたことを確認する。これらの共有面が、後でOpenFOAM側の流体-固体連成境界になる。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="partition結果を再度分解してリネームする">2.
+Partition結果を再度分解してリネームする</h3>
+<figure>
+<img data-src="img/003_heatsink/page_159.svg"
+alt="Partition_1を再度Explodeする" />
+<figcaption aria-hidden="true">Partition_1を再度Explodeする</figcaption>
+</figure>
+<ul>
+<li><ol start="12" type="1">
+<li><code>Explode</code> をクリックする。Main Objectは
+<code>Partition_1</code>、Sub-shapes Typeは <code>Solid</code>
+にする。</li>
+</ol></li>
+<li><ol start="13" type="1">
+<li><code>Apply and Close</code> をクリックする。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/003_heatsink/page_160.svg" alt="リネームする" />
+<figcaption aria-hidden="true">リネームする</figcaption>
+</figure>
+<ul>
+<li><ol start="14" type="1">
+<li>分解された4つのソリッドを右クリック &gt; <code>Rename</code>
+で、<code>heatSource</code> / <code>heatSink</code> / <code>basis</code>
+/ <code>box</code> にリネームする。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="保存する">3. 保存する</h3>
+<figure>
+<img data-src="img/003_heatsink/page_161.svg"
+alt="名前を付けて保存する" />
+<figcaption aria-hidden="true">名前を付けて保存する</figcaption>
+</figure>
+<ul>
+<li><ol start="15" type="1">
+<li><code>File</code> &gt; <code>Save As...</code> をクリックする。</li>
+</ol></li>
+<li><ol start="16" type="1">
+<li>ファイル名 <code>geometry_heatSink_001.hdf</code> で
+<code>Save</code> をクリックする。</li>
+</ol></li>
+</ul>
+</section>
+<section id="geometry-box領域の境界面にグループを作る"
+class="slide level2">
+<h2>Geometry: box領域の境界面にグループを作る</h2>
+<p>OpenFOAMでは境界条件は面の名前に対して設定するため、SALOME側で面グループを作り、後でOpenFOAMのパッチ名として使う。ここではまずbox（流体領域）の8つの境界面グループを作る。</p>
+</section>
+<section class="slide level2">
+
+<h3 id="外壁面のグループを作るyminzmaxxmaxymaxxmin">1.
+外壁面のグループを作る（YMin・ZMax・XMax・YMax・XMin）</h3>
+<figure>
+<img data-src="img/003_heatsink/page_162.svg"
+alt="YMinグループを作成する" />
+<figcaption aria-hidden="true">YMinグループを作成する</figcaption>
+</figure>
+<ul>
+<li><ol type="1">
+<li><code>Partition_1</code> を右クリック &gt; <code>Create Group</code>
+をクリックする。</li>
+</ol></li>
+<li>Shape Typeを面（Face）にし、Group Nameに <code>YMin</code>
+と入力する。</li>
+<li><ol start="2" type="1">
+<li>対象の面を選択して <code>Add</code> をクリックする。</li>
+</ol></li>
+<li><ol start="3" type="1">
+<li><code>Apply</code> をクリックする。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/003_heatsink/page_163.svg"
+alt="ZMaxグループを作成する" />
+<figcaption aria-hidden="true">ZMaxグループを作成する</figcaption>
+</figure>
+<ul>
+<li>(4)(5) 同様に <code>ZMax</code> の面を選択して <code>Add</code> →
+<code>Apply</code>。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/003_heatsink/page_164.svg"
+alt="XMaxグループを作成する" />
+<figcaption aria-hidden="true">XMaxグループを作成する</figcaption>
+</figure>
+<ul>
+<li>(6)(7) 同様に <code>XMax</code> の面を選択して <code>Add</code> →
+<code>Apply</code>。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/003_heatsink/page_165.svg"
+alt="YMaxグループを作成する" />
+<figcaption aria-hidden="true">YMaxグループを作成する</figcaption>
+</figure>
+<ul>
+<li>(8)(9) 同様に <code>YMax</code> の面を選択して <code>Add</code> →
+<code>Apply</code>。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/003_heatsink/page_166.svg"
+alt="XMinグループを作成する" />
+<figcaption aria-hidden="true">XMinグループを作成する</figcaption>
+</figure>
+<ul>
+<li>(10)(11) 同様に <code>XMin</code> の面を選択して <code>Add</code> →
+<code>Apply</code>。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="basisとの接触面グループを作る">2.
+basisとの接触面グループを作る</h3>
+<figure>
+<img data-src="img/003_heatsink/page_167.svg"
+alt="basisグループを作成する" />
+<figcaption aria-hidden="true">basisグループを作成する</figcaption>
+</figure>
+<ul>
+<li><ol start="12" type="1">
+<li><code>basis</code> の側面5面を選択して <code>Add</code>
+をクリックする。</li>
+</ol></li>
+<li><ol start="13" type="1">
+<li><code>Apply</code> をクリックする。</li>
+</ol></li>
+<li>このグループが、box（流体）側から見たbasisとの連成境界になる。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="heatsinkheatsourceとの接触面グループを作る">3.
+heatSink・heatSourceとの接触面グループを作る</h3>
+<figure>
+<img data-src="img/003_heatsink/page_168.svg"
+alt="box外側の面を非表示にする" />
+<figcaption aria-hidden="true">box外側の面を非表示にする</figcaption>
+</figure>
+<ul>
+<li><ol start="14" type="1">
+<li>内部のheatSink・heatSourceの面を選択しやすくするため、box外側の面（上面・側面など）を選択して
+<code>Hide selected</code> で非表示にする。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/003_heatsink/page_169.svg"
+alt="heatSinkグループを作成する" />
+<figcaption aria-hidden="true">heatSinkグループを作成する</figcaption>
+</figure>
+<ul>
+<li><ol start="15" type="1">
+<li><code>RIGHT view</code>
+に切り替え、heatSinkの表面（フィン部分）を選択して <code>Add</code>
+をクリックする。</li>
+</ol></li>
+<li><ol start="16" type="1">
+<li><code>Apply</code> をクリックする。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/003_heatsink/page_170.svg"
+alt="heatSourceグループを作成する" />
+<figcaption aria-hidden="true">heatSourceグループを作成する</figcaption>
+</figure>
+<ul>
+<li><ol start="17" type="1">
+<li>同様にheatSourceの表面を選択して <code>Add</code>
+をクリックする。</li>
+</ol></li>
+<li><ol start="18" type="1">
+<li><code>Apply</code> をクリックする。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="basis側の上面グループを作る">4. basis側の上面グループを作る</h3>
+<figure>
+<img data-src="img/003_heatsink/page_171.svg"
+alt="basis_topグループを作成する" />
+<figcaption aria-hidden="true">basis_topグループを作成する</figcaption>
+</figure>
+<ul>
+<li><ol start="19" type="1">
+<li>今度はbasis自体の視点で、heatSourceと接する上面を選択して
+<code>Add</code> をクリックする。</li>
+</ol></li>
+<li><ol start="20" type="1">
+<li><code>Apply and Close</code> をクリックする。グループ名は
+<code>basis_top</code> とする。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="完成した境界グループを確認する">5.
+完成した境界グループを確認する</h3>
+<figure>
+<img data-src="img/003_heatsink/page_172.svg"
+alt="box配下の全境界グループを確認する" />
+<figcaption
+aria-hidden="true">box配下の全境界グループを確認する</figcaption>
+</figure>
+<ul>
+<li><code>Partition_1</code> の <code>box</code>
+配下に、<code>YMin</code> / <code>ZMax</code> / <code>XMax</code> /
+<code>YMax</code> / <code>basis</code> / <code>XMin</code> /
+<code>heatSink</code> / <code>heatSource</code>
+の8グループが揃ったことを確認する。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="保存する-1">6. 保存する</h3>
+<figure>
+<img data-src="img/003_heatsink/page_173.svg"
+alt="名前を付けて保存する" />
+<figcaption aria-hidden="true">名前を付けて保存する</figcaption>
+</figure>
+<ul>
+<li><ol start="21" type="1">
+<li><code>File</code> &gt; <code>Save As...</code> をクリックする。</li>
+</ol></li>
+<li><ol start="22" type="1">
+<li>ファイル名 <code>geometry_heatSink_002.hdf</code> で
+<code>Save</code> をクリックする。</li>
+</ol></li>
+</ul>
+</section>
+<section id="mesh-テトラメッシュを作成する" class="slide level2">
+<h2>Mesh: テトラメッシュを作成する</h2>
+</section>
+<section class="slide level2">
+
+<h3 id="meshモジュールへ切り替える-2">1. Meshモジュールへ切り替える</h3>
+<figure>
+<img data-src="img/003_heatsink/page_174.svg" alt="Meshへ切り替える" />
+<figcaption aria-hidden="true">Meshへ切り替える</figcaption>
+</figure>
+<ul>
+<li><ol type="1">
+<li><code>Mesh</code> に変更する。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="メッシュを新規作成する">2. メッシュを新規作成する</h3>
+<figure>
+<img data-src="img/003_heatsink/page_175.svg" alt="Create Meshを開く" />
+<figcaption aria-hidden="true">Create Meshを開く</figcaption>
+</figure>
+<ul>
+<li><ol start="2" type="1">
+<li><code>Mesh</code> &gt; <code>Create Mesh</code>
+をクリックする。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/003_heatsink/page_176.svg"
+alt="テトラメッシュの仮設定をする" />
+<figcaption aria-hidden="true">テトラメッシュの仮設定をする</figcaption>
+</figure>
+<ul>
+<li><ol start="3" type="1">
+<li>Geometryに <code>Partition_1</code>
+が選択されていることを確認する。</li>
+</ol></li>
+<li><ol start="4" type="1">
+<li>3Dタブで <code>Assign a set of automatic hypotheses</code> から
+<code>3D: Tetrahedralization</code> を選ぶ。</li>
+</ol></li>
+<li><ol start="5" type="1">
+<li>NETGEN 3D ParametersのLengthを
+<code>25</code>（mm）に仮設定する。</li>
+</ol></li>
+<li><ol start="6" type="1">
+<li><code>Apply and Close</code> をクリックする。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/003_heatsink/page_177.svg"
+alt="メッシュを計算する" />
+<figcaption aria-hidden="true">メッシュを計算する</figcaption>
+</figure>
+<ul>
+<li><ol start="7" type="1">
+<li><code>Mesh_1</code> を選択した状態で <code>Compute</code>
+をクリックし、メッシュを作成する。</li>
+</ol></li>
+<li>計算成功（Nodes 11864、Tetrahedrons 59943）を確認する。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="断面で内部形状を確認する">3. 断面で内部形状を確認する</h3>
+<figure>
+<img data-src="img/003_heatsink/page_178.svg"
+alt="Clippingで断面を確認する" />
+<figcaption aria-hidden="true">Clippingで断面を確認する</figcaption>
+</figure>
+<ul>
+<li>Clipping平面（Y-Z面）を使い、boxの中のheatSink形状とメッシュの様子を確認する。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="メッシュサイズを調整する">4. メッシュサイズを調整する</h3>
+<figure>
+<img data-src="img/003_heatsink/page_179.svg"
+alt="NETGEN 3D Parametersを編集する" />
+<figcaption aria-hidden="true">NETGEN 3D
+Parametersを編集する</figcaption>
+</figure>
+<ul>
+<li><ol start="8" type="1">
+<li><code>Mesh_1</code> を選択した状態で <code>Edit Mesh</code>
+をクリックする。</li>
+</ol></li>
+<li><ol start="9" type="1">
+<li><code>NETGEN 3D Parameters_1</code> を編集し、Max sizeを
+<code>10</code>、Min sizeを <code>0.25</code> に変更する。</li>
+</ol></li>
+</ul>
+</section>
+<section id="mesh-境界層viscous-layersを追加する" class="slide level2">
+<h2>Mesh: 境界層（Viscous Layers）を追加する</h2>
+</section>
+<section class="slide level2">
+
+<h3 id="heatsinkheatsourceの表面に境界層を追加する">1.
+heatSink・heatSourceの表面に境界層を追加する</h3>
+<figure>
+<img data-src="img/003_heatsink/page_180.svg"
+alt="Viscous Layersを追加する" />
+<figcaption aria-hidden="true">Viscous Layersを追加する</figcaption>
+</figure>
+<ul>
+<li><ol start="10" type="1">
+<li>Add. Hypothesisで <code>Viscous Layers</code> を追加する。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/003_heatsink/page_181.svg"
+alt="境界層の厚さを設定する" />
+<figcaption aria-hidden="true">境界層の厚さを設定する</figcaption>
+</figure>
+<ul>
+<li>Total thicknessを <code>0.2</code>、Number of layersを
+<code>3</code>、Stretch factorを <code>1</code> にする。</li>
+<li>Extrusion methodは <code>Face offset</code> を選ぶ。</li>
+<li><ol start="11" type="1">
+<li>heatSink・heatSourceの面を選択して <code>Add</code>
+をクリックする。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="basis側の境界層との接続に注意する">2.
+basis側の境界層との接続に注意する</h3>
+<figure>
+<img data-src="img/003_heatsink/page_182.svg"
+alt="basisとの接続でメッシュが崩れる問題" />
+<figcaption
+aria-hidden="true">basisとの接続でメッシュが崩れる問題</figcaption>
+</figure>
+<ul>
+<li>heatSink・heatSourceだけに境界層を付けると、境界層の外側の輪郭がbasisの表面メッシュとぴったり重ならず、つなぎ目でメッシュ生成エラーになりやすい。</li>
+<li>これを避けるため、basis側にも対応する境界層（Viscous
+Layers）を追加し、輪郭を合わせる。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="basis側にも境界層を追加する">3. basis側にも境界層を追加する</h3>
+<figure>
+<img data-src="img/003_heatsink/page_183.svg"
+alt="basis側にViscous Layers_2を追加する" />
+<figcaption aria-hidden="true">basis側にViscous
+Layers_2を追加する</figcaption>
+</figure>
+<ul>
+<li><ol start="12" type="1">
+<li>Viscous Layers_1に続けて、プラスボタンで新たに
+<code>Viscous Layers_2</code> を追加する。</li>
+</ol></li>
+<li>basis_topの面を選択して <code>Add</code> する。</li>
+<li>Total thicknessを <code>1</code>、Number of layersを <code>3</code>
+にし、Extrusion methodは <code>Surface offset + smooth</code>
+を選ぶ（heatSink・heatSourceの境界層と滑らかに接続させるため）。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="再計算して確認する">4. 再計算して確認する</h3>
+<figure>
+<img data-src="img/003_heatsink/page_184.svg"
+alt="メッシュを再計算する" />
+<figcaption aria-hidden="true">メッシュを再計算する</figcaption>
+</figure>
+<ul>
+<li><ol start="13" type="1">
+<li><code>Compute</code> をクリックする。計算成功（Nodes
+47701、Tetrahedrons 75244、Prisms 63612）を確認する。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/003_heatsink/page_185.svg"
+alt="警告内容を確認する" />
+<figcaption aria-hidden="true">警告内容を確認する</figcaption>
+</figure>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/003_heatsink/page_186.svg"
+alt="フィン部分の境界層を確認する" />
+<figcaption aria-hidden="true">フィン部分の境界層を確認する</figcaption>
+</figure>
+<ul>
+<li>計算は成功するが、フィン間隔が狭いため「Thickness of viscous layers
+not
+reached（指定した境界層厚さに届いていない）」という警告が出ることがある。</li>
+<li>警告が出ていても致命的なエラーでなければ、そのまま次に進めてよい。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="boxの外壁にも境界層を追加する">5.
+boxの外壁にも境界層を追加する</h3>
+<figure>
+<img data-src="img/003_heatsink/page_187.svg"
+alt="Viscous Layers_3を追加する" />
+<figcaption aria-hidden="true">Viscous Layers_3を追加する</figcaption>
+</figure>
+<ul>
+<li><ol start="14" type="1">
+<li>新たに <code>Viscous Layers_3</code> を追加する。</li>
+</ol></li>
+<li>Total thicknessを <code>2</code>、Number of layersを
+<code>3</code>、Extrusion methodは <code>Surface offset + smooth</code>
+にする。</li>
+<li><ol start="15" type="1">
+<li>boxの外壁（ZMax・XMax・XMin）の面を選択して <code>Add</code>
+をクリックする。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/003_heatsink/page_188.svg"
+alt="3つのViscous Layersを確認して確定する" />
+<figcaption aria-hidden="true">3つのViscous
+Layersを確認して確定する</figcaption>
+</figure>
+<ul>
+<li>Add. HypothesisにViscous
+Layers_1〜3がすべて追加されていることを確認し、<code>Apply and Close</code>
+をクリックする。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="最終メッシュを計算する">6. 最終メッシュを計算する</h3>
+<figure>
+<img data-src="img/003_heatsink/page_189.svg"
+alt="メッシュを計算する" />
+<figcaption aria-hidden="true">メッシュを計算する</figcaption>
+</figure>
+<ul>
+<li><ol start="16" type="1">
+<li><code>Compute</code> をクリックする。計算成功（Nodes
+52304、Tetrahedrons 76661、Prisms 72804）、エラーなしを確認する。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/003_heatsink/page_190.svg"
+alt="フィン周りの境界層を拡大確認する" />
+<figcaption
+aria-hidden="true">フィン周りの境界層を拡大確認する</figcaption>
+</figure>
+<ul>
+<li>フィン間の境界層とテトラメッシュの接続部分を拡大し、品質を確認する。</li>
+</ul>
+</section>
+<section id="mesh-sub-meshで流体領域だけ細分化する"
+class="slide level2">
+<h2>Mesh: Sub-meshで流体領域だけ細分化する</h2>
+</section>
+<section class="slide level2">
+
+<h3 id="box用のsub-meshを作成する">1. box用のSub-meshを作成する</h3>
+<figure>
+<img data-src="img/003_heatsink/page_191.svg"
+alt="Create Sub-meshを開く" />
+<figcaption aria-hidden="true">Create Sub-meshを開く</figcaption>
+</figure>
+<ul>
+<li><ol start="17" type="1">
+<li><code>Mesh_1</code> を選択した状態で <code>Create Sub-mesh</code>
+をクリックする。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/003_heatsink/page_192.svg"
+alt="Sub-meshの設定をする" />
+<figcaption aria-hidden="true">Sub-meshの設定をする</figcaption>
+</figure>
+<ul>
+<li><ol start="18" type="1">
+<li>Geometryに <code>box</code> が選択されていることを確認する。</li>
+</ol></li>
+<li><ol start="19" type="1">
+<li>3Dタブで <code>3D: Tetrahedralization</code> を選ぶ。</li>
+</ol></li>
+<li>NETGEN 3D Parameters_2でLengthを <code>10</code>（mm）にする。</li>
+<li><ol start="20" type="1">
+<li>Add. HypothesisにViscous Layers_1〜3を追加する。</li>
+</ol></li>
+<li><ol start="21" type="1">
+<li><code>Apply and Close</code> をクリックする。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="sub-meshを計算する">2. Sub-meshを計算する</h3>
+<figure>
+<img data-src="img/003_heatsink/page_193.svg"
+alt="box部分のメッシュを拡大確認する" />
+<figcaption
+aria-hidden="true">box部分のメッシュを拡大確認する</figcaption>
+</figure>
+<ul>
+<li>box領域内のフィン周りが、全体メッシュより細かくなっていることを確認する。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/003_heatsink/page_194.svg"
+alt="Compute を実行する" />
+<figcaption aria-hidden="true">Compute を実行する</figcaption>
+</figure>
+<ul>
+<li><ol start="26" type="1">
+<li><code>Mesh_1</code> を選択した状態で <code>Compute</code>
+をクリックし、Sub-meshを反映してメッシュを再計算する。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="不要なグループを削除する">3. 不要なグループを削除する</h3>
+<figure>
+<img data-src="img/003_heatsink/page_195.svg"
+alt="不要なGroup_1を削除する" />
+<figcaption aria-hidden="true">不要なGroup_1を削除する</figcaption>
+</figure>
+<ul>
+<li><ol start="29" type="1">
+<li>グループ作成時に重複してできた
+<code>Group_1</code>（basisの底面）は不要なため、右クリック &gt;
+<code>Delete</code> で削除する。</li>
+</ol></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="保存する-2">4. 保存する</h3>
+<figure>
+<img data-src="img/003_heatsink/page_196.svg"
+alt="名前を付けて保存する" />
+<figcaption aria-hidden="true">名前を付けて保存する</figcaption>
+</figure>
+<ul>
+<li><ol start="27" type="1">
+<li><code>File</code> &gt; <code>Save As...</code> をクリックする。</li>
+</ol></li>
+<li><ol start="28" type="1">
+<li>ファイル名 <code>geometry_heatSink_003.hdf</code> で
+<code>Save</code> をクリックする。</li>
+</ol></li>
+</ul>
+</section>
+<section id="mesh-openfoam用にunv出力する" class="slide level2">
+<h2>Mesh: OpenFOAM用にUNV出力する</h2>
+<figure>
+<img data-src="img/003_heatsink/page_197.svg"
+alt="UNVファイルをエクスポートする" />
+<figcaption
+aria-hidden="true">UNVファイルをエクスポートする</figcaption>
+</figure>
+<ul>
+<li><ol start="29" type="1">
+<li><code>Mesh_1</code> を右クリック &gt; <code>Export</code> &gt;
+<code>UNV file</code> をクリックする。</li>
+</ol></li>
+<li><ol start="30" type="1">
+<li>ファイル名 <code>Mesh_1.unv</code>
+として、OpenFOAMの計算フォルダ（例: <code>run001_of13</code>）に
+<code>Save</code> する。</li>
+</ol></li>
+<li>作成した面グループ名（YMin・YMax・ZMax・XMax・XMin・basis・heatSink・heatSource・basis_top）がそのままOpenFOAMのパッチ名になる。</li>
+</ul>
+</section>
+<section id="openfoam側での計算-2" class="slide level2">
+<h2>OpenFOAM側での計算</h2>
+</section>
+<section class="slide level2">
+
+<h3 id="メッシュの変換と確認">メッシュの変換と確認</h3>
+<p>SALOMEから出力したUNVメッシュを計算フォルダに置き、OpenFOAM形式へ変換する。</p>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="bu">.</span> /opt/openfoam13/etc/bashrc</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ex">ideasUnvToFoam</span> Mesh_1.unv <span class="op">&gt;</span> log.ideasUnvToFoam <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="ex">transformPoints</span> <span class="st">&quot;scale=(0.001 0.001 0.001)&quot;</span> <span class="op">&gt;</span> log.transformPoints <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="ex">checkMesh</span> <span class="at">-allGeometry</span> <span class="op">&gt;</span> log.checkMesh <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span></code></pre></div>
+<ul>
+<li><code>ideasUnvToFoam</code>
+でUNVメッシュをOpenFOAM形式に変換する。</li>
+<li>SALOMEでmm単位のモデルを作っているため、<code>transformPoints</code>
+でOpenFOAMが使うm単位に変換する。</li>
+<li><code>checkMesh</code> でメッシュ品質と境界面を確認する。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/003_heatsink/page_198.svg"
+alt="OpenFOAM側でメッシュ全体を確認する" />
+<figcaption
+aria-hidden="true">OpenFOAM側でメッシュ全体を確認する</figcaption>
+</figure>
+<ul>
+<li>ParaView等で、box（流体）とheatSink・heatSource・basis（固体）を含むメッシュ全体像を確認する。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="chtmultiregionfoamの実行">chtMultiRegionFoamの実行</h3>
+<p><code>splitMeshRegions</code>
+で流体・固体をリージョンに分割し、各リージョンの初期条件・物性・境界条件を設定した上で
+<code>chtMultiRegionFoam</code> を実行する。</p>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">splitMeshRegions</span> <span class="at">-cellZones</span> <span class="at">-overwrite</span> <span class="op">&gt;</span> log.splitMeshRegions <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="ex">chtMultiRegionFoam</span> <span class="op">&gt;</span> log.chtMultiRegionFoam <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span></code></pre></div>
+<ul>
+<li><code>splitMeshRegions -cellZones</code>
+は、UNVメッシュ作成時に付けたセルゾーン名（box・heatSink・heatSource・basis）を使ってメッシュを4つのリージョンに分割する。</li>
+<li>各リージョンには、あらかじめ <code>0/&lt;region&gt;</code>
+に初期条件、<code>constant/&lt;region&gt;</code>
+に物性値、<code>system/&lt;region&gt;</code>
+に境界条件・数値スキームを用意しておく。</li>
+<li><code>chtMultiRegionFoam</code>
+は非定常の熱流体・固体連成ソルバで、流体側は速度・圧力・乱流量・温度、固体側は温度のみを解く。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="計算結果の確認">計算結果の確認</h3>
+<figure>
+<img data-src="img/003_heatsink/page_199.svg"
+alt="計算結果（速度分布・温度分布）" />
+<figcaption
+aria-hidden="true">計算結果（速度分布・温度分布）</figcaption>
+</figure>
+<ul>
+<li>流体領域では速度ベクトル分布、固体領域では温度分布を確認する。</li>
+<li>ヒートシンク周りの流れが発熱部からの熱を受け取り、フィン表面から周囲へ熱を逃がしている様子を確認する。</li>
+</ul>
+<p>計算が進むにつれて、発熱源からフィン先端まで温度が上昇し、周囲の空気が対流で熱を運び去っていく過程をアニメーションで確認できる。</p>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/003_heatsink/ani_comp.gif"
+alt="計算過程のアニメーション（速度・温度分布の時間変化）" />
+<figcaption
+aria-hidden="true">計算過程のアニメーション（速度・温度分布の時間変化）</figcaption>
+</figure>
+</section></section>
+    </div>
+  </div>
+
+  <script src="reveal.js/dist/reveal.js"></script>
+
+  <!-- reveal.js plugins -->
+  <script src="reveal.js/plugin/notes/notes.js"></script>
+  <script src="reveal.js/plugin/search/search.js"></script>
+  <script src="reveal.js/plugin/zoom/zoom.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+        // Display controls in the bottom right corner
+        controls: true,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: true,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'bottom-right',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: true,
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: false,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: true,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'default',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: true,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'fade',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // The "normal" size of the presentation, aspect ratio will be preserved
+        // when the presentation is scaled to fit different resolutions. Can be
+        // specified using percentage units.
+        width: 1280,
+
+        height: 800,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 0.06,
+
+        // reveal.js plugins
+        plugins: [
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    </body>
+</html>

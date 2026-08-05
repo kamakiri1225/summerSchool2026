@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 220" font-family="sans-serif">
+  <rect x="0" y="0" width="320" height="220" fill="#ffffff"/>
+  <!-- tetrahedron: apex A, base B-C-D, D is the back (hidden) vertex -->
+  <g stroke="#1f3a5f" stroke-width="2" stroke-linejoin="round">
+    <!-- visible faces -->
+    <polygon points="160,30 70,165 250,165" fill="#dce6f2" fill-opacity="0.6"/>
+    <polygon points="160,30 70,165 175,110" fill="#c3d5ea" fill-opacity="0.6"/>
+    <polygon points="160,30 250,165 175,110" fill="#eef3fa" fill-opacity="0.6"/>
+    <!-- hidden edges (back vertex D to B, D to C) -->
+    <line x1="175" y1="110" x2="70" y2="165" stroke-dasharray="5,4"/>
+    <line x1="175" y1="110" x2="250" y2="165" stroke-dasharray="5,4"/>
+    <!-- visible edges -->
+    <line x1="160" y1="30" x2="70" y2="165"/>
+    <line x1="160" y1="30" x2="250" y2="165"/>
+    <line x1="160" y1="30" x2="175" y2="110"/>
+    <line x1="70" y1="165" x2="250" y2="165"/>
+  </g>
+  <g fill="#1f3a5f">
+    <circle cx="160" cy="30" r="3"/>
+    <circle cx="70" cy="165" r="3"/>
+    <circle cx="250" cy="165" r="3"/>
+    <circle cx="175" cy="110" r="3"/>
+  </g>
+  <text x="160" y="200" text-anchor="middle" font-size="16" fill="#1f3a5f">四面体（1セル）</text>
+</svg>

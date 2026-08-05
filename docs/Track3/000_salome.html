@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>000 SALOMEとは</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="pandoc.css" />
+</head>
+<body>
+<h1 id="salomeとは">SALOMEとは</h1>
+<h2 id="概要">概要</h2>
+<p>SALOME
+はフランス電力（EDF）が中心となって開発しているオープンソースの CAE
+プリ・ポスト処理プラットフォーム。
+ジオメトリ作成からメッシュ生成・結果可視化まで一貫して行える。</p>
+<ul>
+<li>ライセンス: LGPL（無料・商用利用可）</li>
+<li>開発元: EDF（Électricité de France）</li>
+<li>対応OS: Linux / Windows</li>
+</ul>
+<hr />
+<h2 id="主なモジュール">主なモジュール</h2>
+<table>
+<thead>
+<tr class="header">
+<th>モジュール</th>
+<th>役割</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Shaper</td>
+<td>パラメトリック CAD（スケッチ・フィーチャーベース）</td>
+</tr>
+<tr class="even">
+<td>Geometry（GEOM）</td>
+<td>直接モデリング・Python スクリプト対応</td>
+</tr>
+<tr class="odd">
+<td>Mesh</td>
+<td>メッシュ生成（テトラ・ヘキサ・境界層など）</td>
+</tr>
+<tr class="even">
+<td>ParaVis</td>
+<td>結果の可視化（ParaView ベース）</td>
+</tr>
+<tr class="odd">
+<td>YACS</td>
+<td>ワークフロー管理</td>
+</tr>
+</tbody>
+</table>
+<p>SALOME起動後は、画面左上のプルダウンから使用するモジュールを切り替える。</p>
+<figure>
+<img src="img/000_salome/page_017.svg" alt="モジュールを切り替える" />
+<figcaption aria-hidden="true">モジュールを切り替える</figcaption>
+</figure>
+<hr />
+<h2 id="shaper-モジュール">Shaper モジュール</h2>
+<p>SALOMEのツールバーには、下図のように数多くのモジュールが並んでいる。ただし本講義で実際に使うのは、ジオメトリ作成の
+<strong>Shaper</strong>、直接モデリングの
+<strong>Geometry（GEOM）</strong>、メッシュ生成の <strong>Mesh</strong>
+の3つだけである。</p>
+<figure>
+<img src="img/000_salome/page_018.svg"
+alt="SALOMEの主なモジュール一覧" />
+<figcaption aria-hidden="true">SALOMEの主なモジュール一覧</figcaption>
+</figure>
+<p>パラメトリック CAD モジュール。従来の Geometry（GEOM）の後継。</p>
+<h3 id="できること">できること</h3>
+<ul>
+<li>スケッチベースモデリング（2D スケッチ → 押し出し・回転で 3D
+化）</li>
+<li>フィーチャーツリーによる履歴管理（後から寸法変更が容易）</li>
+<li>ブーリアン演算（和・差・積）</li>
+<li>プリミティブ（Box・円柱・球など）</li>
+<li>変換（移動・回転・ミラー・スケール）</li>
+<li>アセンブリ（複数パーツの組み立て）</li>
+</ul>
+<p>例えば、2Dスケッチを描いて押し出すと、以下のように3D形状が作られる。</p>
+<figure>
+<img src="img/000_salome/page_019.svg"
+alt="スケッチから押し出しで3D化する" />
+<figcaption
+aria-hidden="true">スケッチから押し出しで3D化する</figcaption>
+</figure>
+<h3 id="geomgeometryモジュールとは">GEOM（Geometry）モジュールとは</h3>
+<p>GEOM は Shaper
+より前からある直接モデリング（ダイレクトモデリング）方式のジオメトリモジュールで、CAD
+モデルの作成・編集を行う。Shaper
+のようなフィーチャーツリーに基づく履歴は持たないが、Box・円柱などのプリミティブ生成やブーリアン演算（Fuse・Cut・Common）、Python
+スクリプトによる自動化に強く、SALOME では現在も広く使われている。</p>
+<p>例えば、2つの Box
+をブーリアン演算（Fuse）で結合すると、以下のように1つの形状にまとまる。</p>
+<figure>
+<img src="img/000_salome/page_020.svg"
+alt="Box_1とBox_2をFuse（結合）する" />
+<figcaption
+aria-hidden="true">Box_1とBox_2をFuse（結合）する</figcaption>
+</figure>
+<h3 id="geom-モジュールとの比較">GEOM モジュールとの比較</h3>
+<table>
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 28%" />
+<col style="width: 60%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th>Shaper</th>
+<th>Geometry（GEOM）</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>モデリング方式</td>
+<td>パラメトリック（履歴あり）</td>
+<td>直接モデリング（履歴なし）</td>
+</tr>
+<tr class="even">
+<td>後からの変更</td>
+<td>容易</td>
+<td>難しい</td>
+</tr>
+<tr class="odd">
+<td>成熟度</td>
+<td>新しい（機能追加中）</td>
+<td>枯れている</td>
+</tr>
+<tr class="even">
+<td>Python スクリプト</td>
+<td>対応（発展中）</td>
+<td>充実</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="mesh-モジュール">Mesh モジュール</h2>
+<p>Shaper / GEOM
+で作成したジオメトリからメッシュを生成するモジュール。</p>
+<h3 id="メッシュの種類">メッシュの種類</h3>
+<table>
+<colgroup>
+<col style="width: 27%" />
+<col style="width: 27%" />
+<col style="width: 45%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>種類</th>
+<th>説明</th>
+<th>セルの形</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>テトラメッシュ</td>
+<td>四面体。複雑形状に自動生成しやすい</td>
+<td>4つの三角形の面で囲まれた最もシンプルな立体。NETGEN
+などのアルゴリズムで複雑な形状にも自動で敷き詰められる</td>
+</tr>
+<tr class="even">
+<td>ヘキサメッシュ</td>
+<td>六面体。計算精度が高く OpenFOAM と相性が良い</td>
+<td>直方体（サイコロ状）のセル。同じ体積ならテトラよりセル数が少なく、面が壁に沿いやすいため数値誤差が小さい</td>
+</tr>
+<tr class="odd">
+<td>プリズム（境界層）</td>
+<td>壁面付近に層状に生成。境界層の解像度を上げる</td>
+<td>壁に沿って薄い層を積み重ねた三角柱／四角柱状のセル。壁に近いほど薄く、離れるほど厚くする</td>
+</tr>
+<tr class="even">
+<td>ハイブリッド</td>
+<td>ヘキサ＋テトラの混在</td>
+<td>形状が単純な部分はヘキサ、複雑な部分はテトラというように、領域ごとに異なる種類のセルを組み合わせる</td>
+</tr>
+</tbody>
+</table>
+<div
+style="display:flex; flex-wrap:wrap; gap:1.2rem; justify-content:center; margin:1.5rem 0;">
+<figure style="margin:0; text-align:center;">
+<img src="img/000_salome/mesh_tetra.svg" alt="四面体セル" style="display:block; width:260px; max-width:100%; margin:0; border:1px solid #ddd; background:#fff;">
+<figcaption>
+テトラメッシュ
+</figcaption>
+</figure>
+<figure style="margin:0; text-align:center;">
+<img src="img/000_salome/mesh_hexa.svg" alt="六面体セル" style="display:block; width:260px; max-width:100%; margin:0; border:1px solid #ddd; background:#fff;">
+<figcaption>
+ヘキサメッシュ
+</figcaption>
+</figure>
+<figure style="margin:0; text-align:center;">
+<img src="img/000_salome/mesh_prism.svg" alt="境界層セル" style="display:block; width:260px; max-width:100%; margin:0; border:1px solid #ddd; background:#fff;">
+<figcaption>
+プリズム（境界層）
+</figcaption>
+</figure>
+<figure style="margin:0; text-align:center;">
+<img src="img/000_salome/mesh_hybrid.svg" alt="ハイブリッドメッシュ" style="display:block; width:260px; max-width:100%; margin:0; border:1px solid #ddd; background:#fff;">
+<figcaption>
+ハイブリッド
+</figcaption>
+</figure>
+</div>
+<h3 id="分割の設定階層">分割の設定階層</h3>
+<p>メッシュの細かさは 1D → 2D → 3D
+の順に設定する。1D（辺）の分割が2D（面）のメッシュの粗さを決め、2D（面）のメッシュが3D（体積）のメッシュの粗さを決める、という積み上げの関係になっている。</p>
+<table>
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 33%" />
+<col style="width: 26%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>階層</th>
+<th>対象</th>
+<th>設定内容</th>
+<th>具体例</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1D</td>
+<td>エッジ（辺）</td>
+<td>分割数・分割比（グレーディング）</td>
+<td><code>Wire Discretisation</code> で
+<code>Number of Segments</code>（分割数）を指定する</td>
+</tr>
+<tr class="even">
+<td>2D</td>
+<td>フェイス（面）</td>
+<td>面メッシュのアルゴリズム</td>
+<td><code>NETGEN 2D Parameters</code> で <code>Max. Size</code> /
+<code>Min. Size</code>（面メッシュの最大・最小サイズ）を指定する</td>
+</tr>
+<tr class="odd">
+<td>3D</td>
+<td>ソリッド（体積）</td>
+<td>体積メッシュのアルゴリズム</td>
+<td><code>NETGEN 3D Parameters</code> で <code>Max. Size</code> /
+<code>Min. Size</code>（セルの最大・最小サイズ）を指定する</td>
+</tr>
+</tbody>
+</table>
+<p>1D・2D・3D
+をすべて指定すると、辺の分割数を優先しつつ、面・体積は指定したサイズ範囲でメッシュが生成される。具体的な操作手順は
+<a href="001_box.md">001_box.md</a>
+の「1D/2D/3Dを指定してメッシュを制御する」を参照。</p>
+<h3 id="主なアルゴリズム">主なアルゴリズム</h3>
+<table>
+<thead>
+<tr class="header">
+<th>アルゴリズム</th>
+<th>次元</th>
+<th>特徴</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Wire Discretization</td>
+<td>1D</td>
+<td>エッジを指定分割数で均等分割</td>
+</tr>
+<tr class="even">
+<td>Quadrangle（Mapping）</td>
+<td>2D</td>
+<td>四角形メッシュ。ヘキサ化に必須</td>
+</tr>
+<tr class="odd">
+<td>Hexahedron（i,j,k）</td>
+<td>3D</td>
+<td>構造ヘキサメッシュ。規則的な形状に使用</td>
+</tr>
+<tr class="even">
+<td>NETGEN 1D-2D-3D</td>
+<td>3D</td>
+<td>テトラ自動生成</td>
+</tr>
+</tbody>
+</table>
+<h3 id="境界層viscous-layers">境界層（Viscous Layers）</h3>
+<p>壁面付近に薄い層状のプリズムメッシュを追加する機能。</p>
+<ul>
+<li><strong>層数</strong>: 積層する枚数</li>
+<li><strong>厚み</strong>: 最初の層の厚さ</li>
+<li><strong>伸長率</strong>: 層ごとの厚みの増加比率</li>
+</ul>
+<h3 id="サブメッシュ">サブメッシュ</h3>
+<p>特定のフェイスやエッジだけ分割設定を変えたい場合に使用。
+部分的に細かくしたり、境界条件ごとに名前（グループ）をつけるのに使う。</p>
+<h3 id="グループ">グループ</h3>
+<p>OpenFOAM
+のパッチ（境界条件）に対応させるため、フェイスに名前をつける機能。
+メッシュ生成前にグループを設定しておくと UNV
+エクスポート後もパッチ名が引き継がれる。</p>
+<hr />
+<h2 id="openfoam-との連携">OpenFOAM との連携</h2>
+<p>SALOME で作成したメッシュを OpenFOAM 形式に変換して利用する。</p>
+<pre><code>SALOME（Shaper でジオメトリ作成）
+  ↓
+SALOME（Mesh モジュールでメッシュ生成）
+  ↓
+UNV 形式でエクスポート
+  ↓
+ideasUnvToFoam コマンドで OpenFOAM 形式に変換</code></pre>
+<hr />
+<h2 id="ダウンロード">ダウンロード</h2>
+<table style="width:100%;">
+<colgroup>
+<col style="width: 42%" />
+<col style="width: 26%" />
+<col style="width: 31%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>配布元</th>
+<th>URL</th>
+<th>特徴</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Code_Aster 付属版</td>
+<td>https://www.code-aster.org/</td>
+<td>構造解析ソフト Code_Aster
+とセット。<strong>通常はこちら</strong></td>
+</tr>
+<tr class="even">
+<td>Salome Platform（EDF）</td>
+<td>https://www.salome-platform.org/</td>
+<td>開発元 EDF のサイト。Code_Aster は含まないが最新版を入手可能</td>
+</tr>
+</tbody>
+</table>
+</body>
+</html>

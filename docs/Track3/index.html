@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Track3: SALOMEを使ったOpenFOAMメッシュ作成</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="pandoc.css" />
+</head>
+<body>
+<h1 id="track3-salomeを使ったopenfoamメッシュ作成">Track3:
+SALOMEを使ったOpenFOAMメッシュ作成</h1>
+<h2 id="概要">概要</h2>
+<p>SALOME 9.15 を使って OpenFOAM 用のメッシュを作成する。</p>
+<ul>
+<li>ヘキサメッシュ（六面体メッシュ）の作成方法</li>
+<li>マルチリージョン（複数領域）に対応したメッシュ作成</li>
+</ul>
+<hr />
+<h2 id="ダウンロード">ダウンロード</h2>
+<table style="width:100%;">
+<colgroup>
+<col style="width: 42%" />
+<col style="width: 26%" />
+<col style="width: 31%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>配布元</th>
+<th>URL</th>
+<th>特徴</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Code_Aster 付属版</td>
+<td>https://www.code-aster.org/</td>
+<td>構造解析ソフト Code_Aster
+とセット。<strong>通常はこちら</strong></td>
+</tr>
+<tr class="even">
+<td>Salome Platform（EDF）</td>
+<td>https://www.salome-platform.org/</td>
+<td>開発元フランス電力 EDF のサイト。Code_Aster
+は含まないが最新版を入手可能</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="講義の全体像">講義の全体像</h2>
+<p>この講義では SALOME を使って OpenFOAM
+用メッシュを作成するスキルを段階的に習得する。</p>
+<figure>
+<img src="img/index/overview.png" alt="講義の全体像" />
+<figcaption aria-hidden="true">講義の全体像</figcaption>
+</figure>
+<table>
+<colgroup>
+<col style="width: 27%" />
+<col style="width: 16%" />
+<col style="width: 27%" />
+<col style="width: 27%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>ステップ</th>
+<th>演習</th>
+<th>学ぶこと</th>
+<th>ファイル</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>SALOME導入</td>
+<td>SALOME の概要・モジュール・OpenFOAM との連携</td>
+<td><a href="000_salome.html">000_salome.html</a></td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>基礎練習（Box）</td>
+<td>SALOME の基本操作・境界層・OpenFOAM 変換</td>
+<td><a href="001_box.html">001_box.html</a></td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td>撹拌機</td>
+<td>ヘキサメッシュで複雑形状を作成する方法</td>
+<td><a href="002_stirrer.html">002_stirrer.html</a></td>
+</tr>
+<tr class="even">
+<td>3</td>
+<td>ヒートシンク</td>
+<td>マルチリージョンメッシュ・熱流体固体連成</td>
+<td><a href="003_heatsink.html">003_heatsink.html</a></td>
+</tr>
+</tbody>
+</table>
+<p><strong>到達目標</strong></p>
+<ul>
+<li>SALOME で OpenFOAM 用メッシュを一から作れる</li>
+<li>ヘキサメッシュ（六面体メッシュ）を使いこなせる</li>
+<li>複数領域（マルチリージョン）に対応したメッシュを作れる</li>
+</ul>
+<hr />
+<h2 id="スライド版">スライド版</h2>
+<p><a href="slides.html">slides.html</a> —
+全体をreveal.jsのスライドでまとめたもの。</p>
+</body>
+</html>
