@@ -33,7 +33,7 @@ Windows / Mac で共通利用
 - Apple Silicon Mac では `linux/amd64` をエミュレーションして利用
 - 最終的には noVNC 等を使い、ブラウザから SALOME のGUIを開ける構成を目指す
 
-このドキュメントでは、SALOME本体を入れる前段階の「Dockerが正しく動く土台を作る」ところまでを扱う。SALOME 9.15をコンテナへ実際にインストールする手順は [001_install_salome915.md](001_install_salome915.md) を参照。
+このドキュメントでは、SALOME本体を入れる前段階の「Dockerが正しく動く土台を作る」ところまでを扱う。SALOME 9.15をコンテナへ実際にインストールする手順は [002_install_salome915.md](002_install_salome915.md) を参照。
 
 ---
 
@@ -406,4 +406,4 @@ SALOME 9.15
 
 ---
 
-ここまででDockerの土台が整った。次は [001_install_salome915.md](001_install_salome915.md) でSALOME 9.15本体をコンテナへ組み込む。
+ここまででDockerの土台が整った。次は [002_install_salome915.md](002_install_salome915.md) でSALOME 9.15本体をコンテナへ組み込む。

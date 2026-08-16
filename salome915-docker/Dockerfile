@@ -1,82 +1,59 @@
 # ============================================================
-# SALOME 9.15.0 / Ubuntu 24.04 / linux-amd64
+# SALOME 9.15.0 Docker Image
 #
-# 目的:
-#   Windows と macOS の両方で、
-#   Dockerコンテナ内の SALOME 9.15 GUI を
-#   ホストOS上の通常のウィンドウとして表示する。
+# Base OS:
+#   Ubuntu 24.04 LTS
 #
-# GUI表示方式:
+# Architecture:
+#   linux/amd64
 #
-#   Windows
-#     Docker Desktop + WSL2 + WSLg
+# Purpose:
+#   SALOME 9.15.0 native Ubuntu 24.04版を
+#   Dockerコンテナ上で実行する。
 #
-#   macOS
-#     Docker Desktop + XQuartz
+# GUI:
+#   ブラウザ / noVNC / VNC は使用しない。
 #
-# noVNC / VNC / Xvfb は使用しない。
-# SALOME自身のGUIをX11経由でホストOSへ直接表示する。
+#   Windows:
+#       Docker Desktop
+#       + WSL2
+#       + WSLg
 #
-# ------------------------------------------------------------
-# ビルド
-# ------------------------------------------------------------
+#   macOS:
+#       Docker Desktop
+#       + XQuartz
 #
-# docker build --platform linux/amd64 -t salome915 .
+# SALOME:
+#   SALOME-9.15.0-native-UB24.04-SRC.tar.gz
 #
-# ------------------------------------------------------------
-# Windowsでの起動例
-# ------------------------------------------------------------
+# Windows build:
 #
-# docker run --rm -it --platform linux/amd64 -e DISPLAY=:0 -v /mnt/wslg/.X11-unix:/tmp/.X11-unix -v ~/salome_work:/work salome915
+#   docker build --platform linux/amd64 -t salome915 .
 #
-# コンテナ内で:
+# Windows run:
 #
-# /opt/salome/mesa_salome
+#   docker run --rm -it --platform linux/amd64 -e DISPLAY=:0 -v /mnt/wslg/.X11-unix:/tmp/.X11-unix -v ~/salome_work:/work salome915
 #
-# ------------------------------------------------------------
-# 想定フォルダ構成
-# ------------------------------------------------------------
+# SALOME launch:
 #
-# salome915-docker/
-# ├── Dockerfile
-# └── dist/
-#     └── SALOME-9.15.0-native-UB24.04-SRC.tar.gz
+#   /opt/salome/mesa_salome
 #
 # ============================================================
 
-
-# ============================================================
-# 1. ベースOS
-#
-# SALOME 9.15公式対応の Ubuntu 24.04 LTS を使用する。
-#
-# Dockerイメージ自体は linux/amd64 でビルドする。
-#
-# Apple Silicon Mac (M1/M2/M3/M4...) でも
-# Docker Desktopのamd64エミュレーションを利用して
-# 同じDockerイメージを使用する。
-# ============================================================
 
 FROM ubuntu:24.04
 
 
-# ============================================================
-# 2. apt の対話入力を無効化
-#
-# Docker build中に tzdata などが
-# 「地域を選択してください」等の対話入力を要求して
-# ビルドが停止することを防ぐ。
-# ============================================================
+# ------------------------------------------------------------
+# apt を対話なしで実行
+# ------------------------------------------------------------
 
 ENV DEBIAN_FRONTEND=noninteractive
 
 
-# ============================================================
-# 3. 基本ツール
-#
-# SALOMEアーカイブの展開や、
-# コンテナ内での動作確認に使用する。
-# ============================================================
+# ------------------------------------------------------------
+# 基本ツール
+# ------------------------------------------------------------
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
@@ -92,25 +69,20 @@ RUN apt-get update && \
     && rm -rf /var/lib/apt/lists/*
 
 
-# ============================================================
-# 4. X11 / OpenGL 関連ライブラリ
-#
-# SALOMEはQt/OpenGLを使用するGUIアプリなので、
-# Linux側にX11/OpenGL関連ライブラリが必要。
+# ------------------------------------------------------------
+# X11 / OpenGL / Mesa
 #
 # Windows:
-#   WSLgのXサーバーへ接続する。
+#   WSLg
 #
 # macOS:
-#   XQuartzのXサーバーへ接続する。
+#   XQuartz
 #
-# x11-apps:
-#   xclockなどを含む。
-#   SALOME起動前にX11 GUI表示が正常かテストできる。
+# SALOME GUIをDockerコンテナからホスト側へ表示するために必要。
 #
-# mesa-utils:
-#   glxinfo等を含み、OpenGLの確認に利用できる。
-# ============================================================
+# LIBGL_ALWAYS_SOFTWARE=1 を後で設定し、
+# GPU依存を減らしてMesaソフトウェアレンダリングを使用する。
+# ------------------------------------------------------------
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
@@ -118,7 +90,11 @@ RUN apt-get update && \
         libglu1-mesa \
         libglx-mesa0 \
         libegl1 \
+        libopengl0 \
+        libglvnd0 \
+        libdrm2 \
         libx11-6 \
+        libx11-xcb1 \
         libxext6 \
         libxrender1 \
         libxi6 \
@@ -127,7 +103,16 @@ RUN apt-get update && \
         libxinerama1 \
         libxfixes3 \
         libxdamage1 \
+        libxss1 \
+        libxft2 \
+        libxmu6 \
+        libxpm4 \
+        libxt6 \
         libxcb1 \
+        libxcb-glx0 \
+        libxcb-xfixes0 \
+        libxcb-xkb1 \
+        libxkbcommon0 \
         libxkbcommon-x11-0 \
         libfontconfig1 \
         libfreetype6 \
@@ -138,40 +123,12 @@ RUN apt-get update && \
     && rm -rf /var/lib/apt/lists/*
 
 
-# ============================================================
-# 5. SALOME 9.15 ランタイム依存ライブラリ
+# ------------------------------------------------------------
+# Python
 #
-# Ubuntu 24.04上でSALOME 9.15を動作させるために
-# OS側へ追加するランタイム依存ライブラリ。
-#
-# このリストは、以前Ubuntu 24.04へSALOME 9.15を
-# インストールした際に必要だったパッケージ群を基にしている。
-#
-# 今回Docker環境で追加確認された依存:
-#
-#   libmpfr6
-#     → libmpfr.so.6 を提供する。
-#
-#     mesa_salome 起動時に
-#
-#       error while loading shared libraries:
-#       libmpfr.so.6
-#
-#     が出たため追加。
-#
-#   libmpc3
-#     → libmpc.so.3 を提供する。
-#
-#     libmpfr6追加後に
-#
-#       error while loading shared libraries:
-#       libmpc.so.3
-#
-#     が出たため追加。
-#
-# 今後さらに "*.so: cannot open shared object file"
-# が出た場合は、このセクションへ対応パッケージを追加する。
-# ============================================================
+# SALOME本体およびSALOME付属モジュールが使用する
+# Python関連ライブラリ。
+# ------------------------------------------------------------
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
@@ -188,6 +145,51 @@ RUN apt-get update && \
         python3-sip \
         python3-mpi4py \
         python3-nlopt \
+        python3-pyqt5 \
+        python3-pyqt5.qtsvg \
+        python3-pyqt5.sip \
+    && rm -rf /var/lib/apt/lists/*
+
+
+# ------------------------------------------------------------
+# Boost
+#
+# SALOME Geometry / Mesh / SMESH 等で使用。
+#
+# Dockerで実際に不足が発生したもの:
+#
+#   libboost_serialization.so.1.83.0
+#     -> libboost-serialization1.83.0
+#
+#   libboost_thread.so.1.83.0
+#     -> libboost-thread1.83.0
+#
+# WSL Ubuntu 24.04上でSALOME 9.15 Meshが
+# 正常動作している環境も参考にしている。
+# ------------------------------------------------------------
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        libboost-atomic1.83.0 \
+        libboost-filesystem1.83.0 \
+        libboost-system1.83.0 \
+        libboost-serialization1.83.0 \
+        libboost-thread1.83.0 \
+        libboost-program-options1.83.0 \
+        libboost-chrono1.83.0t64 \
+        libboost-date-time1.83.0 \
+    && rm -rf /var/lib/apt/lists/*
+
+
+# ------------------------------------------------------------
+# 数値計算 / Geometry / Mesh / CAE 関連ライブラリ
+#
+# SALOME 9.15をUbuntu 24.04上で動かしている
+# 実績環境と、これまでのDocker動作確認を元にしている。
+# ------------------------------------------------------------
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
         libcminpack1 \
         libmpfr6 \
         libmpc3 \
@@ -196,14 +198,10 @@ RUN apt-get update && \
         libgvc6 \
         libpathplan4 \
         graphviz \
-        libboost-filesystem1.83.0 \
-        libboost-atomic1.83.0 \
-        libboost-system1.83.0 \
-        python3-pyqt5.qtsvg \
-        libqt5x11extras5 \
         libpcre3 \
         libusb-1.0-0 \
         libqwt-qt5-6 \
+        libqt5x11extras5 \
         libexif12 \
         libraw1394-11 \
         libdc1394-25 \
@@ -212,10 +210,14 @@ RUN apt-get update && \
         libxml++2.6-2v5 \
         libnlopt0 \
         libnlopt-cxx0 \
+        libhdf5-103-1t64 \
         libhdf5-cpp-103-1t64 \
+        libhdf5-hl-100t64 \
         libopenblas0-serial \
+        liblapack3 \
         liblapacke \
-        fftw-dev \
+        libfftw3-double3 \
+        libfftw3-dev \
         libtiff6 \
         libfreeimage3 \
         libmetis5 \
@@ -225,66 +227,85 @@ RUN apt-get update && \
     && rm -rf /var/lib/apt/lists/*
 
 
-# ============================================================
-# 6. SALOME本体をDockerイメージへコピー
+# ------------------------------------------------------------
+# MPI
 #
-# ビルド前に以下のファイルを用意しておく。
+# SALOME内部の一部処理・並列処理関連で必要になる。
+# ------------------------------------------------------------
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        openmpi-bin \
+        openmpi-common \
+        libopenmpi3t64 \
+    && rm -rf /var/lib/apt/lists/*
+
+
+# ------------------------------------------------------------
+# その他の一般ランタイムライブラリ
 #
-# dist/
-# └── SALOME-9.15.0-native-UB24.04-SRC.tar.gz
+# Ubuntu最小イメージでは入っていない場合があるため
+# SALOME配布版が参照する可能性のあるものを明示的に導入。
+# ------------------------------------------------------------
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        libbsd0 \
+        libbz2-1.0 \
+        libc6 \
+        libexpat1 \
+        libgomp1 \
+        libjbig0 \
+        libltdl7 \
+        liblzma5 \
+        libnuma1 \
+        libquadmath0 \
+        libstdc++6 \
+        libudev1 \
+        libuuid1 \
+        libsqlite3-0 \
+        libncurses6 \
+        libffi8 \
+        libtinfo6 \
+        libzstd1 \
+        zlib1g \
+    && rm -rf /var/lib/apt/lists/*
+
+
+# ------------------------------------------------------------
+# SALOME 9.15.0
 #
-# Windows側の /mnt/... 上で直接展開せず、
-# Dockerイメージ内部のLinuxファイルシステムで展開する。
+# Dockerfileと同じディレクトリに
 #
-# SALOMEアーカイブにはLinuxのシンボリックリンクや
-# Linux固有のアクセス権が含まれるため、
-# Docker内部で展開する方が安全。
-# ============================================================
+#   dist/
+#     SALOME-9.15.0-native-UB24.04-SRC.tar.gz
+#
+# を置く。
+# ------------------------------------------------------------
 
 COPY dist/SALOME-9.15.0-native-UB24.04-SRC.tar.gz /tmp/salome.tar.gz
 
 
-# ============================================================
-# 7. SALOMEを /opt/salome へ展開
+# ------------------------------------------------------------
+# SALOMEを /opt/salome に展開
 #
-# --strip-components=1
+# --strip-components=1:
+#   tar.gz内部の最上位ディレクトリを除去して
+#   /opt/salome直下にSALOMEを配置。
 #
-# アーカイブ内部:
+# chmod -R a+rX:
+#   SALOMEアーカイブには一部
 #
-# SALOME-9.15.0-native-UB24.04-SRC/
-# ├── salome
-# ├── mesa_salome
-# └── BINARIES-UB24.04/
+#       drwxr-x---
 #
-# ↓
+#   のディレクトリが存在する。
 #
-# /opt/salome/
-# ├── salome
-# ├── mesa_salome
-# └── BINARIES-UB24.04/
+# Docker内では別ユーザー "salome" で実行するため、
+# 全ユーザーに読み取り権限と
+# ディレクトリへの移動権限を付与する。
 #
-#
-# chmod -R a+rX /opt/salome
-#
-# SALOME配布物には、
-#
-#   drwxr-x---
-#
-# のように元のubuntuユーザー/グループしか
-# アクセスできないディレクトリが含まれていた。
-#
-# Docker内では後で作成する salome ユーザーから
-# SALOME本体を読み取り・実行する必要があるため、
-# 全ユーザーへ必要な読み取り/ディレクトリアクセス権を追加する。
-#
-#   a  = all users
-#   +r = 読み取り権限
-#   +X = ディレクトリ、および既に実行可能なファイルへ実行権限
-#
-# 「chmod -R 755」と違って、
-# 普通のデータファイルまで実行可能にしないため、
-# a+rX の方が適切。
-# ============================================================
+# chmod -R 755 は通常ファイルまで実行可能になるため使わない。
+# ------------------------------------------------------------
 
 RUN mkdir -p /opt/salome && \
     tar -xzf /tmp/salome.tar.gz \
@@ -294,21 +315,11 @@ RUN mkdir -p /opt/salome && \
     chmod -R a+rX /opt/salome
 
 
-# ============================================================
-# 8. SALOME実行用の一般ユーザーを作成
+# ------------------------------------------------------------
+# SALOME実行専用ユーザー
 #
-# SALOMEをrootユーザーのまま実行するのではなく、
-# 一般ユーザー salome を作成する。
-#
-# /work:
-#   SALOMEのモデルやMEDファイルなどを保存する作業領域。
-#
-# ホスト側のディレクトリを
-#
-#   -v ~/salome_work:/work
-#
-# とマウントして使用する。
-# ============================================================
+# rootでSALOMEを実行しない。
+# ------------------------------------------------------------
 
 RUN useradd \
         --create-home \
@@ -318,83 +329,61 @@ RUN useradd \
     chown -R salome:salome /work /home/salome
 
 
-# ============================================================
-# 9. 以降は一般ユーザー salome として実行
-# ============================================================
+# ------------------------------------------------------------
+# SALOMEユーザーへ切り替え
+# ------------------------------------------------------------
 
 USER salome
 
 
-# ============================================================
-# 10. HOME / 作業ディレクトリ
-# ============================================================
+# ------------------------------------------------------------
+# HOME
+# ------------------------------------------------------------
 
 ENV HOME=/home/salome
+
+
+# ------------------------------------------------------------
+# 作業ディレクトリ
+#
+# ホスト側フォルダを /work にマウントして利用する。
+# ------------------------------------------------------------
 
 WORKDIR /work
 
 
-# ============================================================
-# 11. Qt / OpenGL関連設定
+# ------------------------------------------------------------
+# OpenGL
 #
-# LIBGL_ALWAYS_SOFTWARE=1
-#
-# Docker + X11ではホストGPUとのOpenGL連携が
-# 不安定になることがあるため、
-# まずMesaによるソフトウェアレンダリングを使用する。
-#
-# 特に:
-#
-#   Windows + WSLg
-#   macOS + XQuartz
-#
-# の共通Dockerイメージとして配布する場合、
-# GPU依存を減らした方が環境差を吸収しやすい。
-#
-#
-# QT_X11_NO_MITSHM=1
-#
-# QtがMIT-SHM（X11共有メモリ）を使わないようにする。
-#
-# DockerコンテナとホストXサーバーは
-# 同じ共有メモリ空間を直接利用できない場合があるため、
-# X11越しGUIでは無効化した方が安定しやすい。
-# ============================================================
+# GPU / WSLg / XQuartz環境差による問題を避けるため、
+# Mesaソフトウェアレンダリングを使用する。
+# ------------------------------------------------------------
 
 ENV LIBGL_ALWAYS_SOFTWARE=1
+
+
+# ------------------------------------------------------------
+# Qt + X11
+#
+# Docker越しのX11でMIT-SHM共有メモリ機構が
+# 問題になることがあるため無効化。
+# ------------------------------------------------------------
+
 ENV QT_X11_NO_MITSHM=1
 
 
-# ============================================================
-# 12. デフォルト起動
+# ------------------------------------------------------------
+# デフォルト
 #
-# WindowsとMacではX11接続方法が異なるため、
-# Dockerイメージ自体ではDISPLAYを固定しない。
+# いきなりSALOMEを起動せずbashにする。
 #
-# コンテナ起動時はbashへ入り、
-# ホスト側のdocker runコマンドでDISPLAYを指定する。
+# デバッグやライブラリ確認が容易になる。
 #
+# コンテナ起動後:
 #
-# Windows:
+#   /opt/salome/mesa_salome
 #
-# docker run --rm -it \
-#   --platform linux/amd64 \
-#   -e DISPLAY=:0 \
-#   -v /mnt/wslg/.X11-unix:/tmp/.X11-unix \
-#   -v ~/salome_work:/work \
-#   salome915
-#
-#
-# コンテナ内:
-#
-# /opt/salome/mesa_salome
-#
-#
-# Mac:
-#
-# Docker Desktop + XQuartzを使用し、
-# DISPLAYをhost.docker.internal側へ向ける。
-#
-# ============================================================
+# でSALOMEを起動する。
+# ------------------------------------------------------------
 
 CMD ["/bin/bash"]

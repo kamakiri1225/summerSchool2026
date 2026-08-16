@@ -4,37 +4,33 @@
 
 GUIはブラウザ(noVNC)ではなく、SALOME本来のGUIウィンドウをX11経由で直接表示する方式。WindowsではWSLg、MacではXQuartzを使う。
 
+配布されたイメージ（`kamakiri734/salome915:...`）を使う場合の手順は [004_distribute_salome.md](004_distribute_salome.md) を参照。ここでは自分でビルドした `salome915` イメージをそのまま使う前提で説明する。
+
 ---
 
-# 1. WindowsでGUIを直接表示する準備
+# 1. Windowsで起動する
 
-WindowsではWSLgを使う。
+## 1-1. GUIを直接表示する準備
 
-WSL側で、
+WindowsではWSLgを使う。WSL側で、
 
 ```bash
 echo $DISPLAY
 ```
 
-を確認する。
-
-通常、
+を確認する。通常、
 
 ```text
 :0
 ```
 
-である。
-
-続いて、
+である。続いて、
 
 ```bash
 ls /mnt/wslg/.X11-unix
 ```
 
-を確認する。
-
-通常、
+を確認する。通常、
 
 ```text
 X0
@@ -42,18 +38,18 @@ X0
 
 が表示される。
 
----
+## 1-2. コンテナを起動する
 
-# 2. Windowsでコンテナ起動
+作業フォルダを用意する。
 
 ```bash
 mkdir -p ~/salome_work
 ```
 
-起動:
+起動する。
 
 ```bash
-docker run --rm -it --platform linux/amd64 -e DISPLAY=:0 -v /mnt/wslg/.X11-unix:/tmp/.X11-unix -v ~/salome_work:/work salome915
+docker run --rm -it --platform linux/amd64 -e DISPLAY=:0 -v /mnt/wslg/.X11-unix:/tmp/.X11-unix -v /mnt/f:/mnt/f -v ~/salome_work:/work salome915
 ```
 
 コマンドの意味：
@@ -87,6 +83,13 @@ docker run
   ウィンドウを直接描画できるようになる（＝-e DISPLAY=:0 とこのマウントが揃って初めて
   GUIがWindowsのデスクトップに表示される）。
 
+-v /mnt/f:/mnt/f
+→ 作業ファイル（このリポジトリや、SALOMEで開くモデル・メッシュファイルなど）は
+  Windows の F ドライブ（WSLからは /mnt/f として見える）に置いているため、
+  ホスト側の /mnt/f を、コンテナ内でも同じパス /mnt/f としてそのまま重ねて見せる。
+  パスをホストと揃えているので、コンテナ内でもホストと同じパスでファイルを
+  指定できる。F ドライブ上のファイルを使わない場合は省略してよい。
+
 -v ~/salome_work:/work
 → ホスト側の ~/salome_work フォルダを、コンテナ内の /work に重ねて見せる。
   SALOMEでStudyファイルなどを保存するとき、コンテナ内の /work に保存しておけば、
@@ -104,9 +107,7 @@ salome@xxxxxxxx:/work$
 
 のようになる。
 
----
-
-# 3. まずxclockでGUI表示確認
+## 1-3. まずxclockでGUI表示確認
 
 いきなりSALOMEを起動せず、
 
@@ -114,9 +115,7 @@ salome@xxxxxxxx:/work$
 xclock
 ```
 
-を実行する。
-
-Windowsデスクトップ上に小さい時計のウィンドウが表示されれば、
+を実行する。Windowsデスクトップ上に小さい時計のウィンドウが表示されれば、
 
 ```text
 Docker
@@ -128,13 +127,9 @@ WSLg
 Windows GUI
 ```
 
-の接続は成功。
+の接続は成功。`xclock`を終了して次へ進む。
 
-`xclock`を終了して次へ進む。
-
----
-
-# 4. SALOME本体を起動する
+## 1-4. SALOME本体を起動する
 
 コンテナ内で、
 
@@ -142,56 +137,26 @@ Windows GUI
 ls -lah /opt/salome
 ```
 
-を実行する。
-
-SALOMEの起動用ファイルを探す。
-
-```bash
-find /opt/salome -maxdepth 2 -type f \( -name "salome" -o -name "mesa_salome" -o -name "run_salome.sh" \)
-```
-
-例えば、
-
-```text
-/opt/salome/mesa_salome
-```
-
-がある場合、
+でSALOMEの起動用ファイルを確認する。
 
 ```bash
 /opt/salome/mesa_salome
 ```
 
-を実行する。
-
-正常ならWindows上にSALOME 9.15のGUIウィンドウが直接表示される。
-
-ブラウザは使用しない。
+を実行する。正常ならWindows上にSALOME 9.15のGUIウィンドウが直接表示される。ブラウザは使用しない。
 
 ---
 
-# 5. Macで使う場合
+# 2. Macで起動する
 
-同じ `salome915` DockerイメージをMacでも使用する。
-
-Apple Silicon Macの場合も、
-
-```text
-linux/amd64
-```
-
-として起動する。
-
-Mac側ではX11 GUI表示のためにXQuartzを使用する。
-
-構成:
+同じ `salome915` DockerイメージをMacでも使用する。GUI表示にはXQuartzを使う。
 
 ```text
 Mac
 ↓
 Docker Desktop
 ↓
-linux/amd64
+linux/amd64（Apple SiliconはエミュレーションでOK)
 ↓
 Ubuntu 24.04
 ↓
@@ -202,13 +167,83 @@ XQuartz
 SALOME GUI
 ```
 
-Dockerイメージ自体はWindows版と同じものを使用する。
+## 2-1. XQuartzをインストール・設定する
 
-違うのはGUIの表示先だけ。
+```text
+https://www.xquartz.org/
+```
+
+からインストールする。XQuartzを起動し、
+
+```text
+XQuartz → 設定（Preferences） → セキュリティ（Security）
+```
+
+で、
+
+```text
+Allow connections from network clients
+```
+
+にチェックを入れ、XQuartzを再起動する。
+
+## 2-2. X11接続を許可する
+
+Macのターミナルで、
+
+```bash
+xhost +localhost
+```
+
+を実行する。
+
+## 2-3. コンテナを起動する
+
+```bash
+mkdir -p ~/salome_work
+```
+
+```bash
+docker run --rm -it --platform linux/amd64 -e DISPLAY=host.docker.internal:0 -v ~/salome_work:/work salome915
+```
+
+Windows版との違い：
+
+```text
+-e DISPLAY=host.docker.internal:0
+→ MacにはWSLgのようなLinux用X11ソケットが存在しないため、コンテナから
+  Macホスト上のXQuartzへネットワーク経由(TCP)で接続する。
+  host.docker.internal は「コンテナから見たホストMac」を指す特別な
+  ホスト名で、Docker Desktopが自動的に用意する。
+
+/mnt/wslg/.X11-unix のマウントが無い
+→ WSLg特有のソケット共有はMacには存在しないため不要。代わりに
+  DISPLAY=host.docker.internal:0 と 2-2 の xhost +localhost の
+  組み合わせでGUIを表示する。
+
+-v /mnt/f:/mnt/f が無い
+→ Mac側にはFドライブという概念が無いため使用しない。
+  Macで作業ファイルを共有したい場合は、-v ~/salome_work:/work の
+  ように、Mac側の任意のフォルダをマウントする。
+```
+
+## 2-4. 動作確認
+
+```bash
+xclock
+```
+
+でGUI表示を確認後、
+
+```bash
+/opt/salome/mesa_salome
+```
+
+でSALOMEを起動する。
 
 ---
 
-# 6. 今回使わないもの
+# 3. 今回使わないもの
 
 以前検討した以下は使用しない。
 
@@ -219,24 +254,16 @@ noVNC
 websockify
 ```
 
-これらはDocker内の画面をブラウザへ表示するための仕組み。
-
-今回は、
-
-```text
-SALOME本来のGUIウィンドウを直接表示する
-```
-
-ことが目的なので不要。
+これらはDocker内の画面をブラウザへ表示するための仕組み。今回は「SALOME本来のGUIウィンドウを直接表示する」ことが目的なので不要。
 
 ---
 
-# 7. 現在地
+# 4. 現在地
 
 現在、以下まで完了している。
 
 - [ ] Windowsでxclock表示確認
 - [ ] WindowsでSALOME GUI起動確認
 - [ ] Mac + XQuartzでGUI起動確認
-- [ ] 配布用Dockerイメージ作成
+- [ ] 配布用Dockerイメージ作成（[004_distribute_salome.md](004_distribute_salome.md)）
 - [ ] Docker Hub等への配布
