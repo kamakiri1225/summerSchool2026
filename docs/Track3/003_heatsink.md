@@ -1,0 +1,380 @@
+# 003 Heatsink: SALOMEでヒートシンクの熱流体・固体連成メッシュを作る
+
+## この演習で目指すこと
+
+ヒートシンクを題材に、流体領域（box）と固体領域（heatSink・heatSource・basis）を分けたマルチリージョン用メッシュを作成する。OpenFOAMのchtMultiRegionFoamで、流体と固体を同時に扱う熱流体・固体連成解析につなげる。
+
+- STEPファイルを読み込み、ソリッド単位に分解して名前を整理する
+- Partitionで4つの領域（box・heatSink・heatSource・basis）を分割する
+- 各領域の境界面にグループ名を付け、OpenFOAMへ渡すパッチ名を決める
+- テトラメッシュを作成し、フィン周りに境界層（Viscous Layers）を追加する
+- Sub-meshで流体領域だけメッシュサイズを調整する
+- UNV形式でOpenFOAM用に出力する
+
+モデル構成は次の4リージョンからなる。
+
+- `box`: 周囲を流れる空気の流体領域（240 × 102 × 103 mm）
+- `heatSink`: フィン部分の固体領域
+- `heatSource`: 発熱源となる底板の固体領域
+- `basis`: ヒートシンクを載せる土台の固体領域
+
+![モデル構成（heatSink・heatSource・basis・box）](img/003_heatsink/page_151.svg)
+
+---
+
+## Geometry: STEPファイルを読み込む
+
+### 1. Geometryモジュールへ切り替える
+
+![Geometryへ切り替える](img/003_heatsink/page_152.svg)
+
+- (1) `Geometry` に変更する。
+
+### 2. STEPファイルをインポートする
+
+![STEPファイルをインポートする](img/003_heatsink/page_153.svg)
+
+- (2) `File` > `Import` > `STEP` をクリックする。
+- (3) `model.step` を選択し `Open` をクリックする。
+- (4) 単位をmm前提で読み込むため、警告ダイアログでは `No` をクリックする（`Yes`にするとモデルのスケールが変わってしまう）。
+
+### 3. 内部形状を確認する
+
+![透過表示で内部形状を確認する](img/003_heatsink/page_154.svg)
+
+- (5) 背景上で右クリックし `Transparency` をクリックする。
+- (6) `Opaque` を `60%` にし、boxの中にあるheatSink・heatSourceの形状を確認する。
+
+---
+
+## Geometry: ソリッドを分解して名前を付ける
+
+### 1. Explodeでソリッド単位に分解する
+
+![Explodeでソリッドに分解する](img/003_heatsink/page_155.svg)
+
+- (7) `Explode（要素に分解）` をクリックする。
+- Sub-shapes Type を `Solid` にする。
+- (8) `Apply and Close` をクリックする。
+
+### 2. 4つのソリッドをリネームする
+
+![ソリッドをリネームする](img/003_heatsink/page_156.svg)
+
+- (9) 分解された4つのソリッドを右クリック > `Rename` で、それぞれ `heatSource` / `heatSink` / `basis` / `box` に名前を変更する。
+- リネームしておくことで、後の境界面グループ作成や、OpenFOAM側のリージョン設定で迷わなくなる。
+
+---
+
+## Geometry: Partitionで領域を分割する
+
+### 1. Partitionを実行する
+
+![Partitionを実行する](img/003_heatsink/page_157.svg)
+
+- (10) `Partition（分割）` をクリックする。
+- Objects に4つのソリッド（heatSource・heatSink・basis・box）を指定する。
+- Resulting Type を `Solid` にする。
+- (11) `Apply and Close` をクリックする。
+
+![Partition_1の生成を確認する](img/003_heatsink/page_158.svg)
+
+- `Partition_1` の下に、4つのソリッドが子要素として作られたことを確認する。これらの共有面が、後でOpenFOAM側の流体-固体連成境界になる。
+
+### 2. Partition結果を再度分解してリネームする
+
+![Partition_1を再度Explodeする](img/003_heatsink/page_159.svg)
+
+- (12) `Explode` をクリックする。Main Objectは `Partition_1`、Sub-shapes Typeは `Solid` にする。
+- (13) `Apply and Close` をクリックする。
+
+![リネームする](img/003_heatsink/page_160.svg)
+
+- (14) 分解された4つのソリッドを右クリック > `Rename` で、`heatSource` / `heatSink` / `basis` / `box` にリネームする。
+
+### 3. 保存する
+
+![名前を付けて保存する](img/003_heatsink/page_161.svg)
+
+- (15) `File` > `Save As...` をクリックする。
+- (16) ファイル名 `geometry_heatSink_001.hdf` で `Save` をクリックする。
+
+---
+
+## Geometry: box領域の境界面にグループを作る
+
+OpenFOAMでは境界条件は面の名前に対して設定するため、SALOME側で面グループを作り、後でOpenFOAMのパッチ名として使う。ここではまずbox（流体領域）の8つの境界面グループを作る。
+
+### 1. 外壁面のグループを作る（YMin・ZMax・XMax・YMax・XMin）
+
+![YMinグループを作成する](img/003_heatsink/page_162.svg)
+
+- (1) `Partition_1` を右クリック > `Create Group` をクリックする。
+- Shape Typeを面（Face）にし、Group Nameに `YMin` と入力する。
+- (2) 対象の面を選択して `Add` をクリックする。
+- (3) `Apply` をクリックする。
+
+![ZMaxグループを作成する](img/003_heatsink/page_163.svg)
+
+- (4)(5) 同様に `ZMax` の面を選択して `Add` → `Apply`。
+
+![XMaxグループを作成する](img/003_heatsink/page_164.svg)
+
+- (6)(7) 同様に `XMax` の面を選択して `Add` → `Apply`。
+
+![YMaxグループを作成する](img/003_heatsink/page_165.svg)
+
+- (8)(9) 同様に `YMax` の面を選択して `Add` → `Apply`。
+
+![XMinグループを作成する](img/003_heatsink/page_166.svg)
+
+- (10)(11) 同様に `XMin` の面を選択して `Add` → `Apply`。
+
+### 2. basisとの接触面グループを作る
+
+![basisグループを作成する](img/003_heatsink/page_167.svg)
+
+- (12) `basis` の側面5面を選択して `Add` をクリックする。
+- (13) `Apply` をクリックする。
+- このグループが、box（流体）側から見たbasisとの連成境界になる。
+
+### 3. heatSink・heatSourceとの接触面グループを作る
+
+![box外側の面を非表示にする](img/003_heatsink/page_168.svg)
+
+- (14) 内部のheatSink・heatSourceの面を選択しやすくするため、box外側の面（上面・側面など）を選択して `Hide selected` で非表示にする。
+
+![heatSinkグループを作成する](img/003_heatsink/page_169.svg)
+
+- (15) `RIGHT view` に切り替え、heatSinkの表面（フィン部分）を選択して `Add` をクリックする。
+- (16) `Apply` をクリックする。
+
+![heatSourceグループを作成する](img/003_heatsink/page_170.svg)
+
+- (17) 同様にheatSourceの表面を選択して `Add` をクリックする。
+- (18) `Apply` をクリックする。
+
+### 4. basis側の上面グループを作る
+
+![basis_topグループを作成する](img/003_heatsink/page_171.svg)
+
+- (19) 今度はbasis自体の視点で、heatSourceと接する上面を選択して `Add` をクリックする。
+- (20) `Apply and Close` をクリックする。グループ名は `basis_top` とする。
+
+### 5. 完成した境界グループを確認する
+
+![box配下の全境界グループを確認する](img/003_heatsink/page_172.svg)
+
+- `Partition_1` の `box` 配下に、`YMin` / `ZMax` / `XMax` / `YMax` / `basis` / `XMin` / `heatSink` / `heatSource` の8グループが揃ったことを確認する。
+
+### 6. 保存する
+
+![名前を付けて保存する](img/003_heatsink/page_173.svg)
+
+- (21) `File` > `Save As...` をクリックする。
+- (22) ファイル名 `geometry_heatSink_002.hdf` で `Save` をクリックする。
+
+---
+
+## Mesh: テトラメッシュを作成する
+
+### 1. Meshモジュールへ切り替える
+
+![Meshへ切り替える](img/003_heatsink/page_174.svg)
+
+- (1) `Mesh` に変更する。
+
+### 2. メッシュを新規作成する
+
+![Create Meshを開く](img/003_heatsink/page_175.svg)
+
+- (2) `Mesh` > `Create Mesh` をクリックする。
+
+![テトラメッシュの仮設定をする](img/003_heatsink/page_176.svg)
+
+- (3) Geometryに `Partition_1` が選択されていることを確認する。
+- (4) 3Dタブで `Assign a set of automatic hypotheses` から `3D: Tetrahedralization` を選ぶ。
+- (5) NETGEN 3D ParametersのLengthを `25`（mm）に仮設定する。
+- (6) `Apply and Close` をクリックする。
+
+![メッシュを計算する](img/003_heatsink/page_177.svg)
+
+- (7) `Mesh_1` を選択した状態で `Compute` をクリックし、メッシュを作成する。
+- 計算成功（Nodes 11864、Tetrahedrons 59943）を確認する。
+
+### 3. 断面で内部形状を確認する
+
+![Clippingで断面を確認する](img/003_heatsink/page_178.svg)
+
+- Clipping平面（Y-Z面）を使い、boxの中のheatSink形状とメッシュの様子を確認する。
+
+### 4. メッシュサイズを調整する
+
+![NETGEN 3D Parametersを編集する](img/003_heatsink/page_179.svg)
+
+- (8) `Mesh_1` を選択した状態で `Edit Mesh` をクリックする。
+- (9) `NETGEN 3D Parameters_1` を編集し、Max sizeを `10`、Min sizeを `0.25` に変更する。
+
+---
+
+## Mesh: 境界層（Viscous Layers）を追加する
+
+### 1. heatSink・heatSourceの表面に境界層を追加する
+
+![Viscous Layersを追加する](img/003_heatsink/page_180.svg)
+
+- (10) Add. Hypothesisで `Viscous Layers` を追加する。
+
+![境界層の厚さを設定する](img/003_heatsink/page_181.svg)
+
+- Total thicknessを `0.2`、Number of layersを `3`、Stretch factorを `1` にする。
+- Extrusion methodは `Face offset` を選ぶ。
+- (11) heatSink・heatSourceの面を選択して `Add` をクリックする。
+
+### 2. basis側の境界層との接続に注意する
+
+![basisとの接続でメッシュが崩れる問題](img/003_heatsink/page_182.svg)
+
+- heatSink・heatSourceだけに境界層を付けると、境界層の外側の輪郭がbasisの表面メッシュとぴったり重ならず、つなぎ目でメッシュ生成エラーになりやすい。
+- これを避けるため、basis側にも対応する境界層（Viscous Layers）を追加し、輪郭を合わせる。
+
+### 3. basis側にも境界層を追加する
+
+![basis側にViscous Layers_2を追加する](img/003_heatsink/page_183.svg)
+
+- (12) Viscous Layers_1に続けて、プラスボタンで新たに `Viscous Layers_2` を追加する。
+- basis_topの面を選択して `Add` する。
+- Total thicknessを `1`、Number of layersを `3` にし、Extrusion methodは `Surface offset + smooth` を選ぶ（heatSink・heatSourceの境界層と滑らかに接続させるため）。
+
+### 4. 再計算して確認する
+
+![メッシュを再計算する](img/003_heatsink/page_184.svg)
+
+- (13) `Compute` をクリックする。計算成功（Nodes 47701、Tetrahedrons 75244、Prisms 63612）を確認する。
+
+![警告内容を確認する](img/003_heatsink/page_185.svg)
+
+![フィン部分の境界層を確認する](img/003_heatsink/page_186.svg)
+
+- 計算は成功するが、フィン間隔が狭いため「Thickness of viscous layers not reached（指定した境界層厚さに届いていない）」という警告が出ることがある。
+- 警告が出ていても致命的なエラーでなければ、そのまま次に進めてよい。
+
+### 5. boxの外壁にも境界層を追加する
+
+![Viscous Layers_3を追加する](img/003_heatsink/page_187.svg)
+
+- (14) 新たに `Viscous Layers_3` を追加する。
+- Total thicknessを `2`、Number of layersを `3`、Extrusion methodは `Surface offset + smooth` にする。
+- (15) boxの外壁（ZMax・XMax・XMin）の面を選択して `Add` をクリックする。
+
+![3つのViscous Layersを確認して確定する](img/003_heatsink/page_188.svg)
+
+- Add. HypothesisにViscous Layers_1〜3がすべて追加されていることを確認し、`Apply and Close` をクリックする。
+
+### 6. 最終メッシュを計算する
+
+![メッシュを計算する](img/003_heatsink/page_189.svg)
+
+- (16) `Compute` をクリックする。計算成功（Nodes 52304、Tetrahedrons 76661、Prisms 72804）、エラーなしを確認する。
+
+![フィン周りの境界層を拡大確認する](img/003_heatsink/page_190.svg)
+
+- フィン間の境界層とテトラメッシュの接続部分を拡大し、品質を確認する。
+
+---
+
+## Mesh: Sub-meshで流体領域だけ細分化する
+
+### 1. box用のSub-meshを作成する
+
+![Create Sub-meshを開く](img/003_heatsink/page_191.svg)
+
+- (17) `Mesh_1` を選択した状態で `Create Sub-mesh` をクリックする。
+
+![Sub-meshの設定をする](img/003_heatsink/page_192.svg)
+
+- (18) Geometryに `box` が選択されていることを確認する。
+- (19) 3Dタブで `3D: Tetrahedralization` を選ぶ。
+- NETGEN 3D Parameters_2でLengthを `10`（mm）にする。
+- (20) Add. HypothesisにViscous Layers_1〜3を追加する。
+- (21) `Apply and Close` をクリックする。
+
+### 2. Sub-meshを計算する
+
+![box部分のメッシュを拡大確認する](img/003_heatsink/page_193.svg)
+
+- box領域内のフィン周りが、全体メッシュより細かくなっていることを確認する。
+
+![Compute を実行する](img/003_heatsink/page_194.svg)
+
+- (26) `Mesh_1` を選択した状態で `Compute` をクリックし、Sub-meshを反映してメッシュを再計算する。
+
+### 3. 不要なグループを削除する
+
+![不要なGroup_1を削除する](img/003_heatsink/page_195.svg)
+
+- (29) グループ作成時に重複してできた `Group_1`（basisの底面）は不要なため、右クリック > `Delete` で削除する。
+
+### 4. 保存する
+
+![名前を付けて保存する](img/003_heatsink/page_196.svg)
+
+- (27) `File` > `Save As...` をクリックする。
+- (28) ファイル名 `geometry_heatSink_003.hdf` で `Save` をクリックする。
+
+---
+
+## Mesh: OpenFOAM用にUNV出力する
+
+![UNVファイルをエクスポートする](img/003_heatsink/page_197.svg)
+
+- (29) `Mesh_1` を右クリック > `Export` > `UNV file` をクリックする。
+- (30) ファイル名 `Mesh_1.unv` として、OpenFOAMの計算フォルダ（例: `run001_of13`）に `Save` する。
+- 作成した面グループ名（YMin・YMax・ZMax・XMax・XMin・basis・heatSink・heatSource・basis_top）がそのままOpenFOAMのパッチ名になる。
+
+---
+
+## OpenFOAM側での計算
+
+### メッシュの変換と確認
+
+SALOMEから出力したUNVメッシュを計算フォルダに置き、OpenFOAM形式へ変換する。
+
+```bash
+. /opt/openfoam13/etc/bashrc
+ideasUnvToFoam Mesh_1.unv > log.ideasUnvToFoam 2>&1
+transformPoints "scale=(0.001 0.001 0.001)" > log.transformPoints 2>&1
+checkMesh -allGeometry > log.checkMesh 2>&1
+```
+
+- `ideasUnvToFoam` でUNVメッシュをOpenFOAM形式に変換する。
+- SALOMEでmm単位のモデルを作っているため、`transformPoints` でOpenFOAMが使うm単位に変換する。
+- `checkMesh` でメッシュ品質と境界面を確認する。
+
+![OpenFOAM側でメッシュ全体を確認する](img/003_heatsink/page_198.svg)
+
+- ParaView等で、box（流体）とheatSink・heatSource・basis（固体）を含むメッシュ全体像を確認する。
+
+### chtMultiRegionFoamの実行
+
+`splitMeshRegions` で流体・固体をリージョンに分割し、各リージョンの初期条件・物性・境界条件を設定した上で `chtMultiRegionFoam` を実行する。
+
+```bash
+splitMeshRegions -cellZones -overwrite > log.splitMeshRegions 2>&1
+chtMultiRegionFoam > log.chtMultiRegionFoam 2>&1
+```
+
+- `splitMeshRegions -cellZones` は、UNVメッシュ作成時に付けたセルゾーン名（box・heatSink・heatSource・basis）を使ってメッシュを4つのリージョンに分割する。
+- 各リージョンには、あらかじめ `0/<region>` に初期条件、`constant/<region>` に物性値、`system/<region>` に境界条件・数値スキームを用意しておく。
+- `chtMultiRegionFoam` は非定常の熱流体・固体連成ソルバで、流体側は速度・圧力・乱流量・温度、固体側は温度のみを解く。
+
+### 計算結果の確認
+
+![計算結果（速度分布・温度分布）](img/003_heatsink/page_199.svg)
+
+- 流体領域では速度ベクトル分布、固体領域では温度分布を確認する。
+- ヒートシンク周りの流れが発熱部からの熱を受け取り、フィン表面から周囲へ熱を逃がしている様子を確認する。
+
+計算が進むにつれて、発熱源からフィン先端まで温度が上昇し、周囲の空気が対流で熱を運び去っていく過程をアニメーションで確認できる。
+
+![計算過程のアニメーション（速度・温度分布の時間変化）](img/003_heatsink/ani_comp.gif)

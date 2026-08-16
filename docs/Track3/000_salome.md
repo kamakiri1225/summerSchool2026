@@ -1,0 +1,164 @@
+# SALOMEとは
+
+## 概要
+
+SALOME はフランス電力（EDF）が中心となって開発しているオープンソースの CAE プリ・ポスト処理プラットフォーム。
+ジオメトリ作成からメッシュ生成・結果可視化まで一貫して行える。
+
+- ライセンス: LGPL（無料・商用利用可）
+- 開発元: EDF（Électricité de France）
+- 対応OS: Linux / Windows
+
+---
+
+## 主なモジュール
+
+| モジュール | 役割 |
+|-----------|------|
+| Shaper | パラメトリック CAD（スケッチ・フィーチャーベース） |
+| Geometry（GEOM） | 直接モデリング・Python スクリプト対応 |
+| Mesh | メッシュ生成（テトラ・ヘキサ・境界層など） |
+| ParaVis | 結果の可視化（ParaView ベース） |
+| YACS | ワークフロー管理 |
+
+SALOME起動後は、画面左上のプルダウンから使用するモジュールを切り替える。
+
+![モジュールを切り替える](img/000_salome/page_017.svg)
+
+---
+
+## Shaper モジュール
+
+SALOMEのツールバーには、下図のように数多くのモジュールが並んでいる。ただし本講義で実際に使うのは、ジオメトリ作成の **Shaper**、直接モデリングの **Geometry（GEOM）**、メッシュ生成の **Mesh** の3つだけである。
+
+![SALOMEの主なモジュール一覧](img/000_salome/page_018.svg)
+
+パラメトリック CAD モジュール。従来の Geometry（GEOM）の後継。
+
+### できること
+
+- スケッチベースモデリング（2D スケッチ → 押し出し・回転で 3D 化）
+- フィーチャーツリーによる履歴管理（後から寸法変更が容易）
+- ブーリアン演算（和・差・積）
+- プリミティブ（Box・円柱・球など）
+- 変換（移動・回転・ミラー・スケール）
+- アセンブリ（複数パーツの組み立て）
+
+例えば、2Dスケッチを描いて押し出すと、以下のように3D形状が作られる。
+
+![スケッチから押し出しで3D化する](img/000_salome/page_019.svg)
+
+### GEOM（Geometry）モジュールとは
+
+GEOM は Shaper より前からある直接モデリング（ダイレクトモデリング）方式のジオメトリモジュールで、CAD モデルの作成・編集を行う。Shaper のようなフィーチャーツリーに基づく履歴は持たないが、Box・円柱などのプリミティブ生成やブーリアン演算（Fuse・Cut・Common）、Python スクリプトによる自動化に強く、SALOME では現在も広く使われている。
+
+例えば、2つの Box をブーリアン演算（Fuse）で結合すると、以下のように1つの形状にまとまる。
+
+![Box_1とBox_2をFuse（結合）する](img/000_salome/page_020.svg)
+
+### GEOM モジュールとの比較
+
+| | Shaper | Geometry（GEOM） |
+|---|--------|-----------------|
+| モデリング方式 | パラメトリック（履歴あり） | 直接モデリング（履歴なし） |
+| 後からの変更 | 容易 | 難しい |
+| 成熟度 | 新しい（機能追加中） | 枯れている |
+| Python スクリプト | 対応（発展中） | 充実 |
+
+---
+
+## Mesh モジュール
+
+Shaper / GEOM で作成したジオメトリからメッシュを生成するモジュール。
+
+### メッシュの種類
+
+| 種類 | 説明 | セルの形 |
+|------|------|----------|
+| テトラメッシュ | 四面体。複雑形状に自動生成しやすい | 4つの三角形の面で囲まれた最もシンプルな立体。NETGEN などのアルゴリズムで複雑な形状にも自動で敷き詰められる |
+| ヘキサメッシュ | 六面体。計算精度が高く OpenFOAM と相性が良い | 直方体（サイコロ状）のセル。同じ体積ならテトラよりセル数が少なく、面が壁に沿いやすいため数値誤差が小さい |
+| プリズム（境界層） | 壁面付近に層状に生成。境界層の解像度を上げる | 壁に沿って薄い層を積み重ねた三角柱／四角柱状のセル。壁に近いほど薄く、離れるほど厚くする |
+| ハイブリッド | ヘキサ＋テトラの混在 | 形状が単純な部分はヘキサ、複雑な部分はテトラというように、領域ごとに異なる種類のセルを組み合わせる |
+
+<div style="display:flex; flex-wrap:wrap; gap:1.2rem; justify-content:center; margin:1.5rem 0;">
+  <figure style="margin:0; text-align:center;">
+    <img src="img/000_salome/mesh_tetra.svg" alt="四面体セル" style="display:block; width:260px; max-width:100%; margin:0; border:1px solid #ddd; background:#fff;">
+    <figcaption>テトラメッシュ</figcaption>
+  </figure>
+  <figure style="margin:0; text-align:center;">
+    <img src="img/000_salome/mesh_hexa.svg" alt="六面体セル" style="display:block; width:260px; max-width:100%; margin:0; border:1px solid #ddd; background:#fff;">
+    <figcaption>ヘキサメッシュ</figcaption>
+  </figure>
+  <figure style="margin:0; text-align:center;">
+    <img src="img/000_salome/mesh_prism.svg" alt="境界層セル" style="display:block; width:260px; max-width:100%; margin:0; border:1px solid #ddd; background:#fff;">
+    <figcaption>プリズム（境界層）</figcaption>
+  </figure>
+  <figure style="margin:0; text-align:center;">
+    <img src="img/000_salome/mesh_hybrid.svg" alt="ハイブリッドメッシュ" style="display:block; width:260px; max-width:100%; margin:0; border:1px solid #ddd; background:#fff;">
+    <figcaption>ハイブリッド</figcaption>
+  </figure>
+</div>
+
+### 分割の設定階層
+
+メッシュの細かさは 1D → 2D → 3D の順に設定する。1D（辺）の分割が2D（面）のメッシュの粗さを決め、2D（面）のメッシュが3D（体積）のメッシュの粗さを決める、という積み上げの関係になっている。
+
+| 階層 | 対象 | 設定内容 | 具体例 |
+|------|------|----------|--------|
+| 1D | エッジ（辺） | 分割数・分割比（グレーディング） | `Wire Discretisation` で `Number of Segments`（分割数）を指定する |
+| 2D | フェイス（面） | 面メッシュのアルゴリズム | `NETGEN 2D Parameters` で `Max. Size` / `Min. Size`（面メッシュの最大・最小サイズ）を指定する |
+| 3D | ソリッド（体積） | 体積メッシュのアルゴリズム | `NETGEN 3D Parameters` で `Max. Size` / `Min. Size`（セルの最大・最小サイズ）を指定する |
+
+1D・2D・3D をすべて指定すると、辺の分割数を優先しつつ、面・体積は指定したサイズ範囲でメッシュが生成される。具体的な操作手順は [001_box.md](001_box.md) の「1D/2D/3Dを指定してメッシュを制御する」を参照。
+
+### 主なアルゴリズム
+
+| アルゴリズム | 次元 | 特徴 |
+|------------|------|------|
+| Wire Discretization | 1D | エッジを指定分割数で均等分割 |
+| Quadrangle（Mapping） | 2D | 四角形メッシュ。ヘキサ化に必須 |
+| Hexahedron（i,j,k） | 3D | 構造ヘキサメッシュ。規則的な形状に使用 |
+| NETGEN 1D-2D-3D | 3D | テトラ自動生成 |
+
+### 境界層（Viscous Layers）
+
+壁面付近に薄い層状のプリズムメッシュを追加する機能。
+
+- **層数**: 積層する枚数
+- **厚み**: 最初の層の厚さ
+- **伸長率**: 層ごとの厚みの増加比率
+
+### サブメッシュ
+
+特定のフェイスやエッジだけ分割設定を変えたい場合に使用。
+部分的に細かくしたり、境界条件ごとに名前（グループ）をつけるのに使う。
+
+### グループ
+
+OpenFOAM のパッチ（境界条件）に対応させるため、フェイスに名前をつける機能。
+メッシュ生成前にグループを設定しておくと UNV エクスポート後もパッチ名が引き継がれる。
+
+---
+
+## OpenFOAM との連携
+
+SALOME で作成したメッシュを OpenFOAM 形式に変換して利用する。
+
+```
+SALOME（Shaper でジオメトリ作成）
+  ↓
+SALOME（Mesh モジュールでメッシュ生成）
+  ↓
+UNV 形式でエクスポート
+  ↓
+ideasUnvToFoam コマンドで OpenFOAM 形式に変換
+```
+
+---
+
+## ダウンロード
+
+| 配布元 | URL | 特徴 |
+|--------|-----|------|
+| Code_Aster 付属版 | https://www.code-aster.org/ | 構造解析ソフト Code_Aster とセット。**通常はこちら** |
+| Salome Platform（EDF） | https://www.salome-platform.org/ | 開発元 EDF のサイト。Code_Aster は含まないが最新版を入手可能 |
