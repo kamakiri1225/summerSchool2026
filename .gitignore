@@ -3,6 +3,11 @@
 !/README.md
 !/docs
 !/data
+!/software
+!/salome915-docker
+
+# salome915-docker/: exclude the large SALOME binary archive (download separately, see docs)
+/salome915-docker/dist/*.tar.gz
 /docs/*
 !/docs/index.html
 !/docs/Track3

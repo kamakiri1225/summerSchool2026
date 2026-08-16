@@ -1,0 +1,2 @@
+# SALOME配布物のtar.gzはサイズが大きいためgit管理しない。
+*.tar.gz
