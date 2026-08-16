@@ -80,24 +80,9 @@ Shaper / GEOM で作成したジオメトリからメッシュを生成するモ
 | プリズム（境界層） | 壁面付近に層状に生成。境界層の解像度を上げる | 壁に沿って薄い層を積み重ねた三角柱／四角柱状のセル。壁に近いほど薄く、離れるほど厚くする |
 | ハイブリッド | ヘキサ＋テトラの混在 | 形状が単純な部分はヘキサ、複雑な部分はテトラというように、領域ごとに異なる種類のセルを組み合わせる |
 
-<div style="display:flex; flex-wrap:wrap; gap:1.2rem; justify-content:center; margin:1.5rem 0;">
-  <figure style="margin:0; text-align:center;">
-    <img src="img/000_salome/mesh_tetra.svg" alt="四面体セル" style="display:block; width:260px; max-width:100%; margin:0; border:1px solid #ddd; background:#fff;">
-    <figcaption>テトラメッシュ</figcaption>
-  </figure>
-  <figure style="margin:0; text-align:center;">
-    <img src="img/000_salome/mesh_hexa.svg" alt="六面体セル" style="display:block; width:260px; max-width:100%; margin:0; border:1px solid #ddd; background:#fff;">
-    <figcaption>ヘキサメッシュ</figcaption>
-  </figure>
-  <figure style="margin:0; text-align:center;">
-    <img src="img/000_salome/mesh_prism.svg" alt="境界層セル" style="display:block; width:260px; max-width:100%; margin:0; border:1px solid #ddd; background:#fff;">
-    <figcaption>プリズム（境界層）</figcaption>
-  </figure>
-  <figure style="margin:0; text-align:center;">
-    <img src="img/000_salome/mesh_hybrid.svg" alt="ハイブリッドメッシュ" style="display:block; width:260px; max-width:100%; margin:0; border:1px solid #ddd; background:#fff;">
-    <figcaption>ハイブリッド</figcaption>
-  </figure>
-</div>
+<figure style="margin:1.5rem 0; text-align:center;">
+  <img src="img/000_salome/mesh_cell_types_overview.png" alt="メッシュのセル種類の概要（テトラ・ヘキサ・プリズム・ハイブリッド）" style="display:block; width:100%; max-width:720px; margin:0 auto; border:1px solid #ddd; background:#fff;">
+</figure>
 
 ### 分割の設定階層
 
