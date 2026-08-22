@@ -20,7 +20,7 @@ FoamFile
     {
         type            patch;
         nFaces          28464;
-        startFace       655015;
+        startFace       654984;
     }
     wall_wing_master
     {
@@ -32,8 +32,8 @@ wall
 wall_wing
 )
 ;
-        nFaces          462;
-        startFace       683479;
+        nFaces          480;
+        startFace       683448;
     }
     wall_wing_slave
     {
@@ -45,8 +45,8 @@ wall
 wall_wing
 )
 ;
-        nFaces          462;
-        startFace       683941;
+        nFaces          480;
+        startFace       683928;
     }
     wall_wing2_master
     {
@@ -58,8 +58,8 @@ wall
 wall_wing2
 )
 ;
-        nFaces          467;
-        startFace       684403;
+        nFaces          480;
+        startFace       684408;
     }
     wall_wing2_slave
     {
@@ -71,8 +71,8 @@ wall
 wall_wing2
 )
 ;
-        nFaces          467;
-        startFace       684870;
+        nFaces          480;
+        startFace       684888;
     }
     wall_circ_z015_master
     {
@@ -85,7 +85,7 @@ wall_circ_z015
 )
 ;
         nFaces          576;
-        startFace       685337;
+        startFace       685368;
     }
     wall_circ_z015_slave
     {
@@ -98,7 +98,7 @@ wall_circ_z015
 )
 ;
         nFaces          576;
-        startFace       685913;
+        startFace       685944;
     }
     wall_circ_z035_master
     {
@@ -111,7 +111,7 @@ wall_circ_z035
 )
 ;
         nFaces          576;
-        startFace       686489;
+        startFace       686520;
     }
     wall_circ_z035_slave
     {
@@ -124,7 +124,7 @@ wall_circ_z035
 )
 ;
         nFaces          576;
-        startFace       687065;
+        startFace       687096;
     }
 )
 

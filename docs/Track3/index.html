@@ -52,25 +52,54 @@ SALOMEを使ったOpenFOAMメッシュ作成</h1>
 <tr class="odd">
 <td>Code_Aster 付属版</td>
 <td>https://www.code-aster.org/</td>
-<td>構造解析ソフト Code_Aster
-とセット。<strong>通常はこちら</strong></td>
+<td>構造解析ソフト Code_Aster とセット</td>
 </tr>
 <tr class="even">
 <td>Salome Platform（EDF）</td>
 <td>https://www.salome-platform.org/</td>
-<td>開発元フランス電力 EDF のサイト。Code_Aster
-は含まないが最新版を入手可能</td>
+<td>開発元フランス電力 EDF のサイト。最新版を入手可能</td>
 </tr>
 </tbody>
 </table>
+<p>本講義では、Salome Platform（EDF）配布の <strong>SALOME 9.15</strong>
+を使用する。</p>
 <hr />
 <h2 id="講義の全体像">講義の全体像</h2>
 <p>この講義では SALOME を使って OpenFOAM
 用メッシュを作成するスキルを段階的に習得する。</p>
 <figure>
-<img src="img/index/overview.png" alt="講義の全体像" />
+<img src="img/overview.png" alt="講義の全体像" />
 <figcaption aria-hidden="true">講義の全体像</figcaption>
 </figure>
+<h3 id="使用データの場所">使用データの場所</h3>
+<p>各演習で使うSALOMEメッシュ（UNV）・OpenFOAMケース・計算結果は、リポジトリの
+<code>data/</code> フォルダにある。</p>
+<table>
+<colgroup>
+<col style="width: 27%" />
+<col style="width: 72%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>演習</th>
+<th>データフォルダ</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>001 Box</td>
+<td><code>data/001_box/run001_of13</code></td>
+</tr>
+<tr class="even">
+<td>002 撹拌機</td>
+<td><code>data/002_Stirrer/sample/mesh/mesh_of13</code>（メッシュ変換・バッフル作成）、<code>data/002_Stirrer/sample/mesh/master_curve_of13</code>（羽根可動化テスト）</td>
+</tr>
+<tr class="odd">
+<td>003 ヒートシンク</td>
+<td><code>data/003_heatsink/run001_of2512</code></td>
+</tr>
+</tbody>
+</table>
 <table>
 <colgroup>
 <col style="width: 27%" />
@@ -91,25 +120,25 @@ SALOMEを使ったOpenFOAMメッシュ作成</h1>
 <td>0</td>
 <td>SALOME導入</td>
 <td>SALOME の概要・モジュール・OpenFOAM との連携</td>
-<td><a href="000_salome.html">000_salome.html</a></td>
+<td><a href="000_salome.md">000_salome.md</a></td>
 </tr>
 <tr class="even">
 <td>1</td>
 <td>基礎練習（Box）</td>
 <td>SALOME の基本操作・境界層・OpenFOAM 変換</td>
-<td><a href="001_box.html">001_box.html</a></td>
+<td><a href="001_box.md">001_box.md</a></td>
 </tr>
 <tr class="odd">
 <td>2</td>
 <td>撹拌機</td>
 <td>ヘキサメッシュで複雑形状を作成する方法</td>
-<td><a href="002_stirrer.html">002_stirrer.html</a></td>
+<td><a href="002_stirrer.md">002_stirrer.md</a></td>
 </tr>
 <tr class="even">
 <td>3</td>
 <td>ヒートシンク</td>
 <td>マルチリージョンメッシュ・熱流体固体連成</td>
-<td><a href="003_heatsink.html">003_heatsink.html</a></td>
+<td><a href="003_heatsink.md">003_heatsink.md</a></td>
 </tr>
 </tbody>
 </table>
@@ -119,9 +148,5 @@ SALOMEを使ったOpenFOAMメッシュ作成</h1>
 <li>ヘキサメッシュ（六面体メッシュ）を使いこなせる</li>
 <li>複数領域（マルチリージョン）に対応したメッシュを作れる</li>
 </ul>
-<hr />
-<h2 id="スライド版">スライド版</h2>
-<p><a href="slides.html">slides.html</a> —
-全体をreveal.jsのスライドでまとめたもの。</p>
 </body>
 </html>

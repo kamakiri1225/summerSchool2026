@@ -145,5 +145,7 @@ ideasUnvToFoam コマンドで OpenFOAM 形式に変換
 
 | 配布元 | URL | 特徴 |
 |--------|-----|------|
-| Code_Aster 付属版 | https://www.code-aster.org/ | 構造解析ソフト Code_Aster とセット。**通常はこちら** |
-| Salome Platform（EDF） | https://www.salome-platform.org/ | 開発元 EDF のサイト。Code_Aster は含まないが最新版を入手可能 |
+| Code_Aster 付属版 | https://www.code-aster.org/ | 構造解析ソフト Code_Aster とセット |
+| Salome Platform（EDF） | https://www.salome-platform.org/ | 開発元 EDF のサイト。最新版を入手可能 |
+
+本講義では、Salome Platform（EDF）配布の **SALOME 9.15** を使用する。

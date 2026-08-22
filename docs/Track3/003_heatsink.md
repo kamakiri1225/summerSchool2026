@@ -20,6 +20,16 @@
 
 ![モデル構成（heatSink・heatSource・basis・box）](img/003_heatsink/page_151.svg)
 
+### 使用データの場所
+
+この演習で使うファイル・計算結果は、リポジトリの以下のフォルダにある。
+
+| フォルダ | 内容 |
+|----------|------|
+| `data/003_heatsink/run001_of2512` | SALOMEから出力した `Mesh_1.unv` と、OpenFOAM v2512で `chtMultiRegionFoam` を実行するケース一式（セットアップスクリプト `setup.sh`、計算結果 `2/`〜`60/`） |
+
+この演習のOpenFOAM計算は **OpenFOAM v2512**（www.openfoam.com 版）で行う。`chtMultiRegionFoam` はv2512側のソルバで、OpenFOAM 13（www.openfoam.org 版）には同名のソルバは無いため注意する。
+
 ---
 
 ## Geometry: STEPファイルを読み込む
@@ -329,27 +339,48 @@ OpenFOAMでは境界条件は面の名前に対して設定するため、SALOME
 ![UNVファイルをエクスポートする](img/003_heatsink/page_197.svg)
 
 - (29) `Mesh_1` を右クリック > `Export` > `UNV file` をクリックする。
-- (30) ファイル名 `Mesh_1.unv` として、OpenFOAMの計算フォルダ（例: `run001_of13`）に `Save` する。
+- (30) ファイル名 `Mesh_1.unv` として、OpenFOAMの計算フォルダ（`run001_of2512`。画像では `run001_of13` に保存しているが、実際の計算はv2512のケースフォルダで行った）に `Save` する。
 - 作成した面グループ名（YMin・YMax・ZMax・XMax・XMin・basis・heatSink・heatSource・basis_top）がそのままOpenFOAMのパッチ名になる。
 
 ---
 
 ## OpenFOAM側での計算
 
-### メッシュの変換と確認
+- 作業フォルダ: `data/003_heatsink/run001_of2512`
 
-SALOMEから出力したUNVメッシュを計算フォルダに置き、OpenFOAM形式へ変換する。
+### OpenFOAM v2512環境の読み込み
+
+この演習の計算はOpenFOAM v2512で行う。まずv2512の環境を読み込む。
 
 ```bash
-. /opt/openfoam13/etc/bashrc
-ideasUnvToFoam Mesh_1.unv > log.ideasUnvToFoam 2>&1
-transformPoints "scale=(0.001 0.001 0.001)" > log.transformPoints 2>&1
-checkMesh -allGeometry > log.checkMesh 2>&1
+cd data/003_heatsink/run001_of2512
+source /usr/lib/openfoam/openfoam2512/etc/bashrc
 ```
 
-- `ideasUnvToFoam` でUNVメッシュをOpenFOAM形式に変換する。
-- SALOMEでmm単位のモデルを作っているため、`transformPoints` でOpenFOAMが使うm単位に変換する。
-- `checkMesh` でメッシュ品質と境界面を確認する。
+### setup.shによるメッシュ変換とケース設定
+
+ケースフォルダには、UNVメッシュの変換からリージョン分割・境界条件設定までを一括実行する `setup.sh` を用意している。
+
+```bash
+bash setup.sh
+```
+
+`setup.sh` の中では、以下の処理を順に行っている。
+
+```text
+1. 前回実行分のクリーンアップ
+2. ideasUnvToFoam Mesh_1.unv     … UNVメッシュをOpenFOAM形式へ変換
+3. transformPoints -scale '(0.001 0.001 0.001)'  … mm単位からm単位へスケール変換
+4. 0/ にフィールドテンプレート（T・p・p_rgh・U・k・omega・alphat・nut）を作成
+5. splitMeshRegions -cellZones -overwrite  … セルゾーン名を使い4リージョンへ分割
+6. 固体リージョン（heatSink・heatSource・basis）から流体専用フィールドを削除
+7. changeDictionary -region <各リージョン>  … 正式な境界条件へ上書き
+```
+
+- `ideasUnvToFoam` でUNVメッシュをOpenFOAM形式に変換する。SALOMEでmm単位のモデルを作っているため、`transformPoints` でOpenFOAMが使うm単位に変換する（v2512では `-scale` オプションで指定する）。
+- `splitMeshRegions -cellZones` は、UNVメッシュ作成時に付けたセルゾーン名（box・heatSink・heatSource・basis）を使ってメッシュを4つのリージョンに分割し、`0/` のフィールドを各リージョン（`0/box` 等）へマッピングする。
+- 分割直後のフィールドは全パッチ `calculated` の仮設定なので、`changeDictionary` が `system/<region>/changeDictionaryDict` を参照して、流入・壁・リージョン間結合（`compressible::turbulentTemperatureRadCoupledMixed` 等）の正式な境界条件に上書きする。
+- 各リージョンの物性値は `constant/<region>`、数値スキーム・行列ソルバ設定は `system/<region>` に用意している。
 
 ![OpenFOAM側でメッシュ全体を確認する](img/003_heatsink/page_198.svg)
 
@@ -357,16 +388,15 @@ checkMesh -allGeometry > log.checkMesh 2>&1
 
 ### chtMultiRegionFoamの実行
 
-`splitMeshRegions` で流体・固体をリージョンに分割し、各リージョンの初期条件・物性・境界条件を設定した上で `chtMultiRegionFoam` を実行する。
+セットアップが完了したら、熱流体・固体連成ソルバを実行する。
 
 ```bash
-splitMeshRegions -cellZones -overwrite > log.splitMeshRegions 2>&1
 chtMultiRegionFoam > log.chtMultiRegionFoam 2>&1
 ```
 
-- `splitMeshRegions -cellZones` は、UNVメッシュ作成時に付けたセルゾーン名（box・heatSink・heatSource・basis）を使ってメッシュを4つのリージョンに分割する。
-- 各リージョンには、あらかじめ `0/<region>` に初期条件、`constant/<region>` に物性値、`system/<region>` に境界条件・数値スキームを用意しておく。
 - `chtMultiRegionFoam` は非定常の熱流体・固体連成ソルバで、流体側は速度・圧力・乱流量・温度、固体側は温度のみを解く。
+- `system/controlDict` の設定により、時刻 `2` から `60` まで一定間隔で結果が書き出される（ケースフォルダの `2/`〜`60/`）。
+- 流入条件は `U = (0 -0.5 0) m/s`（y方向へ0.5 m/s）、初期温度は `293.15 K` としている。発熱源の設定は `system/heatSource/fvOptions`、各リージョンの詳細な境界条件は `system/<region>/changeDictionaryDict` を参照。
 
 ### 計算結果の確認
 

@@ -135,6 +135,33 @@ alt="今回作成するヘキサメッシュのゴール（1/4セクター）" /
 <figcaption
 aria-hidden="true">今回作成するヘキサメッシュのゴール（1/4セクター）</figcaption>
 </figure>
+<h3 id="使用データの場所">使用データの場所</h3>
+<p>この演習で使うファイル・計算結果は、リポジトリの以下のフォルダにある。</p>
+<table>
+<colgroup>
+<col style="width: 62%" />
+<col style="width: 37%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>フォルダ</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>data/002_Stirrer/sample/mesh/mesh_of13</code></td>
+<td>SALOMEから出力した <code>Mesh_1.unv</code>
+と、UNV変換・topoSet・createBaffles を行うOpenFOAMケース（OpenFOAM
+13）</td>
+</tr>
+<tr class="even">
+<td><code>data/002_Stirrer/sample/mesh/master_curve_of13</code></td>
+<td>羽根の可動化テスト（moveDynamicMesh）用のOpenFOAMケース（OpenFOAM
+13）</td>
+</tr>
+</tbody>
+</table>
 <hr />
 <h2 id="モデル作成">モデル作成</h2>
 <h3 id="shaperで断面スケッチを開始する">1.
@@ -460,11 +487,14 @@ alt="もう一つのShellを作成する" />
 </figure>
 <ul>
 <li><ol start="14" type="1">
-<li><code>Shell</code> をクリックし、<code>Sketch_1</code>
-を選択する。</li>
+<li><code>Shell</code> をクリックし、<code>Sketch_2</code>
+を選択する（画像内の説明文は <code>Sketch_1</code>
+になっているが、実際に選択しているのは2つ目のスケッチ
+<code>Sketch_2</code>）。</li>
 </ol></li>
 <li><ol start="15" type="1">
-<li>チェックをクリックし、スケッチからShellを作成する。</li>
+<li>チェックをクリックし、スケッチから <code>Shell_2</code>
+を作成する。</li>
 </ol></li>
 </ul>
 <figure>
@@ -609,23 +639,29 @@ alt="回転押し出しと押し出し結果" />
 </ol></li>
 </ul>
 <figure>
-<img src="img/002_stirrer/page_117.svg" alt="分割面を押し出す" />
-<figcaption aria-hidden="true">分割面を押し出す</figcaption>
+<img src="img/002_stirrer/page_117.svg" alt="分割面でPartitionする" />
+<figcaption aria-hidden="true">分割面でPartitionする</figcaption>
 </figure>
 <ul>
 <li><ol start="21" type="1">
-<li><code>Extrusion</code> をクリックする。</li>
+<li><code>Partition</code> をクリックし、Objectsに
+<code>Partition_1</code>、Tool
+Objectsに平行移動で作った4枚の分割面（<code>Translation_1</code>〜<code>Translation_4</code>）を指定する（画像内の説明文は
+<code>Extrusion</code>
+になっているが、実際に開いているのはPartitionのダイアログ）。</li>
 </ol></li>
 <li><ol start="22" type="1">
-<li><code>Apply and Close</code> をクリックする。</li>
+<li><code>Apply and Close</code>
+をクリックする。<code>Partition_2</code> が作成される。</li>
 </ol></li>
 </ul>
 <figure>
-<img src="img/002_stirrer/page_118.svg" alt="押し出し結果を確認する" />
-<figcaption aria-hidden="true">押し出し結果を確認する</figcaption>
+<img src="img/002_stirrer/page_118.svg" alt="Partition結果を確認する" />
+<figcaption aria-hidden="true">Partition結果を確認する</figcaption>
 </figure>
 <ul>
-<li>分割に使う押し出し面が作成されたことを確認する。</li>
+<li><code>Partition_2</code>
+により、z=10〜40mmの4枚の面の位置で形状が水平方向に分割されたことを確認する。</li>
 </ul>
 <figure>
 <img src="img/002_stirrer/page_119.svg" alt="Propagateを実行する" />
@@ -655,9 +691,40 @@ alt="回転押し出しと押し出し結果" />
 <hr />
 <h2 id="グループを整理する">グループを整理する</h2>
 <p>OpenFOAMへ渡す面や線を整理するため、Geometry側でグループを作成する。境界条件に使う面、メッシュ分割に使う線を分かりやすい名前にしておく。</p>
+<p>ここでは、Propagateで作られた
+<code>Compound_1</code>〜<code>Compound_15</code>（方向ごとの辺の集まり）を
+<code>Union Groups</code>
+でまとめ、後のサブメッシュ設定で使う線グループを作成する。作成する線グループは以下の11個。</p>
+<table>
+<thead>
+<tr class="header">
+<th>線グループ</th>
+<th>方向</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>z1</code> / <code>z2</code> / <code>z3</code></td>
+<td>軸（z）方向。高さ位置ごとの辺</td>
+</tr>
+<tr class="even">
+<td><code>z_rotor</code></td>
+<td>軸（z）方向のうち回転領域まわりの辺</td>
+</tr>
+<tr class="odd">
+<td><code>theta1</code></td>
+<td>周方向の辺</td>
+</tr>
+<tr class="even">
+<td><code>r1</code>〜<code>r6</code></td>
+<td>半径方向の辺</td>
+</tr>
+</tbody>
+</table>
 <figure>
-<img src="img/002_stirrer/page_121.svg" alt="Union Groupsを作成する" />
-<figcaption aria-hidden="true">Union Groupsを作成する</figcaption>
+<img src="img/002_stirrer/page_121.svg"
+alt="Union Groupsでz1を作成する" />
+<figcaption aria-hidden="true">Union Groupsでz1を作成する</figcaption>
 </figure>
 <ul>
 <li><ol type="1">
@@ -665,97 +732,109 @@ alt="回転押し出しと押し出し結果" />
 をクリックする。</li>
 </ol></li>
 <li><ol start="2" type="1">
-<li><code>Apply</code> をクリックする。</li>
+<li>Nameを <code>z1</code> とし、対象のCompoundを選んで
+<code>Apply</code> をクリックする。</li>
 </ol></li>
 </ul>
 <figure>
-<img src="img/002_stirrer/page_122.svg" alt="グループを追加する" />
-<figcaption aria-hidden="true">グループを追加する</figcaption>
+<img src="img/002_stirrer/page_122.svg" alt="z2を作成する" />
+<figcaption aria-hidden="true">z2を作成する</figcaption>
 </figure>
 <ul>
 <li><ol start="3" type="1">
-<li>必要なグループを作成し、<code>Apply</code> をクリックする。</li>
+<li>同様にNameを <code>z2</code> として <code>Apply</code>
+をクリックする。</li>
 </ol></li>
 </ul>
 <figure>
-<img src="img/002_stirrer/page_123.svg" alt="グループを追加する" />
-<figcaption aria-hidden="true">グループを追加する</figcaption>
+<img src="img/002_stirrer/page_123.svg" alt="z3を作成する" />
+<figcaption aria-hidden="true">z3を作成する</figcaption>
 </figure>
 <ul>
 <li><ol start="4" type="1">
-<li>必要なグループを作成し、<code>Apply</code> をクリックする。</li>
+<li>Nameを <code>z3</code> として <code>Apply</code>
+をクリックする。</li>
 </ol></li>
 </ul>
 <figure>
-<img src="img/002_stirrer/page_124.svg" alt="グループを追加する" />
-<figcaption aria-hidden="true">グループを追加する</figcaption>
+<img src="img/002_stirrer/page_124.svg" alt="z_rotorを作成する" />
+<figcaption aria-hidden="true">z_rotorを作成する</figcaption>
 </figure>
 <ul>
 <li><ol start="5" type="1">
-<li>必要なグループを作成し、<code>Apply</code> をクリックする。</li>
+<li>Nameを <code>z_rotor</code>
+とし、回転領域まわりの4つのCompoundを選んで <code>Apply</code>
+をクリックする。</li>
 </ol></li>
 </ul>
 <figure>
-<img src="img/002_stirrer/page_125.svg" alt="グループを追加する" />
-<figcaption aria-hidden="true">グループを追加する</figcaption>
+<img src="img/002_stirrer/page_125.svg" alt="theta1を作成する" />
+<figcaption aria-hidden="true">theta1を作成する</figcaption>
 </figure>
 <ul>
 <li><ol start="6" type="1">
-<li>必要なグループを作成し、<code>Apply</code> をクリックする。</li>
+<li>Nameを <code>theta1</code> とし、周方向の2つのCompoundを選んで
+<code>Apply</code> をクリックする。</li>
 </ol></li>
 </ul>
 <figure>
-<img src="img/002_stirrer/page_126.svg" alt="グループを追加する" />
-<figcaption aria-hidden="true">グループを追加する</figcaption>
+<img src="img/002_stirrer/page_126.svg" alt="r1を作成する" />
+<figcaption aria-hidden="true">r1を作成する</figcaption>
 </figure>
 <ul>
 <li><ol start="8" type="1">
-<li>必要なグループを作成し、<code>Apply</code> をクリックする。</li>
+<li>Nameを <code>r1</code> として <code>Apply</code>
+をクリックする。</li>
 </ol></li>
 </ul>
 <figure>
-<img src="img/002_stirrer/page_127.svg" alt="グループを追加する" />
-<figcaption aria-hidden="true">グループを追加する</figcaption>
+<img src="img/002_stirrer/page_127.svg" alt="r2を作成する" />
+<figcaption aria-hidden="true">r2を作成する</figcaption>
 </figure>
 <ul>
 <li><ol start="9" type="1">
-<li>必要なグループを作成し、<code>Apply</code> をクリックする。</li>
+<li>Nameを <code>r2</code> として <code>Apply</code>
+をクリックする。</li>
 </ol></li>
 </ul>
 <figure>
-<img src="img/002_stirrer/page_128.svg" alt="グループを追加する" />
-<figcaption aria-hidden="true">グループを追加する</figcaption>
+<img src="img/002_stirrer/page_128.svg" alt="r3を作成する" />
+<figcaption aria-hidden="true">r3を作成する</figcaption>
 </figure>
 <ul>
 <li><ol start="10" type="1">
-<li>必要なグループを作成し、<code>Apply</code> をクリックする。</li>
+<li>Nameを <code>r3</code> として <code>Apply</code>
+をクリックする。</li>
 </ol></li>
 </ul>
 <figure>
-<img src="img/002_stirrer/page_129.svg" alt="グループを追加する" />
-<figcaption aria-hidden="true">グループを追加する</figcaption>
+<img src="img/002_stirrer/page_129.svg" alt="r4を作成する" />
+<figcaption aria-hidden="true">r4を作成する</figcaption>
 </figure>
 <ul>
 <li><ol start="11" type="1">
-<li>必要なグループを作成し、<code>Apply</code> をクリックする。</li>
+<li>Nameを <code>r4</code> として <code>Apply</code>
+をクリックする。</li>
 </ol></li>
 </ul>
 <figure>
-<img src="img/002_stirrer/page_130.svg" alt="グループを追加する" />
-<figcaption aria-hidden="true">グループを追加する</figcaption>
+<img src="img/002_stirrer/page_130.svg" alt="r5を作成する" />
+<figcaption aria-hidden="true">r5を作成する</figcaption>
 </figure>
 <ul>
 <li><ol start="12" type="1">
-<li>必要なグループを作成し、<code>Apply</code> をクリックする。</li>
+<li>Nameを <code>r5</code> として <code>Apply</code>
+をクリックする。</li>
 </ol></li>
 </ul>
 <figure>
-<img src="img/002_stirrer/page_131.svg" alt="グループを追加する" />
-<figcaption aria-hidden="true">グループを追加する</figcaption>
+<img src="img/002_stirrer/page_131.svg" alt="r6を作成する" />
+<figcaption aria-hidden="true">r6を作成する</figcaption>
 </figure>
 <ul>
 <li><ol start="13" type="1">
-<li>必要なグループを作成し、<code>Apply</code> をクリックする。</li>
+<li>Nameを <code>r6</code> として <code>Apply</code>
+をクリックする。</li>
 </ol></li>
 </ul>
 <figure>
@@ -764,7 +843,10 @@ alt="グループ整理結果を確認する" />
 <figcaption aria-hidden="true">グループ整理結果を確認する</figcaption>
 </figure>
 <ul>
-<li>作成したグループを確認する。</li>
+<li>ツリーに <code>z1</code> / <code>z2</code> / <code>z3</code> /
+<code>z_rotor</code> / <code>theta1</code> /
+<code>r1</code>〜<code>r6</code>
+の11個の線グループが並んでいることを確認する。</li>
 </ul>
 <figure>
 <img src="img/002_stirrer/page_133.svg"
@@ -1045,6 +1127,9 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="ex">topoSet</span> <span class="op">&gt;</span> log.topoSet <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="ex">createBaffles</span> <span class="at">-overwrite</span> <span class="op">&gt;</span> log.createBaffles <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span>
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="ex">checkMesh</span> <span class="op">&gt;</span> log.checkMesh.final <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span></code></pre></div>
+<p>なお、同フォルダには上記一連の処理をまとめた <code>Allrun</code>
+スクリプトがあり、<code>./Allclean &amp;&amp; ./Allrun</code>
+で最初から一括再実行できる。</p>
 <ul>
 <li><code>ideasUnvToFoam</code> / <code>transformPoints</code>
 は、<code>001_box.md</code> や <code>003_heatsink.md</code>
@@ -1056,6 +1141,9 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="
 <p><code>wingFaceZone</code> / <code>wingFaceZone2</code>
 は、羽根の位置にある面のゾーン（上下2枚分）。羽根のパーティション面はセクターの二等分線（30°）上にあるため、<code>rotatedBoxToFace</code>
 で30°回転させた薄い直方体を使って面を選び出す。</p>
+<p>選択ボックスのz範囲には注意が必要になる。羽根のz範囲は12.5〜17.5mmだが、メッシュの面中心の座標がちょうどz=12.5mm/17.5mmに乗っているため、ボックスの境界をぴったりそこに置くと、浮動小数点の判定次第で端の面が拾われたり拾われなかったりして、羽根のエッジがガタついたゾーンになる。これを避けるため、ボックスを上下に半セル分（0.05mm）広げて端の面を確実に含めている。さらに
+<code>normalToFace</code>
+で羽根の垂直面だけに絞り込む。この結果、上下の羽根とも480面（30列×16段）の完全な長方形のゾーンになる。</p>
 <figure>
 <img src="img/002_stirrer/zone_wing.png"
 alt="topoSetで作成したwingFaceZone / wingFaceZone2" />
@@ -1067,6 +1155,10 @@ wingFaceZone2</figcaption>
 <code>circularFaceZone_z035</code>
 は、仕切り板の位置にある面のゾーン。<code>cylinderToFace</code>
 で薄いz範囲を直接指定して選び出す。</p>
+<p>この形状にはシャフト（軸）が上からz=15mmの位置まで刺さっており、メッシュはシャフト部分（半径約3.3mmの円柱）をくり抜いた形になっている。そのため仕切り板は、シャフトの周りに付いた環状（ドーナツ状）の板になる。z=15mm平面には、シャフトの底面（境界面）も同じ高さに存在するため、<code>cylinderToFace</code>
+だけではこの境界面まで拾ってしまう。境界面はバッフル化できないので、<code>boundaryToFace</code>
+を <code>action delete</code>
+で使って選択から取り除き、内部面（仕切り板の環状部分）だけを残す。この結果、上下の仕切り板とも576面の同一形状のゾーンになる。</p>
 <figure>
 <img src="img/002_stirrer/zone_circ.png"
 alt="topoSetで作成したcircularFaceZone_z015 / circularFaceZone_z035" />

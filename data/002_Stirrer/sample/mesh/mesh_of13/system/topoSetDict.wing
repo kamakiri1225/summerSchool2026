@@ -8,10 +8,26 @@
         type    faceSet;
         action  new;
         source  rotatedBoxToFace;
-        origin  (0.008684388 0.004956199 0.0125);
+        // 羽根のz範囲は0.0125〜0.0175だが、メッシュの面中心が
+        // ちょうどz=0.0125/0.0175に乗っており、boxの境界をそこに置くと
+        // 浮動小数点の判定次第で端の面が不揃いに拾われる(羽根エッジのガタつきの原因)。
+        // boxを半セル分(0.00005)広げ、端の面を確実に含める。
+        origin  (0.008684388 0.004956199 0.01245);
         i       (0.012991334 0.007500550 0);
         j       (-0.00005 0.0000866025 0);
-        k       (0 0 0.005);
+        k       (0 0 0.0051);
+    }
+    // 念のため、法線が30deg面に垂直な向き(=羽根の垂直面)だけを残す。
+    {
+        name    wingFaceSet;
+        type    faceSet;
+        action  subset;
+        source  normalToFace;
+        sourceInfo
+        {
+            normal  (-0.5 0.8660254 0);
+            cos     0.2;
+        }
     }
     // それを元に羽根の形状のfaceZoneを作成
     {
@@ -28,10 +44,23 @@
         type    faceSet;
         action  new;
         source  rotatedBoxToFace;
-        origin  (0.008684388 0.004956199 0.0325);
+        // 下の羽根と同様に、boxを半セル分広げて端の面を確実に含める
+        origin  (0.008684388 0.004956199 0.03245);
         i       (0.012991334 0.007500550 0);
         j       (-0.00005 0.0000866025 0);
-        k       (0 0 0.005);
+        k       (0 0 0.0051);
+    }
+    // 上の羽根と同様に、羽根の垂直面だけを残す
+    {
+        name    wingFaceSet2;
+        type    faceSet;
+        action  subset;
+        source  normalToFace;
+        sourceInfo
+        {
+            normal  (-0.5 0.8660254 0);
+            cos     0.2;
+        }
     }
     // それを元に羽根の形状のfaceZoneを作成
     {

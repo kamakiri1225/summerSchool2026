@@ -104,24 +104,9 @@ Shaper / GEOM で作成したジオメトリからメッシュを生成するモ
 | プリズム（境界層） | 壁面付近に層状に生成。境界層の解像度を上げる | 壁に沿って薄い層を積み重ねた三角柱／四角柱状のセル。壁に近いほど薄く、離れるほど厚くする |
 | ハイブリッド | ヘキサ＋テトラの混在 | 形状が単純な部分はヘキサ、複雑な部分はテトラというように、領域ごとに異なる種類のセルを組み合わせる |
 
-<div style="display:flex; flex-wrap:wrap; gap:1.2rem; justify-content:center; margin:1.5rem 0;">
-  <figure style="margin:0; text-align:center;">
-    <img src="img/000_salome/mesh_tetra.svg" alt="四面体セル" style="display:block; width:260px; max-width:100%; margin:0; border:1px solid #ddd; background:#fff;">
-    <figcaption>テトラメッシュ</figcaption>
-  </figure>
-  <figure style="margin:0; text-align:center;">
-    <img src="img/000_salome/mesh_hexa.svg" alt="六面体セル" style="display:block; width:260px; max-width:100%; margin:0; border:1px solid #ddd; background:#fff;">
-    <figcaption>ヘキサメッシュ</figcaption>
-  </figure>
-  <figure style="margin:0; text-align:center;">
-    <img src="img/000_salome/mesh_prism.svg" alt="境界層セル" style="display:block; width:260px; max-width:100%; margin:0; border:1px solid #ddd; background:#fff;">
-    <figcaption>プリズム（境界層）</figcaption>
-  </figure>
-  <figure style="margin:0; text-align:center;">
-    <img src="img/000_salome/mesh_hybrid.svg" alt="ハイブリッドメッシュ" style="display:block; width:260px; max-width:100%; margin:0; border:1px solid #ddd; background:#fff;">
-    <figcaption>ハイブリッド</figcaption>
-  </figure>
-</div>
+<figure style="margin:1.5rem 0; text-align:center;">
+  <img src="img/000_salome/mesh_cell_types_overview.png" alt="メッシュのセル種類の概要（テトラ・ヘキサ・プリズム・ハイブリッド）" style="display:block; width:100%; max-width:720px; margin:0 auto; border:1px solid #ddd; background:#fff;">
+</figure>
 
 
 ---
@@ -199,8 +184,10 @@ ideasUnvToFoam コマンドで OpenFOAM 形式に変換
 
 | 配布元 | URL | 特徴 |
 |--------|-----|------|
-| Code_Aster 付属版 | https://www.code-aster.org/ | 構造解析ソフト Code_Aster とセット。**通常はこちら** |
-| Salome Platform（EDF） | https://www.salome-platform.org/ | 開発元 EDF のサイト。Code_Aster は含まないが最新版を入手可能 |
+| Code_Aster 付属版 | https://www.code-aster.org/ | 構造解析ソフト Code_Aster とセット |
+| Salome Platform（EDF） | https://www.salome-platform.org/ | 開発元 EDF のサイト。最新版を入手可能 |
+
+本講義では、Salome Platform（EDF）配布の **SALOME 9.15** を使用する。
 
 ---
 
@@ -217,6 +204,17 @@ SALOMEで直方体モデルを作成し、OpenFOAMで使える境界名つきメ
 - 特定の面だけメッシュを細分化する
 - 境界層メッシュを入れる
 - OpenFOAM用にUNVを書き出す
+
+
+---
+
+### 使用データの場所
+
+この演習で使うファイル・計算結果は、リポジトリの以下のフォルダにある。
+
+| フォルダ | 内容 |
+|----------|------|
+| `data/001_box/run001_of13` | SALOMEから出力した `Mesh_4.unv` と、OpenFOAM 13で流体解析を行うケース一式（`0`・`constant`・`system`、収束後の結果 `90/`） |
 
 
 ---
@@ -761,6 +759,30 @@ checkMesh > log.checkMesh.of13 2>&1
 
 ---
 
+#### 境界条件を設定する
+
+チュートリアルからコピーした `0` フォルダの各ファイルを、SALOMEで付けた境界名（`inlet`・`outlet`・`side`・`topAndbottom`）に合わせて編集する。主な設定は以下。
+
+- `0/U`: `inlet` を `fixedValue`、`value uniform (0.01 0 0)` とし、x方向へ0.01 m/sの一様流入を与える。`outlet` は `zeroGradient`、`side` は壁（`noSlip`）、`topAndbottom` は `empty` とする。
+- `0/p`: `outlet` を基準圧として `fixedValue 0`、`inlet` と `side` は `zeroGradient`、`topAndbottom` は `empty` とする。
+- `topAndbottom` を `empty` にするため、`constant/polyMesh/boundary` の該当パッチの `type` も `empty` になっていることを確認する（`ideasUnvToFoam` 変換直後は `patch` になっているため、必要に応じて修正する）。
+
+---
+
+#### 計算を実行する
+
+境界条件を設定したら、ソルバを実行する。
+
+```bash
+foamRun > log.foamRun.of13 2>&1
+```
+
+- OpenFOAM 13では、`foamRun` が `system/controlDict` の `solver incompressibleFluid;` を読み込み、非圧縮流体の定常計算（SIMPLE法）を行う。
+- `system/controlDict` の `endTime` は `2000` としているが、定常解析では残差が収束判定を満たした時点で計算が終了する。今回の計算は90反復で収束し（`log.foamRun.of13` に `SIMPLE solution converged in 90 iterations` と出力される）、結果は `90/` フォルダに書き出された。
+- `log.foamRun.of13` の各反復で `Ux`・`Uy`・`p` の残差（`Initial residual`）が小さくなっていく様子を確認する。
+
+---
+
 #### OpenFOAMの計算結果確認
 
 OpenFOAMで計算した後は、`post.foam` を作成してParaViewで結果を確認する。
@@ -825,6 +847,18 @@ touch post.foam
 ---
 
 ![今回作成するヘキサメッシュのゴール（1/4セクター）](img/002_stirrer/page_140.svg)
+
+
+---
+
+### 使用データの場所
+
+この演習で使うファイル・計算結果は、リポジトリの以下のフォルダにある。
+
+| フォルダ | 内容 |
+|----------|------|
+| `data/002_Stirrer/sample/mesh/mesh_of13` | SALOMEから出力した `Mesh_1.unv` と、UNV変換・topoSet・createBaffles を行うOpenFOAMケース（OpenFOAM 13） |
+| `data/002_Stirrer/sample/mesh/master_curve_of13` | 羽根の可動化テスト（moveDynamicMesh）用のOpenFOAMケース（OpenFOAM 13） |
 
 ---
 
@@ -1082,8 +1116,8 @@ touch post.foam
 
 ![もう一つのShellを作成する](img/002_stirrer/page_104.svg)
 
-- (14) `Shell` をクリックし、`Sketch_1` を選択する。
-- (15) チェックをクリックし、スケッチからShellを作成する。
+- (14) `Shell` をクリックし、`Sketch_2` を選択する（画像内の説明文は `Sketch_1` になっているが、実際に選択しているのは2つ目のスケッチ `Sketch_2`）。
+- (15) チェックをクリックし、スケッチから `Shell_2` を作成する。
 
 
 ---
@@ -1191,17 +1225,17 @@ touch post.foam
 
 ---
 
-![分割面を押し出す](img/002_stirrer/page_117.svg)
+![分割面でPartitionする](img/002_stirrer/page_117.svg)
 
-- (21) `Extrusion` をクリックする。
-- (22) `Apply and Close` をクリックする。
+- (21) `Partition` をクリックし、Objectsに `Partition_1`、Tool Objectsに平行移動で作った4枚の分割面（`Translation_1`〜`Translation_4`）を指定する（画像内の説明文は `Extrusion` になっているが、実際に開いているのはPartitionのダイアログ）。
+- (22) `Apply and Close` をクリックする。`Partition_2` が作成される。
 
 
 ---
 
-![押し出し結果を確認する](img/002_stirrer/page_118.svg)
+![Partition結果を確認する](img/002_stirrer/page_118.svg)
 
-- 分割に使う押し出し面が作成されたことを確認する。
+- `Partition_2` により、z=10〜40mmの4枚の面の位置で形状が水平方向に分割されたことを確認する。
 
 
 ---
@@ -1225,90 +1259,99 @@ touch post.foam
 
 OpenFOAMへ渡す面や線を整理するため、Geometry側でグループを作成する。境界条件に使う面、メッシュ分割に使う線を分かりやすい名前にしておく。
 
+ここでは、Propagateで作られた `Compound_1`〜`Compound_15`（方向ごとの辺の集まり）を `Union Groups` でまとめ、後のサブメッシュ設定で使う線グループを作成する。作成する線グループは以下の11個。
+
+| 線グループ | 方向 |
+|-----------|------|
+| `z1` / `z2` / `z3` | 軸（z）方向。高さ位置ごとの辺 |
+| `z_rotor` | 軸（z）方向のうち回転領域まわりの辺 |
+| `theta1` | 周方向の辺 |
+| `r1`〜`r6` | 半径方向の辺 |
+
 
 ---
 
-![Union Groupsを作成する](img/002_stirrer/page_121.svg)
+![Union Groupsでz1を作成する](img/002_stirrer/page_121.svg)
 
 - (1) `New Entity > Group > Union Groups` をクリックする。
-- (2) `Apply` をクリックする。
+- (2) Nameを `z1` とし、対象のCompoundを選んで `Apply` をクリックする。
 
 
 ---
 
-![グループを追加する](img/002_stirrer/page_122.svg)
+![z2を作成する](img/002_stirrer/page_122.svg)
 
-- (3) 必要なグループを作成し、`Apply` をクリックする。
-
-
----
-
-![グループを追加する](img/002_stirrer/page_123.svg)
-
-- (4) 必要なグループを作成し、`Apply` をクリックする。
+- (3) 同様にNameを `z2` として `Apply` をクリックする。
 
 
 ---
 
-![グループを追加する](img/002_stirrer/page_124.svg)
+![z3を作成する](img/002_stirrer/page_123.svg)
 
-- (5) 必要なグループを作成し、`Apply` をクリックする。
-
-
----
-
-![グループを追加する](img/002_stirrer/page_125.svg)
-
-- (6) 必要なグループを作成し、`Apply` をクリックする。
+- (4) Nameを `z3` として `Apply` をクリックする。
 
 
 ---
 
-![グループを追加する](img/002_stirrer/page_126.svg)
+![z_rotorを作成する](img/002_stirrer/page_124.svg)
 
-- (8) 必要なグループを作成し、`Apply` をクリックする。
-
-
----
-
-![グループを追加する](img/002_stirrer/page_127.svg)
-
-- (9) 必要なグループを作成し、`Apply` をクリックする。
+- (5) Nameを `z_rotor` とし、回転領域まわりの4つのCompoundを選んで `Apply` をクリックする。
 
 
 ---
 
-![グループを追加する](img/002_stirrer/page_128.svg)
+![theta1を作成する](img/002_stirrer/page_125.svg)
 
-- (10) 必要なグループを作成し、`Apply` をクリックする。
-
-
----
-
-![グループを追加する](img/002_stirrer/page_129.svg)
-
-- (11) 必要なグループを作成し、`Apply` をクリックする。
+- (6) Nameを `theta1` とし、周方向の2つのCompoundを選んで `Apply` をクリックする。
 
 
 ---
 
-![グループを追加する](img/002_stirrer/page_130.svg)
+![r1を作成する](img/002_stirrer/page_126.svg)
 
-- (12) 必要なグループを作成し、`Apply` をクリックする。
+- (8) Nameを `r1` として `Apply` をクリックする。
 
 
 ---
 
-![グループを追加する](img/002_stirrer/page_131.svg)
+![r2を作成する](img/002_stirrer/page_127.svg)
 
-- (13) 必要なグループを作成し、`Apply` をクリックする。
+- (9) Nameを `r2` として `Apply` をクリックする。
+
+
+---
+
+![r3を作成する](img/002_stirrer/page_128.svg)
+
+- (10) Nameを `r3` として `Apply` をクリックする。
+
+
+---
+
+![r4を作成する](img/002_stirrer/page_129.svg)
+
+- (11) Nameを `r4` として `Apply` をクリックする。
+
+
+---
+
+![r5を作成する](img/002_stirrer/page_130.svg)
+
+- (12) Nameを `r5` として `Apply` をクリックする。
+
+
+---
+
+![r6を作成する](img/002_stirrer/page_131.svg)
+
+- (13) Nameを `r6` として `Apply` をクリックする。
 
 
 ---
 
 ![グループ整理結果を確認する](img/002_stirrer/page_132.svg)
 
-- 作成したグループを確認する。
+- ツリーに `z1` / `z2` / `z3` / `z_rotor` / `theta1` / `r1`〜`r6` の11個の線グループが並んでいることを確認する。
 
 
 ---
@@ -1520,12 +1563,16 @@ createBaffles -overwrite > log.createBaffles 2>&1
 checkMesh > log.checkMesh.final 2>&1
 ```
 
+なお、同フォルダには上記一連の処理をまとめた `Allrun` スクリプトがあり、`./Allclean && ./Allrun` で最初から一括再実行できる。
+
 - `ideasUnvToFoam` / `transformPoints` は、`001_box.md` や `003_heatsink.md` と同様に、UNVメッシュをOpenFOAM形式へ変換し、SALOMEのmm単位からOpenFOAMのm単位へスケール変換する。
 - `topoSet`（`system/topoSetDict`、`topoSetDict.wing`、`topoSetDict.circ`、`topoSetDict.rotor` を使用）で、次の3種類の領域を作成する。
 
 **羽根（wing）の面ゾーン**
 
 `wingFaceZone` / `wingFaceZone2` は、羽根の位置にある面のゾーン（上下2枚分）。羽根のパーティション面はセクターの二等分線（30°）上にあるため、`rotatedBoxToFace` で30°回転させた薄い直方体を使って面を選び出す。
+
+選択ボックスのz範囲には注意が必要になる。羽根のz範囲は12.5〜17.5mmだが、メッシュの面中心の座標がちょうどz=12.5mm/17.5mmに乗っているため、ボックスの境界をぴったりそこに置くと、浮動小数点の判定次第で端の面が拾われたり拾われなかったりして、羽根のエッジがガタついたゾーンになる。これを避けるため、ボックスを上下に半セル分（0.05mm）広げて端の面を確実に含めている。さらに `normalToFace` で羽根の垂直面だけに絞り込む。この結果、上下の羽根とも480面（30列×16段）の完全な長方形のゾーンになる。
 
 
 ---
@@ -1535,6 +1582,8 @@ checkMesh > log.checkMesh.final 2>&1
 **仕切り板（circ）の面ゾーン**
 
 `circularFaceZone_z015` / `circularFaceZone_z035` は、仕切り板の位置にある面のゾーン。`cylinderToFace` で薄いz範囲を直接指定して選び出す。
+
+この形状にはシャフト（軸）が上からz=15mmの位置まで刺さっており、メッシュはシャフト部分（半径約3.3mmの円柱）をくり抜いた形になっている。そのため仕切り板は、シャフトの周りに付いた環状（ドーナツ状）の板になる。z=15mm平面には、シャフトの底面（境界面）も同じ高さに存在するため、`cylinderToFace` だけではこの境界面まで拾ってしまう。境界面はバッフル化できないので、`boundaryToFace` を `action delete` で使って選択から取り除き、内部面（仕切り板の環状部分）だけを残す。この結果、上下の仕切り板とも576面の同一形状のゾーンになる。
 
 
 ---
@@ -1611,6 +1660,19 @@ checkMesh -latestTime > log.checkMesh 2>&1
 ---
 
 ![モデル構成（heatSink・heatSource・basis・box）](img/003_heatsink/page_151.svg)
+
+
+---
+
+### 使用データの場所
+
+この演習で使うファイル・計算結果は、リポジトリの以下のフォルダにある。
+
+| フォルダ | 内容 |
+|----------|------|
+| `data/003_heatsink/run001_of2512` | SALOMEから出力した `Mesh_1.unv` と、OpenFOAM v2512で `chtMultiRegionFoam` を実行するケース一式（セットアップスクリプト `setup.sh`、計算結果 `2/`〜`60/`） |
+
+この演習のOpenFOAM計算は **OpenFOAM v2512**（www.openfoam.com 版）で行う。`chtMultiRegionFoam` はv2512側のソルバで、OpenFOAM 13（www.openfoam.org 版）には同名のソルバは無いため注意する。
 
 ---
 
@@ -2056,30 +2118,54 @@ OpenFOAMでは境界条件は面の名前に対して設定するため、SALOME
 ![UNVファイルをエクスポートする](img/003_heatsink/page_197.svg)
 
 - (29) `Mesh_1` を右クリック > `Export` > `UNV file` をクリックする。
-- (30) ファイル名 `Mesh_1.unv` として、OpenFOAMの計算フォルダ（例: `run001_of13`）に `Save` する。
+- (30) ファイル名 `Mesh_1.unv` として、OpenFOAMの計算フォルダ（`run001_of2512`。画像では `run001_of13` に保存しているが、実際の計算はv2512のケースフォルダで行った）に `Save` する。
 - 作成した面グループ名（YMin・YMax・ZMax・XMax・XMin・basis・heatSink・heatSource・basis_top）がそのままOpenFOAMのパッチ名になる。
 
 ---
 
 ## OpenFOAM側での計算
 
+- 作業フォルダ: `data/003_heatsink/run001_of2512`
+
 
 ---
 
-### メッシュの変換と確認
+### OpenFOAM v2512環境の読み込み
 
-SALOMEから出力したUNVメッシュを計算フォルダに置き、OpenFOAM形式へ変換する。
+この演習の計算はOpenFOAM v2512で行う。まずv2512の環境を読み込む。
 
 ```bash
-. /opt/openfoam13/etc/bashrc
-ideasUnvToFoam Mesh_1.unv > log.ideasUnvToFoam 2>&1
-transformPoints "scale=(0.001 0.001 0.001)" > log.transformPoints 2>&1
-checkMesh -allGeometry > log.checkMesh 2>&1
+cd data/003_heatsink/run001_of2512
+source /usr/lib/openfoam/openfoam2512/etc/bashrc
 ```
 
-- `ideasUnvToFoam` でUNVメッシュをOpenFOAM形式に変換する。
-- SALOMEでmm単位のモデルを作っているため、`transformPoints` でOpenFOAMが使うm単位に変換する。
-- `checkMesh` でメッシュ品質と境界面を確認する。
+
+---
+
+### setup.shによるメッシュ変換とケース設定
+
+ケースフォルダには、UNVメッシュの変換からリージョン分割・境界条件設定までを一括実行する `setup.sh` を用意している。
+
+```bash
+bash setup.sh
+```
+
+`setup.sh` の中では、以下の処理を順に行っている。
+
+```text
+1. 前回実行分のクリーンアップ
+2. ideasUnvToFoam Mesh_1.unv     … UNVメッシュをOpenFOAM形式へ変換
+3. transformPoints -scale '(0.001 0.001 0.001)'  … mm単位からm単位へスケール変換
+4. 0/ にフィールドテンプレート（T・p・p_rgh・U・k・omega・alphat・nut）を作成
+5. splitMeshRegions -cellZones -overwrite  … セルゾーン名を使い4リージョンへ分割
+6. 固体リージョン（heatSink・heatSource・basis）から流体専用フィールドを削除
+7. changeDictionary -region <各リージョン>  … 正式な境界条件へ上書き
+```
+
+- `ideasUnvToFoam` でUNVメッシュをOpenFOAM形式に変換する。SALOMEでmm単位のモデルを作っているため、`transformPoints` でOpenFOAMが使うm単位に変換する（v2512では `-scale` オプションで指定する）。
+- `splitMeshRegions -cellZones` は、UNVメッシュ作成時に付けたセルゾーン名（box・heatSink・heatSource・basis）を使ってメッシュを4つのリージョンに分割し、`0/` のフィールドを各リージョン（`0/box` 等）へマッピングする。
+- 分割直後のフィールドは全パッチ `calculated` の仮設定なので、`changeDictionary` が `system/<region>/changeDictionaryDict` を参照して、流入・壁・リージョン間結合（`compressible::turbulentTemperatureRadCoupledMixed` 等）の正式な境界条件に上書きする。
+- 各リージョンの物性値は `constant/<region>`、数値スキーム・行列ソルバ設定は `system/<region>` に用意している。
 
 
 ---
@@ -2093,16 +2179,15 @@ checkMesh -allGeometry > log.checkMesh 2>&1
 
 ### chtMultiRegionFoamの実行
 
-`splitMeshRegions` で流体・固体をリージョンに分割し、各リージョンの初期条件・物性・境界条件を設定した上で `chtMultiRegionFoam` を実行する。
+セットアップが完了したら、熱流体・固体連成ソルバを実行する。
 
 ```bash
-splitMeshRegions -cellZones -overwrite > log.splitMeshRegions 2>&1
 chtMultiRegionFoam > log.chtMultiRegionFoam 2>&1
 ```
 
-- `splitMeshRegions -cellZones` は、UNVメッシュ作成時に付けたセルゾーン名（box・heatSink・heatSource・basis）を使ってメッシュを4つのリージョンに分割する。
-- 各リージョンには、あらかじめ `0/<region>` に初期条件、`constant/<region>` に物性値、`system/<region>` に境界条件・数値スキームを用意しておく。
 - `chtMultiRegionFoam` は非定常の熱流体・固体連成ソルバで、流体側は速度・圧力・乱流量・温度、固体側は温度のみを解く。
+- `system/controlDict` の設定により、時刻 `2` から `60` まで一定間隔で結果が書き出される（ケースフォルダの `2/`〜`60/`）。
+- 流入条件は `U = (0 -0.5 0) m/s`（y方向へ0.5 m/s）、初期温度は `293.15 K` としている。発熱源の設定は `system/heatSource/fvOptions`、各リージョンの詳細な境界条件は `system/<region>/changeDictionaryDict` を参照。
 
 
 ---

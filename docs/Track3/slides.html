@@ -307,33 +307,9 @@ aria-hidden="true">Box_1とBox_2をFuse（結合）する</figcaption>
 </tr>
 </tbody>
 </table>
-<div
-style="display:flex; flex-wrap:wrap; gap:1.2rem; justify-content:center; margin:1.5rem 0;">
-<figure style="margin:0; text-align:center;">
-<img src="img/000_salome/mesh_tetra.svg" alt="四面体セル" style="display:block; width:260px; max-width:100%; margin:0; border:1px solid #ddd; background:#fff;">
-<figcaption>
-テトラメッシュ
-</figcaption>
+<figure style="margin:1.5rem 0; text-align:center;">
+<img src="img/000_salome/mesh_cell_types_overview.png" alt="メッシュのセル種類の概要（テトラ・ヘキサ・プリズム・ハイブリッド）" style="display:block; width:100%; max-width:720px; margin:0 auto; border:1px solid #ddd; background:#fff;">
 </figure>
-<figure style="margin:0; text-align:center;">
-<img src="img/000_salome/mesh_hexa.svg" alt="六面体セル" style="display:block; width:260px; max-width:100%; margin:0; border:1px solid #ddd; background:#fff;">
-<figcaption>
-ヘキサメッシュ
-</figcaption>
-</figure>
-<figure style="margin:0; text-align:center;">
-<img src="img/000_salome/mesh_prism.svg" alt="境界層セル" style="display:block; width:260px; max-width:100%; margin:0; border:1px solid #ddd; background:#fff;">
-<figcaption>
-プリズム（境界層）
-</figcaption>
-</figure>
-<figure style="margin:0; text-align:center;">
-<img src="img/000_salome/mesh_hybrid.svg" alt="ハイブリッドメッシュ" style="display:block; width:260px; max-width:100%; margin:0; border:1px solid #ddd; background:#fff;">
-<figcaption>
-ハイブリッド
-</figcaption>
-</figure>
-</div>
 </section>
 <section class="slide level2">
 
@@ -473,16 +449,17 @@ ideasUnvToFoam コマンドで OpenFOAM 形式に変換</code></pre>
 <tr class="odd">
 <td>Code_Aster 付属版</td>
 <td>https://www.code-aster.org/</td>
-<td>構造解析ソフト Code_Aster
-とセット。<strong>通常はこちら</strong></td>
+<td>構造解析ソフト Code_Aster とセット</td>
 </tr>
 <tr class="even">
 <td>Salome Platform（EDF）</td>
 <td>https://www.salome-platform.org/</td>
-<td>開発元 EDF のサイト。Code_Aster は含まないが最新版を入手可能</td>
+<td>開発元 EDF のサイト。最新版を入手可能</td>
 </tr>
 </tbody>
 </table>
+<p>本講義では、Salome Platform（EDF）配布の <strong>SALOME 9.15</strong>
+を使用する。</p>
 </section>
 <section class="slide level2">
 
@@ -505,6 +482,31 @@ class="title-slide slide level1">
 <li>境界層メッシュを入れる</li>
 <li>OpenFOAM用にUNVを書き出す</li>
 </ul>
+</section>
+<section class="slide level2">
+
+<h3 id="使用データの場所">使用データの場所</h3>
+<p>この演習で使うファイル・計算結果は、リポジトリの以下のフォルダにある。</p>
+<table>
+<colgroup>
+<col style="width: 62%" />
+<col style="width: 37%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>フォルダ</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>data/001_box/run001_of13</code></td>
+<td>SALOMEから出力した <code>Mesh_4.unv</code> と、OpenFOAM
+13で流体解析を行うケース一式（<code>0</code>・<code>constant</code>・<code>system</code>、収束後の結果
+<code>90/</code>）</td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="モデル作成" class="slide level2">
 <h2>モデル作成</h2>
@@ -1454,11 +1456,55 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="
 </section>
 <section class="slide level2">
 
+<h4 id="境界条件を設定する">境界条件を設定する</h4>
+<p>チュートリアルからコピーした <code>0</code>
+フォルダの各ファイルを、SALOMEで付けた境界名（<code>inlet</code>・<code>outlet</code>・<code>side</code>・<code>topAndbottom</code>）に合わせて編集する。主な設定は以下。</p>
+<ul>
+<li><code>0/U</code>: <code>inlet</code> を
+<code>fixedValue</code>、<code>value uniform (0.01 0 0)</code>
+とし、x方向へ0.01 m/sの一様流入を与える。<code>outlet</code> は
+<code>zeroGradient</code>、<code>side</code>
+は壁（<code>noSlip</code>）、<code>topAndbottom</code> は
+<code>empty</code> とする。</li>
+<li><code>0/p</code>: <code>outlet</code> を基準圧として
+<code>fixedValue 0</code>、<code>inlet</code> と <code>side</code> は
+<code>zeroGradient</code>、<code>topAndbottom</code> は
+<code>empty</code> とする。</li>
+<li><code>topAndbottom</code> を <code>empty</code>
+にするため、<code>constant/polyMesh/boundary</code> の該当パッチの
+<code>type</code> も <code>empty</code>
+になっていることを確認する（<code>ideasUnvToFoam</code> 変換直後は
+<code>patch</code> になっているため、必要に応じて修正する）。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h4 id="計算を実行する">計算を実行する</h4>
+<p>境界条件を設定したら、ソルバを実行する。</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">foamRun</span> <span class="op">&gt;</span> log.foamRun.of13 <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span></code></pre></div>
+<ul>
+<li>OpenFOAM 13では、<code>foamRun</code> が
+<code>system/controlDict</code> の
+<code>solver incompressibleFluid;</code>
+を読み込み、非圧縮流体の定常計算（SIMPLE法）を行う。</li>
+<li><code>system/controlDict</code> の <code>endTime</code> は
+<code>2000</code>
+としているが、定常解析では残差が収束判定を満たした時点で計算が終了する。今回の計算は90反復で収束し（<code>log.foamRun.of13</code>
+に <code>SIMPLE solution converged in 90 iterations</code>
+と出力される）、結果は <code>90/</code> フォルダに書き出された。</li>
+<li><code>log.foamRun.of13</code> の各反復で
+<code>Ux</code>・<code>Uy</code>・<code>p</code>
+の残差（<code>Initial residual</code>）が小さくなっていく様子を確認する。</li>
+</ul>
+</section>
+<section class="slide level2">
+
 <h4 id="openfoamの計算結果確認">OpenFOAMの計算結果確認</h4>
 <p>OpenFOAMで計算した後は、<code>post.foam</code>
 を作成してParaViewで結果を確認する。</p>
-<div class="sourceCode" id="cb5"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">touch</span> post.foam</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">touch</span> post.foam</span></code></pre></div>
 </section>
 <section class="slide level2">
 
@@ -1552,6 +1598,36 @@ alt="今回作成するヘキサメッシュのゴール（1/4セクター）" /
 <figcaption
 aria-hidden="true">今回作成するヘキサメッシュのゴール（1/4セクター）</figcaption>
 </figure>
+</section>
+<section class="slide level2">
+
+<h3 id="使用データの場所-1">使用データの場所</h3>
+<p>この演習で使うファイル・計算結果は、リポジトリの以下のフォルダにある。</p>
+<table>
+<colgroup>
+<col style="width: 62%" />
+<col style="width: 37%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>フォルダ</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>data/002_Stirrer/sample/mesh/mesh_of13</code></td>
+<td>SALOMEから出力した <code>Mesh_1.unv</code>
+と、UNV変換・topoSet・createBaffles を行うOpenFOAMケース（OpenFOAM
+13）</td>
+</tr>
+<tr class="even">
+<td><code>data/002_Stirrer/sample/mesh/master_curve_of13</code></td>
+<td>羽根の可動化テスト（moveDynamicMesh）用のOpenFOAMケース（OpenFOAM
+13）</td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="モデル作成-1" class="slide level2">
 <h2>モデル作成</h2>
@@ -1980,11 +2056,14 @@ alt="もう一つのShellを作成する" />
 </figure>
 <ul>
 <li><ol start="14" type="1">
-<li><code>Shell</code> をクリックし、<code>Sketch_1</code>
-を選択する。</li>
+<li><code>Shell</code> をクリックし、<code>Sketch_2</code>
+を選択する（画像内の説明文は <code>Sketch_1</code>
+になっているが、実際に選択しているのは2つ目のスケッチ
+<code>Sketch_2</code>）。</li>
 </ol></li>
 <li><ol start="15" type="1">
-<li>チェックをクリックし、スケッチからShellを作成する。</li>
+<li>チェックをクリックし、スケッチから <code>Shell_2</code>
+を作成する。</li>
 </ol></li>
 </ul>
 </section>
@@ -2173,15 +2252,21 @@ alt="分割面を平行移動する" />
 <section class="slide level2">
 
 <figure>
-<img data-src="img/002_stirrer/page_117.svg" alt="分割面を押し出す" />
-<figcaption aria-hidden="true">分割面を押し出す</figcaption>
+<img data-src="img/002_stirrer/page_117.svg"
+alt="分割面でPartitionする" />
+<figcaption aria-hidden="true">分割面でPartitionする</figcaption>
 </figure>
 <ul>
 <li><ol start="21" type="1">
-<li><code>Extrusion</code> をクリックする。</li>
+<li><code>Partition</code> をクリックし、Objectsに
+<code>Partition_1</code>、Tool
+Objectsに平行移動で作った4枚の分割面（<code>Translation_1</code>〜<code>Translation_4</code>）を指定する（画像内の説明文は
+<code>Extrusion</code>
+になっているが、実際に開いているのはPartitionのダイアログ）。</li>
 </ol></li>
 <li><ol start="22" type="1">
-<li><code>Apply and Close</code> をクリックする。</li>
+<li><code>Apply and Close</code>
+をクリックする。<code>Partition_2</code> が作成される。</li>
 </ol></li>
 </ul>
 </section>
@@ -2189,11 +2274,12 @@ alt="分割面を平行移動する" />
 
 <figure>
 <img data-src="img/002_stirrer/page_118.svg"
-alt="押し出し結果を確認する" />
-<figcaption aria-hidden="true">押し出し結果を確認する</figcaption>
+alt="Partition結果を確認する" />
+<figcaption aria-hidden="true">Partition結果を確認する</figcaption>
 </figure>
 <ul>
-<li>分割に使う押し出し面が作成されたことを確認する。</li>
+<li><code>Partition_2</code>
+により、z=10〜40mmの4枚の面の位置で形状が水平方向に分割されたことを確認する。</li>
 </ul>
 </section>
 <section class="slide level2">
@@ -2231,13 +2317,43 @@ alt="Propagateを実行する" />
 <section id="グループを整理する" class="slide level2">
 <h2>グループを整理する</h2>
 <p>OpenFOAMへ渡す面や線を整理するため、Geometry側でグループを作成する。境界条件に使う面、メッシュ分割に使う線を分かりやすい名前にしておく。</p>
+<p>ここでは、Propagateで作られた
+<code>Compound_1</code>〜<code>Compound_15</code>（方向ごとの辺の集まり）を
+<code>Union Groups</code>
+でまとめ、後のサブメッシュ設定で使う線グループを作成する。作成する線グループは以下の11個。</p>
+<table>
+<thead>
+<tr class="header">
+<th>線グループ</th>
+<th>方向</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>z1</code> / <code>z2</code> / <code>z3</code></td>
+<td>軸（z）方向。高さ位置ごとの辺</td>
+</tr>
+<tr class="even">
+<td><code>z_rotor</code></td>
+<td>軸（z）方向のうち回転領域まわりの辺</td>
+</tr>
+<tr class="odd">
+<td><code>theta1</code></td>
+<td>周方向の辺</td>
+</tr>
+<tr class="even">
+<td><code>r1</code>〜<code>r6</code></td>
+<td>半径方向の辺</td>
+</tr>
+</tbody>
+</table>
 </section>
 <section class="slide level2">
 
 <figure>
 <img data-src="img/002_stirrer/page_121.svg"
-alt="Union Groupsを作成する" />
-<figcaption aria-hidden="true">Union Groupsを作成する</figcaption>
+alt="Union Groupsでz1を作成する" />
+<figcaption aria-hidden="true">Union Groupsでz1を作成する</figcaption>
 </figure>
 <ul>
 <li><ol type="1">
@@ -2245,127 +2361,139 @@ alt="Union Groupsを作成する" />
 をクリックする。</li>
 </ol></li>
 <li><ol start="2" type="1">
-<li><code>Apply</code> をクリックする。</li>
+<li>Nameを <code>z1</code> とし、対象のCompoundを選んで
+<code>Apply</code> をクリックする。</li>
 </ol></li>
 </ul>
 </section>
 <section class="slide level2">
 
 <figure>
-<img data-src="img/002_stirrer/page_122.svg" alt="グループを追加する" />
-<figcaption aria-hidden="true">グループを追加する</figcaption>
+<img data-src="img/002_stirrer/page_122.svg" alt="z2を作成する" />
+<figcaption aria-hidden="true">z2を作成する</figcaption>
 </figure>
 <ul>
 <li><ol start="3" type="1">
-<li>必要なグループを作成し、<code>Apply</code> をクリックする。</li>
+<li>同様にNameを <code>z2</code> として <code>Apply</code>
+をクリックする。</li>
 </ol></li>
 </ul>
 </section>
 <section class="slide level2">
 
 <figure>
-<img data-src="img/002_stirrer/page_123.svg" alt="グループを追加する" />
-<figcaption aria-hidden="true">グループを追加する</figcaption>
+<img data-src="img/002_stirrer/page_123.svg" alt="z3を作成する" />
+<figcaption aria-hidden="true">z3を作成する</figcaption>
 </figure>
 <ul>
 <li><ol start="4" type="1">
-<li>必要なグループを作成し、<code>Apply</code> をクリックする。</li>
+<li>Nameを <code>z3</code> として <code>Apply</code>
+をクリックする。</li>
 </ol></li>
 </ul>
 </section>
 <section class="slide level2">
 
 <figure>
-<img data-src="img/002_stirrer/page_124.svg" alt="グループを追加する" />
-<figcaption aria-hidden="true">グループを追加する</figcaption>
+<img data-src="img/002_stirrer/page_124.svg" alt="z_rotorを作成する" />
+<figcaption aria-hidden="true">z_rotorを作成する</figcaption>
 </figure>
 <ul>
 <li><ol start="5" type="1">
-<li>必要なグループを作成し、<code>Apply</code> をクリックする。</li>
+<li>Nameを <code>z_rotor</code>
+とし、回転領域まわりの4つのCompoundを選んで <code>Apply</code>
+をクリックする。</li>
 </ol></li>
 </ul>
 </section>
 <section class="slide level2">
 
 <figure>
-<img data-src="img/002_stirrer/page_125.svg" alt="グループを追加する" />
-<figcaption aria-hidden="true">グループを追加する</figcaption>
+<img data-src="img/002_stirrer/page_125.svg" alt="theta1を作成する" />
+<figcaption aria-hidden="true">theta1を作成する</figcaption>
 </figure>
 <ul>
 <li><ol start="6" type="1">
-<li>必要なグループを作成し、<code>Apply</code> をクリックする。</li>
+<li>Nameを <code>theta1</code> とし、周方向の2つのCompoundを選んで
+<code>Apply</code> をクリックする。</li>
 </ol></li>
 </ul>
 </section>
 <section class="slide level2">
 
 <figure>
-<img data-src="img/002_stirrer/page_126.svg" alt="グループを追加する" />
-<figcaption aria-hidden="true">グループを追加する</figcaption>
+<img data-src="img/002_stirrer/page_126.svg" alt="r1を作成する" />
+<figcaption aria-hidden="true">r1を作成する</figcaption>
 </figure>
 <ul>
 <li><ol start="8" type="1">
-<li>必要なグループを作成し、<code>Apply</code> をクリックする。</li>
+<li>Nameを <code>r1</code> として <code>Apply</code>
+をクリックする。</li>
 </ol></li>
 </ul>
 </section>
 <section class="slide level2">
 
 <figure>
-<img data-src="img/002_stirrer/page_127.svg" alt="グループを追加する" />
-<figcaption aria-hidden="true">グループを追加する</figcaption>
+<img data-src="img/002_stirrer/page_127.svg" alt="r2を作成する" />
+<figcaption aria-hidden="true">r2を作成する</figcaption>
 </figure>
 <ul>
 <li><ol start="9" type="1">
-<li>必要なグループを作成し、<code>Apply</code> をクリックする。</li>
+<li>Nameを <code>r2</code> として <code>Apply</code>
+をクリックする。</li>
 </ol></li>
 </ul>
 </section>
 <section class="slide level2">
 
 <figure>
-<img data-src="img/002_stirrer/page_128.svg" alt="グループを追加する" />
-<figcaption aria-hidden="true">グループを追加する</figcaption>
+<img data-src="img/002_stirrer/page_128.svg" alt="r3を作成する" />
+<figcaption aria-hidden="true">r3を作成する</figcaption>
 </figure>
 <ul>
 <li><ol start="10" type="1">
-<li>必要なグループを作成し、<code>Apply</code> をクリックする。</li>
+<li>Nameを <code>r3</code> として <code>Apply</code>
+をクリックする。</li>
 </ol></li>
 </ul>
 </section>
 <section class="slide level2">
 
 <figure>
-<img data-src="img/002_stirrer/page_129.svg" alt="グループを追加する" />
-<figcaption aria-hidden="true">グループを追加する</figcaption>
+<img data-src="img/002_stirrer/page_129.svg" alt="r4を作成する" />
+<figcaption aria-hidden="true">r4を作成する</figcaption>
 </figure>
 <ul>
 <li><ol start="11" type="1">
-<li>必要なグループを作成し、<code>Apply</code> をクリックする。</li>
+<li>Nameを <code>r4</code> として <code>Apply</code>
+をクリックする。</li>
 </ol></li>
 </ul>
 </section>
 <section class="slide level2">
 
 <figure>
-<img data-src="img/002_stirrer/page_130.svg" alt="グループを追加する" />
-<figcaption aria-hidden="true">グループを追加する</figcaption>
+<img data-src="img/002_stirrer/page_130.svg" alt="r5を作成する" />
+<figcaption aria-hidden="true">r5を作成する</figcaption>
 </figure>
 <ul>
 <li><ol start="12" type="1">
-<li>必要なグループを作成し、<code>Apply</code> をクリックする。</li>
+<li>Nameを <code>r5</code> として <code>Apply</code>
+をクリックする。</li>
 </ol></li>
 </ul>
 </section>
 <section class="slide level2">
 
 <figure>
-<img data-src="img/002_stirrer/page_131.svg" alt="グループを追加する" />
-<figcaption aria-hidden="true">グループを追加する</figcaption>
+<img data-src="img/002_stirrer/page_131.svg" alt="r6を作成する" />
+<figcaption aria-hidden="true">r6を作成する</figcaption>
 </figure>
 <ul>
 <li><ol start="13" type="1">
-<li>必要なグループを作成し、<code>Apply</code> をクリックする。</li>
+<li>Nameを <code>r6</code> として <code>Apply</code>
+をクリックする。</li>
 </ol></li>
 </ul>
 </section>
@@ -2377,7 +2505,10 @@ alt="グループ整理結果を確認する" />
 <figcaption aria-hidden="true">グループ整理結果を確認する</figcaption>
 </figure>
 <ul>
-<li>作成したグループを確認する。</li>
+<li>ツリーに <code>z1</code> / <code>z2</code> / <code>z3</code> /
+<code>z_rotor</code> / <code>theta1</code> /
+<code>r1</code>〜<code>r6</code>
+の11個の線グループが並んでいることを確認する。</li>
 </ul>
 </section>
 <section class="slide level2">
@@ -2723,17 +2854,20 @@ alt="UNV形式でエクスポートする" />
 <section class="slide level2">
 
 <h3 id="メッシュ変換とバッフル作成">メッシュ変換とバッフル作成</h3>
-<div class="sourceCode" id="cb6"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> data/002_Stirrer/sample/mesh/mesh_of13</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="bu">.</span> /opt/openfoam13/etc/bashrc</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="ex">ideasUnvToFoam</span> Mesh_1.unv <span class="op">&gt;</span> log.ideasUnvToFoam <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="ex">transformPoints</span> <span class="st">&quot;scale=(0.001 0.001 0.001)&quot;</span> <span class="op">&gt;</span> log.transformPoints <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="ex">checkMesh</span> <span class="op">&gt;</span> log.checkMesh.initial <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="ex">topoSet</span> <span class="op">&gt;</span> log.topoSet <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="ex">createBaffles</span> <span class="at">-overwrite</span> <span class="op">&gt;</span> log.createBaffles <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="ex">checkMesh</span> <span class="op">&gt;</span> log.checkMesh.final <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> data/002_Stirrer/sample/mesh/mesh_of13</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="bu">.</span> /opt/openfoam13/etc/bashrc</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="ex">ideasUnvToFoam</span> Mesh_1.unv <span class="op">&gt;</span> log.ideasUnvToFoam <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="ex">transformPoints</span> <span class="st">&quot;scale=(0.001 0.001 0.001)&quot;</span> <span class="op">&gt;</span> log.transformPoints <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="ex">checkMesh</span> <span class="op">&gt;</span> log.checkMesh.initial <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="ex">topoSet</span> <span class="op">&gt;</span> log.topoSet <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="ex">createBaffles</span> <span class="at">-overwrite</span> <span class="op">&gt;</span> log.createBaffles <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="ex">checkMesh</span> <span class="op">&gt;</span> log.checkMesh.final <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span></code></pre></div>
+<p>なお、同フォルダには上記一連の処理をまとめた <code>Allrun</code>
+スクリプトがあり、<code>./Allclean &amp;&amp; ./Allrun</code>
+で最初から一括再実行できる。</p>
 <ul>
 <li><code>ideasUnvToFoam</code> / <code>transformPoints</code>
 は、<code>001_box.md</code> や <code>003_heatsink.md</code>
@@ -2745,6 +2879,9 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="
 <p><code>wingFaceZone</code> / <code>wingFaceZone2</code>
 は、羽根の位置にある面のゾーン（上下2枚分）。羽根のパーティション面はセクターの二等分線（30°）上にあるため、<code>rotatedBoxToFace</code>
 で30°回転させた薄い直方体を使って面を選び出す。</p>
+<p>選択ボックスのz範囲には注意が必要になる。羽根のz範囲は12.5〜17.5mmだが、メッシュの面中心の座標がちょうどz=12.5mm/17.5mmに乗っているため、ボックスの境界をぴったりそこに置くと、浮動小数点の判定次第で端の面が拾われたり拾われなかったりして、羽根のエッジがガタついたゾーンになる。これを避けるため、ボックスを上下に半セル分（0.05mm）広げて端の面を確実に含めている。さらに
+<code>normalToFace</code>
+で羽根の垂直面だけに絞り込む。この結果、上下の羽根とも480面（30列×16段）の完全な長方形のゾーンになる。</p>
 </section>
 <section class="slide level2">
 
@@ -2759,6 +2896,10 @@ wingFaceZone2</figcaption>
 <code>circularFaceZone_z035</code>
 は、仕切り板の位置にある面のゾーン。<code>cylinderToFace</code>
 で薄いz範囲を直接指定して選び出す。</p>
+<p>この形状にはシャフト（軸）が上からz=15mmの位置まで刺さっており、メッシュはシャフト部分（半径約3.3mmの円柱）をくり抜いた形になっている。そのため仕切り板は、シャフトの周りに付いた環状（ドーナツ状）の板になる。z=15mm平面には、シャフトの底面（境界面）も同じ高さに存在するため、<code>cylinderToFace</code>
+だけではこの境界面まで拾ってしまう。境界面はバッフル化できないので、<code>boundaryToFace</code>
+を <code>action delete</code>
+で使って選択から取り除き、内部面（仕切り板の環状部分）だけを残す。この結果、上下の仕切り板とも576面の同一形状のゾーンになる。</p>
 </section>
 <section class="slide level2">
 
@@ -2803,15 +2944,15 @@ id="羽根の可動化テストmaster_curve_of13">羽根の可動化テスト（
 <code>data/002_Stirrer/sample/mesh/master_curve_of13</code>（<code>mesh_of13</code>
 で作成したバッフル済みメッシュを引き継ぐ）</li>
 </ul>
-<div class="sourceCode" id="cb7"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> data/002_Stirrer/sample/mesh/master_curve_of13</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="bu">.</span> /opt/openfoam13/etc/bashrc</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span> <span class="at">-rf</span> 0</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="fu">cp</span> <span class="at">-r</span> 0.orig 0</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="ex">moveDynamicMesh</span> <span class="op">&gt;</span> log.moveDynamicMesh <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="ex">checkMesh</span> <span class="at">-latestTime</span> <span class="op">&gt;</span> log.checkMesh <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> data/002_Stirrer/sample/mesh/master_curve_of13</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="bu">.</span> /opt/openfoam13/etc/bashrc</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span> <span class="at">-rf</span> 0</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="fu">cp</span> <span class="at">-r</span> 0.orig 0</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="ex">moveDynamicMesh</span> <span class="op">&gt;</span> log.moveDynamicMesh <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="ex">checkMesh</span> <span class="at">-latestTime</span> <span class="op">&gt;</span> log.checkMesh <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span></code></pre></div>
 <ul>
 <li><code>constant/dynamicMeshDict</code> で
 <code>displacementSBRStress</code> モーションソルバを指定する。</li>
@@ -2877,6 +3018,37 @@ alt="モデル構成（heatSink・heatSource・basis・box）" />
 <figcaption
 aria-hidden="true">モデル構成（heatSink・heatSource・basis・box）</figcaption>
 </figure>
+</section>
+<section class="slide level2">
+
+<h3 id="使用データの場所-2">使用データの場所</h3>
+<p>この演習で使うファイル・計算結果は、リポジトリの以下のフォルダにある。</p>
+<table>
+<colgroup>
+<col style="width: 62%" />
+<col style="width: 37%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>フォルダ</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>data/003_heatsink/run001_of2512</code></td>
+<td>SALOMEから出力した <code>Mesh_1.unv</code> と、OpenFOAM v2512で
+<code>chtMultiRegionFoam</code>
+を実行するケース一式（セットアップスクリプト
+<code>setup.sh</code>、計算結果 <code>2/</code>〜<code>60/</code>）</td>
+</tr>
+</tbody>
+</table>
+<p>この演習のOpenFOAM計算は <strong>OpenFOAM
+v2512</strong>（www.openfoam.com
+版）で行う。<code>chtMultiRegionFoam</code>
+はv2512側のソルバで、OpenFOAM 13（www.openfoam.org
+版）には同名のソルバは無いため注意する。</p>
 </section>
 <section id="geometry-stepファイルを読み込む" class="slide level2">
 <h2>Geometry: STEPファイルを読み込む</h2>
@@ -3659,7 +3831,9 @@ aria-hidden="true">UNVファイルをエクスポートする</figcaption>
 </ol></li>
 <li><ol start="30" type="1">
 <li>ファイル名 <code>Mesh_1.unv</code>
-として、OpenFOAMの計算フォルダ（例: <code>run001_of13</code>）に
+として、OpenFOAMの計算フォルダ（<code>run001_of2512</code>。画像では
+<code>run001_of13</code>
+に保存しているが、実際の計算はv2512のケースフォルダで行った）に
 <code>Save</code> する。</li>
 </ol></li>
 <li>作成した面グループ名（YMin・YMax・ZMax・XMax・XMin・basis・heatSink・heatSource・basis_top）がそのままOpenFOAMのパッチ名になる。</li>
@@ -3667,22 +3841,51 @@ aria-hidden="true">UNVファイルをエクスポートする</figcaption>
 </section>
 <section id="openfoam側での計算-2" class="slide level2">
 <h2>OpenFOAM側での計算</h2>
+<ul>
+<li>作業フォルダ: <code>data/003_heatsink/run001_of2512</code></li>
+</ul>
 </section>
 <section class="slide level2">
 
-<h3 id="メッシュの変換と確認">メッシュの変換と確認</h3>
-<p>SALOMEから出力したUNVメッシュを計算フォルダに置き、OpenFOAM形式へ変換する。</p>
-<div class="sourceCode" id="cb8"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="bu">.</span> /opt/openfoam13/etc/bashrc</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ex">ideasUnvToFoam</span> Mesh_1.unv <span class="op">&gt;</span> log.ideasUnvToFoam <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="ex">transformPoints</span> <span class="st">&quot;scale=(0.001 0.001 0.001)&quot;</span> <span class="op">&gt;</span> log.transformPoints <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="ex">checkMesh</span> <span class="at">-allGeometry</span> <span class="op">&gt;</span> log.checkMesh <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span></code></pre></div>
+<h3 id="openfoam-v2512環境の読み込み">OpenFOAM v2512環境の読み込み</h3>
+<p>この演習の計算はOpenFOAM v2512で行う。まずv2512の環境を読み込む。</p>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> data/003_heatsink/run001_of2512</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> /usr/lib/openfoam/openfoam2512/etc/bashrc</span></code></pre></div>
+</section>
+<section class="slide level2">
+
+<h3
+id="setup.shによるメッシュ変換とケース設定">setup.shによるメッシュ変換とケース設定</h3>
+<p>ケースフォルダには、UNVメッシュの変換からリージョン分割・境界条件設定までを一括実行する
+<code>setup.sh</code> を用意している。</p>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bash</span> setup.sh</span></code></pre></div>
+<p><code>setup.sh</code> の中では、以下の処理を順に行っている。</p>
+<pre class="text"><code>1. 前回実行分のクリーンアップ
+2. ideasUnvToFoam Mesh_1.unv     … UNVメッシュをOpenFOAM形式へ変換
+3. transformPoints -scale &#39;(0.001 0.001 0.001)&#39;  … mm単位からm単位へスケール変換
+4. 0/ にフィールドテンプレート（T・p・p_rgh・U・k・omega・alphat・nut）を作成
+5. splitMeshRegions -cellZones -overwrite  … セルゾーン名を使い4リージョンへ分割
+6. 固体リージョン（heatSink・heatSource・basis）から流体専用フィールドを削除
+7. changeDictionary -region &lt;各リージョン&gt;  … 正式な境界条件へ上書き</code></pre>
 <ul>
 <li><code>ideasUnvToFoam</code>
-でUNVメッシュをOpenFOAM形式に変換する。</li>
-<li>SALOMEでmm単位のモデルを作っているため、<code>transformPoints</code>
-でOpenFOAMが使うm単位に変換する。</li>
-<li><code>checkMesh</code> でメッシュ品質と境界面を確認する。</li>
+でUNVメッシュをOpenFOAM形式に変換する。SALOMEでmm単位のモデルを作っているため、<code>transformPoints</code>
+でOpenFOAMが使うm単位に変換する（v2512では <code>-scale</code>
+オプションで指定する）。</li>
+<li><code>splitMeshRegions -cellZones</code>
+は、UNVメッシュ作成時に付けたセルゾーン名（box・heatSink・heatSource・basis）を使ってメッシュを4つのリージョンに分割し、<code>0/</code>
+のフィールドを各リージョン（<code>0/box</code>
+等）へマッピングする。</li>
+<li>分割直後のフィールドは全パッチ <code>calculated</code>
+の仮設定なので、<code>changeDictionary</code> が
+<code>system/&lt;region&gt;/changeDictionaryDict</code>
+を参照して、流入・壁・リージョン間結合（<code>compressible::turbulentTemperatureRadCoupledMixed</code>
+等）の正式な境界条件に上書きする。</li>
+<li>各リージョンの物性値は
+<code>constant/&lt;region&gt;</code>、数値スキーム・行列ソルバ設定は
+<code>system/&lt;region&gt;</code> に用意している。</li>
 </ul>
 </section>
 <section class="slide level2">
@@ -3700,21 +3903,19 @@ aria-hidden="true">OpenFOAM側でメッシュ全体を確認する</figcaption>
 <section class="slide level2">
 
 <h3 id="chtmultiregionfoamの実行">chtMultiRegionFoamの実行</h3>
-<p><code>splitMeshRegions</code>
-で流体・固体をリージョンに分割し、各リージョンの初期条件・物性・境界条件を設定した上で
-<code>chtMultiRegionFoam</code> を実行する。</p>
-<div class="sourceCode" id="cb9"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">splitMeshRegions</span> <span class="at">-cellZones</span> <span class="at">-overwrite</span> <span class="op">&gt;</span> log.splitMeshRegions <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="ex">chtMultiRegionFoam</span> <span class="op">&gt;</span> log.chtMultiRegionFoam <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span></code></pre></div>
+<p>セットアップが完了したら、熱流体・固体連成ソルバを実行する。</p>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ex">chtMultiRegionFoam</span> <span class="op">&gt;</span> log.chtMultiRegionFoam <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span></code></pre></div>
 <ul>
-<li><code>splitMeshRegions -cellZones</code>
-は、UNVメッシュ作成時に付けたセルゾーン名（box・heatSink・heatSource・basis）を使ってメッシュを4つのリージョンに分割する。</li>
-<li>各リージョンには、あらかじめ <code>0/&lt;region&gt;</code>
-に初期条件、<code>constant/&lt;region&gt;</code>
-に物性値、<code>system/&lt;region&gt;</code>
-に境界条件・数値スキームを用意しておく。</li>
 <li><code>chtMultiRegionFoam</code>
 は非定常の熱流体・固体連成ソルバで、流体側は速度・圧力・乱流量・温度、固体側は温度のみを解く。</li>
+<li><code>system/controlDict</code> の設定により、時刻 <code>2</code>
+から <code>60</code> まで一定間隔で結果が書き出される（ケースフォルダの
+<code>2/</code>〜<code>60/</code>）。</li>
+<li>流入条件は <code>U = (0 -0.5 0) m/s</code>（y方向へ0.5
+m/s）、初期温度は <code>293.15 K</code> としている。発熱源の設定は
+<code>system/heatSource/fvOptions</code>、各リージョンの詳細な境界条件は
+<code>system/&lt;region&gt;/changeDictionaryDict</code> を参照。</li>
 </ul>
 </section>
 <section class="slide level2">

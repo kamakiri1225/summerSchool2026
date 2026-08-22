@@ -13,8 +13,10 @@ SALOME 9.15 を使って OpenFOAM 用のメッシュを作成する。
 
 | 配布元 | URL | 特徴 |
 |--------|-----|------|
-| Code_Aster 付属版 | https://www.code-aster.org/ | 構造解析ソフト Code_Aster とセット。**通常はこちら** |
-| Salome Platform（EDF） | https://www.salome-platform.org/ | 開発元フランス電力 EDF のサイト。Code_Aster は含まないが最新版を入手可能 |
+| Code_Aster 付属版 | https://www.code-aster.org/ | 構造解析ソフト Code_Aster とセット |
+| Salome Platform（EDF） | https://www.salome-platform.org/ | 開発元フランス電力 EDF のサイト。最新版を入手可能 |
+
+本講義では、Salome Platform（EDF）配布の **SALOME 9.15** を使用する。
 
 ---
 
@@ -22,7 +24,17 @@ SALOME 9.15 を使って OpenFOAM 用のメッシュを作成する。
 
 この講義では SALOME を使って OpenFOAM 用メッシュを作成するスキルを段階的に習得する。
 
-![講義の全体像](memo/1.png)
+![講義の全体像](img/overview.png)
+
+### 使用データの場所
+
+各演習で使うSALOMEメッシュ（UNV）・OpenFOAMケース・計算結果は、リポジトリの `data/` フォルダにある。
+
+| 演習 | データフォルダ |
+|------|----------------|
+| 001 Box | `data/001_box/run001_of13` |
+| 002 撹拌機 | `data/002_Stirrer/sample/mesh/mesh_of13`（メッシュ変換・バッフル作成）、`data/002_Stirrer/sample/mesh/master_curve_of13`（羽根可動化テスト） |
+| 003 ヒートシンク | `data/003_heatsink/run001_of2512` |
 
 | ステップ | 演習 | 学ぶこと | ファイル |
 |----------|------|----------|----------|

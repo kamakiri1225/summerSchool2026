@@ -29,6 +29,15 @@
 
 ![今回作成するヘキサメッシュのゴール（1/4セクター）](img/002_stirrer/page_140.svg)
 
+### 使用データの場所
+
+この演習で使うファイル・計算結果は、リポジトリの以下のフォルダにある。
+
+| フォルダ | 内容 |
+|----------|------|
+| `data/002_Stirrer/sample/mesh/mesh_of13` | SALOMEから出力した `Mesh_1.unv` と、UNV変換・topoSet・createBaffles を行うOpenFOAMケース（OpenFOAM 13） |
+| `data/002_Stirrer/sample/mesh/master_curve_of13` | 羽根の可動化テスト（moveDynamicMesh）用のOpenFOAMケース（OpenFOAM 13） |
+
 ---
 
 ## モデル作成
@@ -189,8 +198,8 @@
 
 ![もう一つのShellを作成する](img/002_stirrer/page_104.svg)
 
-- (14) `Shell` をクリックし、`Sketch_1` を選択する。
-- (15) チェックをクリックし、スケッチからShellを作成する。
+- (14) `Shell` をクリックし、`Sketch_2` を選択する（画像内の説明文は `Sketch_1` になっているが、実際に選択しているのは2つ目のスケッチ `Sketch_2`）。
+- (15) チェックをクリックし、スケッチから `Shell_2` を作成する。
 
 ![Geometryへエクスポートする](img/002_stirrer/page_105.svg)
 
@@ -259,14 +268,14 @@
 - (16) `Dz = 20`、(18) `Dz = 30`、(20) `Dz = 40` として分割面を複製する。
 - (21) `Apply and Close` をクリックする。
 
-![分割面を押し出す](img/002_stirrer/page_117.svg)
+![分割面でPartitionする](img/002_stirrer/page_117.svg)
 
-- (21) `Extrusion` をクリックする。
-- (22) `Apply and Close` をクリックする。
+- (21) `Partition` をクリックし、Objectsに `Partition_1`、Tool Objectsに平行移動で作った4枚の分割面（`Translation_1`〜`Translation_4`）を指定する（画像内の説明文は `Extrusion` になっているが、実際に開いているのはPartitionのダイアログ）。
+- (22) `Apply and Close` をクリックする。`Partition_2` が作成される。
 
-![押し出し結果を確認する](img/002_stirrer/page_118.svg)
+![Partition結果を確認する](img/002_stirrer/page_118.svg)
 
-- 分割に使う押し出し面が作成されたことを確認する。
+- `Partition_2` により、z=10〜40mmの4枚の面の位置で形状が水平方向に分割されたことを確認する。
 
 ![Propagateを実行する](img/002_stirrer/page_119.svg)
 
@@ -284,54 +293,63 @@
 
 OpenFOAMへ渡す面や線を整理するため、Geometry側でグループを作成する。境界条件に使う面、メッシュ分割に使う線を分かりやすい名前にしておく。
 
-![Union Groupsを作成する](img/002_stirrer/page_121.svg)
+ここでは、Propagateで作られた `Compound_1`〜`Compound_15`（方向ごとの辺の集まり）を `Union Groups` でまとめ、後のサブメッシュ設定で使う線グループを作成する。作成する線グループは以下の11個。
+
+| 線グループ | 方向 |
+|-----------|------|
+| `z1` / `z2` / `z3` | 軸（z）方向。高さ位置ごとの辺 |
+| `z_rotor` | 軸（z）方向のうち回転領域まわりの辺 |
+| `theta1` | 周方向の辺 |
+| `r1`〜`r6` | 半径方向の辺 |
+
+![Union Groupsでz1を作成する](img/002_stirrer/page_121.svg)
 
 - (1) `New Entity > Group > Union Groups` をクリックする。
-- (2) `Apply` をクリックする。
+- (2) Nameを `z1` とし、対象のCompoundを選んで `Apply` をクリックする。
 
-![グループを追加する](img/002_stirrer/page_122.svg)
+![z2を作成する](img/002_stirrer/page_122.svg)
 
-- (3) 必要なグループを作成し、`Apply` をクリックする。
+- (3) 同様にNameを `z2` として `Apply` をクリックする。
 
-![グループを追加する](img/002_stirrer/page_123.svg)
+![z3を作成する](img/002_stirrer/page_123.svg)
 
-- (4) 必要なグループを作成し、`Apply` をクリックする。
+- (4) Nameを `z3` として `Apply` をクリックする。
 
-![グループを追加する](img/002_stirrer/page_124.svg)
+![z_rotorを作成する](img/002_stirrer/page_124.svg)
 
-- (5) 必要なグループを作成し、`Apply` をクリックする。
+- (5) Nameを `z_rotor` とし、回転領域まわりの4つのCompoundを選んで `Apply` をクリックする。
 
-![グループを追加する](img/002_stirrer/page_125.svg)
+![theta1を作成する](img/002_stirrer/page_125.svg)
 
-- (6) 必要なグループを作成し、`Apply` をクリックする。
+- (6) Nameを `theta1` とし、周方向の2つのCompoundを選んで `Apply` をクリックする。
 
-![グループを追加する](img/002_stirrer/page_126.svg)
+![r1を作成する](img/002_stirrer/page_126.svg)
 
-- (8) 必要なグループを作成し、`Apply` をクリックする。
+- (8) Nameを `r1` として `Apply` をクリックする。
 
-![グループを追加する](img/002_stirrer/page_127.svg)
+![r2を作成する](img/002_stirrer/page_127.svg)
 
-- (9) 必要なグループを作成し、`Apply` をクリックする。
+- (9) Nameを `r2` として `Apply` をクリックする。
 
-![グループを追加する](img/002_stirrer/page_128.svg)
+![r3を作成する](img/002_stirrer/page_128.svg)
 
-- (10) 必要なグループを作成し、`Apply` をクリックする。
+- (10) Nameを `r3` として `Apply` をクリックする。
 
-![グループを追加する](img/002_stirrer/page_129.svg)
+![r4を作成する](img/002_stirrer/page_129.svg)
 
-- (11) 必要なグループを作成し、`Apply` をクリックする。
+- (11) Nameを `r4` として `Apply` をクリックする。
 
-![グループを追加する](img/002_stirrer/page_130.svg)
+![r5を作成する](img/002_stirrer/page_130.svg)
 
-- (12) 必要なグループを作成し、`Apply` をクリックする。
+- (12) Nameを `r5` として `Apply` をクリックする。
 
-![グループを追加する](img/002_stirrer/page_131.svg)
+![r6を作成する](img/002_stirrer/page_131.svg)
 
-- (13) 必要なグループを作成し、`Apply` をクリックする。
+- (13) Nameを `r6` として `Apply` をクリックする。
 
 ![グループ整理結果を確認する](img/002_stirrer/page_132.svg)
 
-- 作成したグループを確認する。
+- ツリーに `z1` / `z2` / `z3` / `z_rotor` / `theta1` / `r1`〜`r6` の11個の線グループが並んでいることを確認する。
 
 ![不要な線グループを削除する](img/002_stirrer/page_133.svg)
 
@@ -474,6 +492,8 @@ createBaffles -overwrite > log.createBaffles 2>&1
 checkMesh > log.checkMesh.final 2>&1
 ```
 
+なお、同フォルダには上記一連の処理をまとめた `Allrun` スクリプトがあり、`./Allclean && ./Allrun` で最初から一括再実行できる。
+
 - `ideasUnvToFoam` / `transformPoints` は、`001_box.md` や `003_heatsink.md` と同様に、UNVメッシュをOpenFOAM形式へ変換し、SALOMEのmm単位からOpenFOAMのm単位へスケール変換する。
 - `topoSet`（`system/topoSetDict`、`topoSetDict.wing`、`topoSetDict.circ`、`topoSetDict.rotor` を使用）で、次の3種類の領域を作成する。
 
@@ -481,11 +501,15 @@ checkMesh > log.checkMesh.final 2>&1
 
 `wingFaceZone` / `wingFaceZone2` は、羽根の位置にある面のゾーン（上下2枚分）。羽根のパーティション面はセクターの二等分線（30°）上にあるため、`rotatedBoxToFace` で30°回転させた薄い直方体を使って面を選び出す。
 
+選択ボックスのz範囲には注意が必要になる。羽根のz範囲は12.5〜17.5mmだが、メッシュの面中心の座標がちょうどz=12.5mm/17.5mmに乗っているため、ボックスの境界をぴったりそこに置くと、浮動小数点の判定次第で端の面が拾われたり拾われなかったりして、羽根のエッジがガタついたゾーンになる。これを避けるため、ボックスを上下に半セル分（0.05mm）広げて端の面を確実に含めている。さらに `normalToFace` で羽根の垂直面だけに絞り込む。この結果、上下の羽根とも480面（30列×16段）の完全な長方形のゾーンになる。
+
 ![topoSetで作成したwingFaceZone / wingFaceZone2](img/002_stirrer/zone_wing.png)
 
 **仕切り板（circ）の面ゾーン**
 
 `circularFaceZone_z015` / `circularFaceZone_z035` は、仕切り板の位置にある面のゾーン。`cylinderToFace` で薄いz範囲を直接指定して選び出す。
+
+この形状にはシャフト（軸）が上からz=15mmの位置まで刺さっており、メッシュはシャフト部分（半径約3.3mmの円柱）をくり抜いた形になっている。そのため仕切り板は、シャフトの周りに付いた環状（ドーナツ状）の板になる。z=15mm平面には、シャフトの底面（境界面）も同じ高さに存在するため、`cylinderToFace` だけではこの境界面まで拾ってしまう。境界面はバッフル化できないので、`boundaryToFace` を `action delete` で使って選択から取り除き、内部面（仕切り板の環状部分）だけを残す。この結果、上下の仕切り板とも576面の同一形状のゾーンになる。
 
 ![topoSetで作成したcircularFaceZone_z015 / circularFaceZone_z035](img/002_stirrer/zone_circ.png)
 

@@ -24,6 +24,18 @@
         cos     0.2;
     }
 }
+// シャフト(軸)はz=0.015まで刺さっており、z=0.015平面のr<約0.0033には
+// シャフト底面(境界面)が含まれてしまう。境界面はバッフル化できないため
+// faceSetから削除し、内部面(仕切り板の環状部分)だけを残す。
+{
+    name    circFaces;
+    type    faceSet;
+    action  delete;
+    source  boundaryToFace;
+    sourceInfo
+    {
+    }
+}
 {
     name    circularFaceZone_z015;
     type    faceZoneSet;
