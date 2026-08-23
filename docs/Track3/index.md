@@ -11,12 +11,14 @@ SALOME 9.15 を使って OpenFOAM 用のメッシュを作成する。
 
 ## ダウンロード
 
-| 配布元 | URL | 特徴 |
-|--------|-----|------|
-| Code_Aster 付属版 | https://www.code-aster.org/ | 構造解析ソフト Code_Aster とセット |
-| Salome Platform（EDF） | https://www.salome-platform.org/ | 開発元フランス電力 EDF のサイト。最新版を入手可能 |
+SALOMEには、プラットフォーム本体の **SALOME** と、構造解析ソルバCode_Asterを統合した **Salome-Meca** の2種類の配布形態がある（詳細は [000_salome.md](000_salome.md) を参照）。
 
-本講義では、Salome Platform（EDF）配布の **SALOME 9.15** を使用する。
+| 名称 | 内容 | 配布元 |
+|------|------|--------|
+| SALOME | プリ・ポスト処理プラットフォーム本体。ソルバは付属しない | https://www.salome-platform.org/ |
+| Salome-Meca | SALOMEに構造解析ソルバ Code_Aster を統合したパッケージ | https://www.code-aster.org/ |
+
+本講義ではソルバとしてOpenFOAMを使うため、Salome Platform配布の **SALOME 9.15**（ソルバなし版）を使用する。
 
 ---
 

@@ -35,34 +35,38 @@ SALOMEを使ったOpenFOAMメッシュ作成</h1>
 </ul>
 <hr />
 <h2 id="ダウンロード">ダウンロード</h2>
-<table style="width:100%;">
+<p>SALOMEには、プラットフォーム本体の <strong>SALOME</strong>
+と、構造解析ソルバCode_Asterを統合した <strong>Salome-Meca</strong>
+の2種類の配布形態がある（詳細は <a
+href="000_salome.md">000_salome.md</a> を参照）。</p>
+<table>
 <colgroup>
-<col style="width: 42%" />
-<col style="width: 26%" />
-<col style="width: 31%" />
+<col style="width: 30%" />
+<col style="width: 30%" />
+<col style="width: 40%" />
 </colgroup>
 <thead>
 <tr class="header">
+<th>名称</th>
+<th>内容</th>
 <th>配布元</th>
-<th>URL</th>
-<th>特徴</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td>Code_Aster 付属版</td>
-<td>https://www.code-aster.org/</td>
-<td>構造解析ソフト Code_Aster とセット</td>
+<td>SALOME</td>
+<td>プリ・ポスト処理プラットフォーム本体。ソルバは付属しない</td>
+<td>https://www.salome-platform.org/</td>
 </tr>
 <tr class="even">
-<td>Salome Platform（EDF）</td>
-<td>https://www.salome-platform.org/</td>
-<td>開発元フランス電力 EDF のサイト。最新版を入手可能</td>
+<td>Salome-Meca</td>
+<td>SALOMEに構造解析ソルバ Code_Aster を統合したパッケージ</td>
+<td>https://www.code-aster.org/</td>
 </tr>
 </tbody>
 </table>
-<p>本講義では、Salome Platform（EDF）配布の <strong>SALOME 9.15</strong>
-を使用する。</p>
+<p>本講義ではソルバとしてOpenFOAMを使うため、Salome Platform配布の
+<strong>SALOME 9.15</strong>（ソルバなし版）を使用する。</p>
 <hr />
 <h2 id="講義の全体像">講義の全体像</h2>
 <p>この講義では SALOME を使って OpenFOAM

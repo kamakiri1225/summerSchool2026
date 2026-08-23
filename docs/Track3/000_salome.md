@@ -9,6 +9,19 @@ SALOME はフランス電力（EDF）が中心となって開発しているオ�
 - 開発元: EDF（Électricité de France）
 - 対応OS: Linux / Windows
 
+## SALOMEとSalome-Mecaの違い
+
+SALOMEには2種類の配布形態があり、混同しやすいので最初に整理しておく。
+
+| 名称 | 内容 | 配布元 |
+|------|------|--------|
+| **SALOME** | プリ・ポスト処理プラットフォーム本体。ソルバは付属しない | https://www.salome-platform.org/ |
+| **Salome-Meca** | SALOMEに構造解析ソルバ **Code_Aster** を統合したパッケージ | https://www.code-aster.org/ |
+
+- SALOME自体はジオメトリ作成・メッシュ生成・可視化のためのツールで、解析ソルバは含まれない。ソルバ（OpenFOAM、Code_Asterなど）は別途用意し、SALOMEで作ったメッシュを渡して使う。
+- Salome-Mecaは、SALOMEと構造解析ソルバCode_Asterをセットにした配布版で、構造解析までを一体で行いたい場合に使う。
+- 本講義ではソルバとしてOpenFOAMを使うため、**Salome Platform配布のSALOME 9.15**（ソルバなし版）を使用する。
+
 ---
 
 ## 主なモジュール
@@ -143,9 +156,4 @@ ideasUnvToFoam コマンドで OpenFOAM 形式に変換
 
 ## ダウンロード
 
-| 配布元 | URL | 特徴 |
-|--------|-----|------|
-| Code_Aster 付属版 | https://www.code-aster.org/ | 構造解析ソフト Code_Aster とセット |
-| Salome Platform（EDF） | https://www.salome-platform.org/ | 開発元 EDF のサイト。最新版を入手可能 |
-
-本講義では、Salome Platform（EDF）配布の **SALOME 9.15** を使用する。
+冒頭の「SALOMEとSalome-Mecaの違い」の通り、本講義では https://www.salome-platform.org/ から **SALOME 9.15** をダウンロードして使用する。
