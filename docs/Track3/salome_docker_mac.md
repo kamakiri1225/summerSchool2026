@@ -1,4 +1,4 @@
-# 004 Mac向け: DockerでSALOME 9.15を使う
+# Mac向け: DockerでSALOME 9.15を使う
 
 SALOMEのWindows版はzipを展開するだけで使えるが、**Mac向けのSALOME配布は無い**。そこでMacの受講者は、Dockerを使ってLinux版のSALOME 9.15を動かす。
 

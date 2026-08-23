@@ -475,6 +475,10 @@ OpenFOAMへ渡す面や線を整理するため、Geometry側でグループを�
 
 SALOMEから出力した `Mesh_1.unv` は、そのままではOpenFOAMで使えない。UNV形式からOpenFOAM形式へ変換し、スケール変換（mm→m）を行った上で、羽根（wing）と仕切り板（circ）の位置に `topoSet` + `createBaffles` でバッフル（厚みゼロの内部壁）を作成する。
 
+SALOME で作成したメッシュを OpenFOAM 形式に変換して利用する。全体の流れは以下の通り。
+
+![SALOMEからOpenFOAMへの連携フロー](img/000_salome/salome_to_openfoam_flow.png)
+
 - 作業フォルダ: `data/002_Stirrer/sample/mesh/mesh_of13`
 
 ### メッシュ変換とバッフル作成

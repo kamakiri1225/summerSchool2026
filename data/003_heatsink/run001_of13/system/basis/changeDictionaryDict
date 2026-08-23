@@ -1,0 +1,39 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2512                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      changeDictionaryDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+T
+{
+    internalField   uniform 293.15;
+    boundaryField
+    {
+        Group_1
+        {
+            type            zeroGradient;
+        }
+        basis_to_box
+        {
+            type            coupledTemperature;
+            value           uniform 293.15;
+        }
+        basis_to_heatSource
+        {
+            type            coupledTemperature;
+            value           uniform 293.15;
+        }
+    }
+}
+
+// ************************************************************************* //

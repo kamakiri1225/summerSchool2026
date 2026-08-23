@@ -1111,6 +1111,14 @@ alt="UNV形式でエクスポートする" />
 は、そのままではOpenFOAMで使えない。UNV形式からOpenFOAM形式へ変換し、スケール変換（mm→m）を行った上で、羽根（wing）と仕切り板（circ）の位置に
 <code>topoSet</code> + <code>createBaffles</code>
 でバッフル（厚みゼロの内部壁）を作成する。</p>
+<p>SALOME で作成したメッシュを OpenFOAM
+形式に変換して利用する。全体の流れは以下の通り。</p>
+<figure>
+<img src="img/000_salome/salome_to_openfoam_flow.png"
+alt="SALOMEからOpenFOAMへの連携フロー" />
+<figcaption
+aria-hidden="true">SALOMEからOpenFOAMへの連携フロー</figcaption>
+</figure>
 <ul>
 <li>作業フォルダ:
 <code>data/002_Stirrer/sample/mesh/mesh_of13</code></li>

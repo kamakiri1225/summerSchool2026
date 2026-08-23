@@ -1,0 +1,13 @@
+# Generated initial fields and meshes
+/0/
+/constant/polyMesh/
+/constant/*/polyMesh/
+/constant/cellToRegion
+
+# Solver output
+/[1-9]*/
+/log.*
+/*.foam
+/postProcessing/
+/dynamicCode/
+/processor*/

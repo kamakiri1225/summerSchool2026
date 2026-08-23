@@ -1,4 +1,4 @@
-# SALOMEとは
+# SALOMEとは・インストール
 
 ## 概要
 
@@ -28,7 +28,7 @@ SALOMEには2種類の配布形態があり、混同しやすいので最初に�
 
 <https://www.salome-platform.org/> からSALOMEをダウンロードしてインストールする。ここでは**Windowsを対象にしたダウンロード方法**を記載している（Linuxの場合は、OSの選択で使用ディストリビューションに合わせたファイルを選ぶ）。
 
-**Macの方はDockerを使用すること。** 手順は [004_salome_docker.md](004_salome_docker.md) を参照（Docker Desktopをインストールし、Docker Hubで公開している講義用SALOMEイメージを取得して使う）。
+**Macの方はDockerを使用すること。** 手順は [salome_docker_mac.md](salome_docker_mac.md) を参照（Docker Desktopをインストールし、Docker Hubで公開している講義用SALOMEイメージを取得して使う）。
 
 ![SALOME公式サイトからDOWNLOADを開く](img/000_salome/salome-install_1.png)
 
@@ -211,4 +211,4 @@ SALOME で作成したメッシュを OpenFOAM 形式に変換して利用する
 | 001 Box | `data/001_box/run001_of13` | `Mesh_4.unv`、OpenFOAM 13の定常流体解析ケース（結果 `90/`） |
 | 002 撹拌機 | `data/002_Stirrer/sample/mesh/mesh_of13` | `Mesh_1.unv`、UNV変換・topoSet・createBafflesのケース |
 | 002 撹拌機 | `data/002_Stirrer/sample/mesh/master_curve_of13` | 羽根可動化テスト（moveDynamicMesh）のケース |
-| 003 ヒートシンク | `data/003_heatsink/run001_of2512` | `Mesh_1.unv`、OpenFOAM v2512の熱流体・固体連成ケース（結果 `2/`〜`60/`） |
+| 003 ヒートシンク | `data/003_heatsink/run001_of13` | `Mesh_1.unv`、OpenFOAM 13の熱流体・固体連成ケース |

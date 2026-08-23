@@ -1,0 +1,17 @@
+FoamFile
+{
+    format      ascii;
+    class       volScalarField;
+    object      omega;
+}
+dimensions      [0 0 -1 0 0 0 0];
+internalField   uniform 10;
+boundaryField
+{
+    #includeEtc "caseDicts/setConstraintTypes"
+    ".*"
+    {
+        type            calculated;
+        value           uniform 10;
+    }
+}

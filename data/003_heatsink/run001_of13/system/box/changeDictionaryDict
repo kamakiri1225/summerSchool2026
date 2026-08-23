@@ -1,0 +1,416 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2512                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      changeDictionaryDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+// 流れ方向: YMax(+0.160m) → YMin(-0.080m)  U = (0 -0.5 0)
+// 入口 = YMax,  出口 = YMin
+
+// ---- 全パッチタイプ ----
+boundary
+{
+    YMin
+    {
+        type        patch;
+    }
+    YMax
+    {
+        type        patch;
+    }
+    ZMax
+    {
+        type        wall;
+        inGroups    1(wall);
+    }
+    XMax
+    {
+        type        wall;
+        inGroups    1(wall);
+    }
+    XMin
+    {
+        type        wall;
+        inGroups    1(wall);
+    }
+}
+
+// ---- 温度 ----
+T
+{
+    internalField   uniform 293.15;
+    boundaryField
+    {
+        YMax
+        {
+            type            fixedValue;
+            value           uniform 293.15;
+        }
+        YMin
+        {
+            type            inletOutlet;
+            inletValue      uniform 293.15;
+            value           uniform 293.15;
+        }
+        ZMax
+        {
+            type            zeroGradient;
+        }
+        XMax
+        {
+            type            zeroGradient;
+        }
+        XMin
+        {
+            type            zeroGradient;
+        }
+        box_to_heatSource
+        {
+            type            coupledTemperature;
+            value           uniform 293.15;
+        }
+        box_to_basis
+        {
+            type            coupledTemperature;
+            value           uniform 293.15;
+        }
+        box_to_heatSink
+        {
+            type            coupledTemperature;
+            value           uniform 293.15;
+        }
+    }
+}
+
+// ---- 速度 ----
+// 入口YMaxで固定速度,  出口YMinで圧力駆動
+U
+{
+    internalField   uniform ( 0 -0.5 0 );
+    boundaryField
+    {
+        YMax
+        {
+            type            fixedValue;
+            value           uniform ( 0 -0.5 0 );
+        }
+        YMin
+        {
+            type            pressureInletOutletVelocity;
+            value           uniform ( 0 -0.5 0 );
+        }
+        ZMax
+        {
+            type            noSlip;
+        }
+        XMax
+        {
+            type            noSlip;
+        }
+        XMin
+        {
+            type            noSlip;
+        }
+        box_to_heatSource
+        {
+            type            noSlip;
+        }
+        box_to_basis
+        {
+            type            noSlip;
+        }
+        box_to_heatSink
+        {
+            type            noSlip;
+        }
+    }
+}
+
+// ---- 圧力 ----
+// splitMeshRegions が生成する box_to_* パッチは value 0 になるため
+// 全パッチを 100000 Pa で上書き（0 のままだと rho=0 → kOmegaSST 初期化で0除算）
+p
+{
+    internalField   uniform 100000;
+    boundaryField
+    {
+        ".*"
+        {
+            type            calculated;
+            value           uniform 100000;
+        }
+    }
+}
+
+// ---- 修正圧力 ----
+// 入口YMaxでfixedFluxPressure,  出口YMinでtotalPressure
+p_rgh
+{
+    internalField   uniform 100000;
+    boundaryField
+    {
+        YMax
+        {
+            type            fixedFluxPressure;
+            value           uniform 100000;
+        }
+        YMin
+        {
+            type            totalPressure;
+            value           uniform 100000;
+            p0              uniform 100000;
+        }
+        ZMax
+        {
+            type            fixedFluxPressure;
+            value           uniform 100000;
+        }
+        XMax
+        {
+            type            fixedFluxPressure;
+            value           uniform 100000;
+        }
+        XMin
+        {
+            type            fixedFluxPressure;
+            value           uniform 100000;
+        }
+        box_to_heatSource
+        {
+            type            fixedFluxPressure;
+            value           uniform 100000;
+        }
+        box_to_basis
+        {
+            type            fixedFluxPressure;
+            value           uniform 100000;
+        }
+        box_to_heatSink
+        {
+            type            fixedFluxPressure;
+            value           uniform 100000;
+        }
+    }
+}
+
+// ---- 乱流運動エネルギー ----
+// 入口: 乱流強度5%から計算 (k = 1.5*(0.05*0.5)^2 ≈ 0.00094 → 0.001)
+// 出口: inletOutlet (逆流対応)
+k
+{
+    internalField   uniform 0.001;
+    boundaryField
+    {
+        YMax
+        {
+            type            turbulentIntensityKineticEnergyInlet;
+            intensity       0.05;
+            value           uniform 0.001;
+        }
+        YMin
+        {
+            type            inletOutlet;
+            inletValue      uniform 0.001;
+            value           uniform 0.001;
+        }
+        ZMax
+        {
+            type            kqRWallFunction;
+            value           uniform 0.001;
+        }
+        XMax
+        {
+            type            kqRWallFunction;
+            value           uniform 0.001;
+        }
+        XMin
+        {
+            type            kqRWallFunction;
+            value           uniform 0.001;
+        }
+        box_to_heatSource
+        {
+            type            kqRWallFunction;
+            value           uniform 0.001;
+        }
+        box_to_basis
+        {
+            type            kqRWallFunction;
+            value           uniform 0.001;
+        }
+        box_to_heatSink
+        {
+            type            kqRWallFunction;
+            value           uniform 0.001;
+        }
+    }
+}
+
+// ---- 比散逸率 ----
+// 入口: 混合長から計算 (l = 0.07*Dh = 0.007m, omega = Cmu^(-0.25)*sqrt(k)/l ≈ 8)
+// 出口: inletOutlet
+omega
+{
+    internalField   uniform 10;
+    boundaryField
+    {
+        YMax
+        {
+            type            turbulentMixingLengthFrequencyInlet;
+            mixingLength    0.007;
+            value           uniform 10;
+        }
+        YMin
+        {
+            type            inletOutlet;
+            inletValue      uniform 10;
+            value           uniform 10;
+        }
+        ZMax
+        {
+            type            omegaWallFunction;
+            value           uniform 10;
+        }
+        XMax
+        {
+            type            omegaWallFunction;
+            value           uniform 10;
+        }
+        XMin
+        {
+            type            omegaWallFunction;
+            value           uniform 10;
+        }
+        box_to_heatSource
+        {
+            type            omegaWallFunction;
+            value           uniform 10;
+        }
+        box_to_basis
+        {
+            type            omegaWallFunction;
+            value           uniform 10;
+        }
+        box_to_heatSink
+        {
+            type            omegaWallFunction;
+            value           uniform 10;
+        }
+    }
+}
+
+// ---- 乱流温度拡散係数 ----
+alphat
+{
+    internalField   uniform 0;
+    boundaryField
+    {
+        YMax
+        {
+            type            calculated;
+            value           uniform 0;
+        }
+        YMin
+        {
+            type            calculated;
+            value           uniform 0;
+        }
+        ZMax
+        {
+            type            compressible::alphatWallFunction;
+            Prt             0.85;
+            value           uniform 0;
+        }
+        XMax
+        {
+            type            compressible::alphatWallFunction;
+            Prt             0.85;
+            value           uniform 0;
+        }
+        XMin
+        {
+            type            compressible::alphatWallFunction;
+            Prt             0.85;
+            value           uniform 0;
+        }
+        box_to_heatSource
+        {
+            type            compressible::alphatWallFunction;
+            Prt             0.85;
+            value           uniform 0;
+        }
+        box_to_basis
+        {
+            type            compressible::alphatWallFunction;
+            Prt             0.85;
+            value           uniform 0;
+        }
+        box_to_heatSink
+        {
+            type            compressible::alphatWallFunction;
+            Prt             0.85;
+            value           uniform 0;
+        }
+    }
+}
+
+// ---- 乱流粘性係数 ----
+nut
+{
+    internalField   uniform 0;
+    boundaryField
+    {
+        YMax
+        {
+            type            calculated;
+            value           uniform 0;
+        }
+        YMin
+        {
+            type            calculated;
+            value           uniform 0;
+        }
+        ZMax
+        {
+            type            nutkWallFunction;
+            value           uniform 0;
+        }
+        XMax
+        {
+            type            nutkWallFunction;
+            value           uniform 0;
+        }
+        XMin
+        {
+            type            nutkWallFunction;
+            value           uniform 0;
+        }
+        box_to_heatSource
+        {
+            type            nutkWallFunction;
+            value           uniform 0;
+        }
+        box_to_basis
+        {
+            type            nutkWallFunction;
+            value           uniform 0;
+        }
+        box_to_heatSink
+        {
+            type            nutkWallFunction;
+            value           uniform 0;
+        }
+    }
+}
+
+// ************************************************************************* //

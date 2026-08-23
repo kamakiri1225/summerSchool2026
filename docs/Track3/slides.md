@@ -1,4 +1,4 @@
-# SALOMEとは
+# SALOMEとは・インストール
 
 ## 概要
 
@@ -28,7 +28,7 @@ SALOMEには2種類の配布形態があり、混同しやすいので最初に�
 
 <https://www.salome-platform.org/> からSALOMEをダウンロードしてインストールする。ここでは**Windowsを対象にしたダウンロード方法**を記載している（Linuxの場合は、OSの選択で使用ディストリビューションに合わせたファイルを選ぶ）。
 
-**Macの方はDockerを使用すること。** 手順は [004_salome_docker.md](004_salome_docker.md) を参照（Docker Desktopをインストールし、Docker Hubで公開している講義用SALOMEイメージを取得して使う）。
+**Macの方はDockerを使用すること。** 手順は [salome_docker_mac.md](salome_docker_mac.md) を参照（Docker Desktopをインストールし、Docker Hubで公開している講義用SALOMEイメージを取得して使う）。
 
 
 ---
@@ -277,7 +277,7 @@ SALOME で作成したメッシュを OpenFOAM 形式に変換して利用する
 | 001 Box | `data/001_box/run001_of13` | `Mesh_4.unv`、OpenFOAM 13の定常流体解析ケース（結果 `90/`） |
 | 002 撹拌機 | `data/002_Stirrer/sample/mesh/mesh_of13` | `Mesh_1.unv`、UNV変換・topoSet・createBafflesのケース |
 | 002 撹拌機 | `data/002_Stirrer/sample/mesh/master_curve_of13` | 羽根可動化テスト（moveDynamicMesh）のケース |
-| 003 ヒートシンク | `data/003_heatsink/run001_of2512` | `Mesh_1.unv`、OpenFOAM v2512の熱流体・固体連成ケース（結果 `2/`〜`60/`） |
+| 003 ヒートシンク | `data/003_heatsink/run001_of13` | `Mesh_1.unv`、OpenFOAM 13の熱流体・固体連成ケース |
 
 ---
 
@@ -516,7 +516,7 @@ SALOMEで直方体モデルを作成し、OpenFOAMで使える境界名つきメ
 
 #### 5. テトラメッシュ結果を確認する
 
-![テトラメッシュ結果を確認する](img/001_box/page_022.svg)
+![テトラメッシュ結果を確認する](img/001_box/mesh_p43.png)
 
 - 確認: 生成されたテトラメッシュの見た目を確認する。
 - 確認: 複雑形状には使いやすいが、直方体ではヘキサメッシュも比較する。
@@ -527,7 +527,16 @@ SALOMEで直方体モデルを作成し、OpenFOAMで使える境界名つきメ
 
 ---
 
-#### 1. ヘキサメッシュを設定する
+#### 1. 新しいメッシュを追加する
+
+![新しいメッシュを追加する](img/001_box/page_022.svg)
+
+- 別のメッシュタイプを作成する場合は、メニューバーの `Mesh` から `Create Mesh` をクリックする。
+- 同じ形状に対して、テトラメッシュやヘキサメッシュなど、複数のメッシュを追加しておくことができる。
+
+---
+
+#### 2. ヘキサメッシュを設定する
 
 ![ヘキサメッシュを設定する](img/001_box/page_023.svg)
 
@@ -538,7 +547,7 @@ SALOMEで直方体モデルを作成し、OpenFOAMで使える境界名つきメ
 
 ---
 
-#### 2. ヘキサメッシュを計算する
+#### 3. ヘキサメッシュを計算する
 
 ![ヘキサメッシュを計算する](img/001_box/page_024.svg)
 
@@ -635,21 +644,20 @@ SALOMEで直方体モデルを作成し、OpenFOAMで使える境界名つきメ
 
 ---
 
-#### 4. サブメッシュ設定を確認する
+#### 4. y方向の分割数を指定する
 
-![サブメッシュ設定を確認する](img/001_box/page_034.svg)
+![y方向の分割数を指定する](img/001_box/page_034.svg)
 
-- 確認: 選択した線グループが正しいか確認する。
-- 確認: サブメッシュは全体設定より優先されるため、対象の選択が重要になる。
+- `Geometry` に線グループ `y` を選択し、y方向の分割数を指定する。
 
 ---
 
-#### 5. 方向別分割の考え方
+#### 5. z方向の分割数を指定する
 
-![方向別分割の考え方](img/001_box/page_035.svg)
+![z方向の分割数を指定する](img/001_box/page_035.svg)
 
+- `Geometry` に線グループ `z` を選択し、z方向の分割数を指定する。
 - 確認: 全体メッシュ設定とサブメッシュ設定を組み合わせて使う。
-- 確認: 流れ方向や勾配が大きい方向だけ分割数を増やせる。
 
 ---
 
@@ -662,21 +670,12 @@ SALOMEで直方体モデルを作成し、OpenFOAMで使える境界名つきメ
 
 ---
 
-#### 7. 分割結果を確認する
+#### 7. 保存する
 
-![分割結果を確認する](img/001_box/page_037.svg)
+![](img/001_box/pdf_p059.svg)
 
-- 確認: メッシュ密度が方向ごとに変わっていることを確認する。
-- 確認: 流れ方向・壁面近傍・勾配の大きい場所で分割を調整する。
-
----
-
-#### 8. メッシュ品質を確認する
-
-![メッシュ品質を確認する](img/001_box/page_038.svg)
-
-- 確認: サブメッシュ設定後のセル形状を確認する。
-- 確認: 極端なアスペクト比や不自然なセルがないかを見る。
+- (12) `File > Save As...` をクリックする。
+- (13) ファイル名を入力し、`Save` をクリックする。
 
 ---
 
@@ -725,15 +724,6 @@ SALOMEで直方体モデルを作成し、OpenFOAMで使える境界名つきメ
 
 ---
 
-#### 5. 局所細分化結果を確認する
-
-![局所細分化結果を確認する](img/001_box/page_043.svg)
-
-- 確認: 細分化した面とその周辺のセル接続を確認する。
-- 確認: 局所細分化は計算コストと精度のバランスを取るために使う。
-
----
-
 ### 境界層メッシュを入れる
 
 ---
@@ -772,26 +762,35 @@ SALOMEで直方体モデルを作成し、OpenFOAMで使える境界名つきメ
 
 SALOMEで作成したメッシュをOpenFOAMへ渡すには、UNV形式で書き出し、OpenFOAMのケースフォルダへ変換・配置する必要がある。
 
+SALOME で作成したメッシュを OpenFOAM 形式に変換して利用する。全体の流れは以下の通り。
+
+
+---
+
+![SALOMEからOpenFOAMへの連携フロー](img/000_salome/salome_to_openfoam_flow.png)
+
 ---
 
 ### OpenFOAM用にUNV出力する
 
 ---
 
-#### 1. OpenFOAM計算で使うメッシュを選ぶ
+#### 1. SALOMEのStudyを保存する
 
-![OpenFOAM計算で使うメッシュを選ぶ](img/001_box/page_047.svg)
+![SALOMEのStudyを保存する](img/001_box/pdf_p071.svg)
 
-- 確認: 今回のOpenFOAM計算では `Mesh_4` を使う。
-- 確認: `Mesh_4` は方向別分割を設定したヘキサメッシュで、直方体流路の基礎計算に使いやすい。
+- (4) `File > Save As...` をクリックする。
+- (5) ファイル名を入力し、`Save` をクリックする。
 
 ---
 
-#### 2. OpenFOAMへ渡すグループを整理する
+#### 2. Geometryからメッシュグループを作る
 
-![OpenFOAMへ渡すグループを整理する](img/001_box/page_048.svg)
+![Geometryからメッシュグループを作る](img/001_box/pdf_p072.svg)
 
-- (1) `Groups of Edges` は削除する。
+- (1) `Mesh_4` を選択した状態で `Create Groups from Geometry` をクリックする。
+- (2) Geometryに `inlet`、`side`、`topAndbottom`、`outlet` を追加する。
+- (3) `Apply and Close` で確定する。
 - 補足: `Groups of Faces` がOpenFOAMの境界面の名前になる。
 - 補足: 不要な線グループやCompoundグループをUNVに含めると、`ideasUnvToFoam`でエラーになることがある。
 
@@ -799,30 +798,10 @@ SALOMEで作成したメッシュをOpenFOAMへ渡すには、UNV形式で書き
 
 #### 3. UNV形式でエクスポートする
 
-![UNV形式でエクスポートする](img/001_box/page_049.svg)
+![UNV形式でエクスポートする](img/001_box/pdf_p073.svg)
 
 - (2) `Mesh_4` 上で右クリックし、`Export > UNV file` を選ぶ。
 - (3) ファイル名を `Mesh_4` として保存する。
-
----
-
-#### 4. エクスポート結果を確認する
-
-![エクスポート結果を確認する](img/001_box/page_050.svg)
-
-- 確認: 指定した場所に `Mesh_4.unv` が作成されたことを確認する。
-- 確認: OpenFOAMケース側へコピーまたは参照して変換する。
-
----
-
-#### 5. Geometryからメッシュグループを作る
-
-![Geometryからメッシュグループを作る](img/001_box/page_051.svg)
-
-- (1) `Mesh_4` を選択した状態で `Create Groups from Geometry` をクリックする。
-- (2) Geometryに面を追加する。
-- (3) `Apply and Close` で確定し、OpenFOAMに渡すパッチ名を整える。
-- 補足: メッシュを作成した後にGeometry側で面グループを作成した場合も、`Create Groups from Geometry` を使うと、Geometryの面グループをメッシュ側のグループとして割り当てることができる。
 
 ---
 
@@ -878,11 +857,19 @@ checkMesh > log.checkMesh.of13 2>&1
 
 #### 境界条件を設定する
 
-チュートリアルからコピーした `0` フォルダの各ファイルを、SALOMEで付けた境界名（`inlet`・`outlet`・`side`・`topAndbottom`）に合わせて編集する。主な設定は以下。
+チュートリアルからコピーした `0` フォルダの各ファイルと `constant/polyMesh/boundary` を、SALOMEで付けた境界名（`inlet`・`outlet`・`side`・`topAndbottom`）に合わせて編集する。
 
-- `0/U`: `inlet` を `fixedValue`、`value uniform (0.01 0 0)` とし、x方向へ0.01 m/sの一様流入を与える。`outlet` は `zeroGradient`、`side` は壁（`noSlip`）、`topAndbottom` は `empty` とする。
-- `0/p`: `outlet` を基準圧として `fixedValue 0`、`inlet` と `side` は `zeroGradient`、`topAndbottom` は `empty` とする。
-- `topAndbottom` を `empty` にするため、`constant/polyMesh/boundary` の該当パッチの `type` も `empty` になっていることを確認する（`ideasUnvToFoam` 変換直後は `patch` になっているため、必要に応じて修正する）。
+| 境界名 | `constant/polyMesh/boundary` の `type` | `0/U` | `0/p` |
+|---|---|---|---|
+| `inlet` | `patch` | `fixedValue`、`value uniform (0.01 0 0)` | `zeroGradient` |
+| `outlet` | `patch` | `zeroGradient` | `fixedValue`、`value uniform 0` |
+| `side` | `wall` | `noSlip` | `zeroGradient` |
+| `topAndbottom` | `empty` | `empty` | `empty` |
+
+- `inlet` ではx方向へ0.01 m/sの一様流入を与える。
+- `outlet` の圧力を `uniform 0` とし、基準圧にする。
+- `ideasUnvToFoam` 変換直後は、`constant/polyMesh/boundary` の各境界が `patch` になっている場合がある。`side` を `wall`、`topAndbottom` を `empty` に修正する。
+- `topAndbottom` を2次元計算の空方向として扱うには、`constant/polyMesh/boundary`、`0/U`、`0/p` の3か所をすべて `empty` に揃える。
 
 ---
 
@@ -895,6 +882,8 @@ foamRun > log.foamRun.of13 2>&1
 ```
 
 - OpenFOAM 13では、`foamRun` が `system/controlDict` の `solver incompressibleFluid;` を読み込み、非圧縮流体の定常計算（SIMPLE法）を行う。
+- `controlDict` に書かれた設定を使わず、実行時にソルバ名を明示する場合は、`foamRun -solver incompressibleFluid > log.incompressibleFluid.of13 2>&1` とする。
+- `simpleFoam > log.simpleFoam 2>&1` のようにソルバ名をコマンドとして直接実行する形式もあるが、これは独立したソルバ実行ファイルを提供するOpenFOAMのバージョンやディストリビューションで使用する。OpenFOAM 13の `incompressibleFluid` はソルバモジュールなので、この演習では `foamRun` を使用する。
 - `system/controlDict` の `endTime` は `2000` としているが、定常解析では残差が収束判定を満たした時点で計算が終了する。今回の計算は90反復で収束し（`log.foamRun.of13` に `SIMPLE solution converged in 90 iterations` と出力される）、結果は `90/` フォルダに書き出された。
 - `log.foamRun.of13` の各反復で `Ux`・`Uy`・`p` の残差（`Initial residual`）が小さくなっていく様子を確認する。
 
@@ -919,6 +908,21 @@ touch post.foam
 - 境界条件: `topAndbottom` は `empty` とし、2次元解析として厚み方向を解かない。
 - 境界条件: `side` は `wall` とし、壁面では流速が0になるため、壁近傍で `U Magnitude` が小さくなる。
 - 確認: 矢印表示を追加すると、流速ベクトルの向きが入口から出口方向へ向かっていることを確認しやすい。
+
+---
+
+## メッシュの品質について
+
+![メッシュ数と品質を確認](img/001_box/mesh_quality_check.svg)
+
+`checkMesh` の結果では、セル数だけでなく次の品質指標を確認する。
+
+- `Max aspect ratio`: セルの縦横比。大きすぎるセルは計算の収束を遅くする場合がある。
+- `Mesh non-orthogonality Max`: セル面とセル中心間の非直交性。70度を超える場合は数値設定による補正が必要になり、90度を超えるメッシュは使用しない。
+- `Max skewness`: セルの歪み。値が大きい場所では補間精度が低下しやすい。
+- `Mesh OK`: OpenFOAMの基本的な品質判定を通過したことを示す。ただし、解析内容に適した品質かどうかは各指標の値とParaView上の位置を併せて判断する。
+
+品質に問題がある面やセルは、`checkMesh` の面セット・セルセット出力をParaViewで表示し、問題箇所を確認する。
 
 ---
 
@@ -1660,6 +1664,13 @@ OpenFOAMへ渡す面や線を整理するため、Geometry側でグループを�
 
 SALOMEから出力した `Mesh_1.unv` は、そのままではOpenFOAMで使えない。UNV形式からOpenFOAM形式へ変換し、スケール変換（mm→m）を行った上で、羽根（wing）と仕切り板（circ）の位置に `topoSet` + `createBaffles` でバッフル（厚みゼロの内部壁）を作成する。
 
+SALOME で作成したメッシュを OpenFOAM 形式に変換して利用する。全体の流れは以下の通り。
+
+
+---
+
+![SALOMEからOpenFOAMへの連携フロー](img/000_salome/salome_to_openfoam_flow.png)
+
 - 作業フォルダ: `data/002_Stirrer/sample/mesh/mesh_of13`
 
 
@@ -1774,7 +1785,7 @@ t=0.1〜1の変形過程をアニメーションにすると以下のように�
 
 ## この演習で目指すこと
 
-ヒートシンクを題材に、流体領域（box）と固体領域（heatSink・heatSource・basis）を分けたマルチリージョン用メッシュを作成する。OpenFOAMのchtMultiRegionFoamで、流体と固体を同時に扱う熱流体・固体連成解析につなげる。
+ヒートシンクを題材に、流体領域（box）と固体領域（heatSink・heatSource・basis）を分けたマルチリージョン用メッシュを作成する。OpenFOAM 13の `foamMultiRun` で流体ソルバと固体ソルバを連成し、熱流体・固体連成解析につなげる。
 
 - STEPファイルを読み込み、ソリッド単位に分解して名前を整理する
 - Partitionで4つの領域（box・heatSink・heatSource・basis）を分割する
@@ -1804,9 +1815,9 @@ t=0.1〜1の変形過程をアニメーションにすると以下のように�
 
 | フォルダ | 内容 |
 |----------|------|
-| `data/003_heatsink/run001_of2512` | SALOMEから出力した `Mesh_1.unv` と、OpenFOAM v2512で `chtMultiRegionFoam` を実行するケース一式（セットアップスクリプト `setup.sh`、計算結果 `2/`〜`60/`） |
+| `data/003_heatsink/run001_of13` | SALOMEから出力した `Mesh_1.unv` と、OpenFOAM 13で `foamMultiRun` を実行するケース一式（セットアップスクリプト `setup.sh` を含む） |
 
-この演習のOpenFOAM計算は **OpenFOAM v2512**（www.openfoam.com 版）で行う。`chtMultiRegionFoam` はv2512側のソルバで、OpenFOAM 13（www.openfoam.org 版）には同名のソルバは無いため注意する。
+この演習のOpenFOAM計算は **OpenFOAM 13**（www.openfoam.org 版）で行う。
 
 ---
 
@@ -2252,25 +2263,32 @@ OpenFOAMでは境界条件は面の名前に対して設定するため、SALOME
 ![UNVファイルをエクスポートする](img/003_heatsink/page_197.svg)
 
 - (29) `Mesh_1` を右クリック > `Export` > `UNV file` をクリックする。
-- (30) ファイル名 `Mesh_1.unv` として、OpenFOAMの計算フォルダ（`run001_of2512`。画像では `run001_of13` に保存しているが、実際の計算はv2512のケースフォルダで行った）に `Save` する。
+- (30) ファイル名 `Mesh_1.unv` として、OpenFOAMの計算フォルダ `run001_of13` に `Save` する。
 - 作成した面グループ名（YMin・YMax・ZMax・XMax・XMin・basis・heatSink・heatSource・basis_top）がそのままOpenFOAMのパッチ名になる。
 
 ---
 
 ## OpenFOAM側での計算
 
-- 作業フォルダ: `data/003_heatsink/run001_of2512`
+SALOME で作成したメッシュを OpenFOAM 形式に変換して利用する。全体の流れは以下の通り。
 
 
 ---
 
-### OpenFOAM v2512環境の読み込み
+![SALOMEからOpenFOAMへの連携フロー](img/000_salome/salome_to_openfoam_flow.png)
 
-この演習の計算はOpenFOAM v2512で行う。まずv2512の環境を読み込む。
+- 作業フォルダ: `data/003_heatsink/run001_of13`
+
+
+---
+
+### OpenFOAM 13環境の読み込み
+
+この演習の計算はOpenFOAM 13で行う。まずOpenFOAM 13の環境を読み込む。
 
 ```bash
-cd data/003_heatsink/run001_of2512
-source /usr/lib/openfoam/openfoam2512/etc/bashrc
+source /opt/openfoam13/etc/bashrc
+cd data/003_heatsink/run001_of13
 ```
 
 
@@ -2286,19 +2304,26 @@ bash setup.sh
 
 `setup.sh` の中では、以下の処理を順に行っている。
 
+
+---
+
+![OpenFOAM 13ケースセットアップの流れ](img/003_heatsink/openfoam13_setup_flow.svg)
+
 ```text
 1. 前回実行分のクリーンアップ
 2. ideasUnvToFoam Mesh_1.unv     … UNVメッシュをOpenFOAM形式へ変換
-3. transformPoints -scale '(0.001 0.001 0.001)'  … mm単位からm単位へスケール変換
-4. 0/ にフィールドテンプレート（T・p・p_rgh・U・k・omega・alphat・nut）を作成
-5. splitMeshRegions -cellZones -overwrite  … セルゾーン名を使い4リージョンへ分割
-6. 固体リージョン（heatSink・heatSource・basis）から流体専用フィールドを削除
+3. transformPoints "scale=(0.001 0.001 0.001)"  … mm単位からm単位へスケール変換
+4. splitMeshRegions -cellZones  … セルゾーン名を使い4リージョンへ分割
+5. 0.orig/ のフィールドテンプレートを 0/ へコピー
+   流体は T・U・p・p_rgh、固体は T を用意し、各境界を calculated にしておく
+6. 0・constant・system にリージョン別の入力を用意
 7. changeDictionary -region <各リージョン>  … 正式な境界条件へ上書き
+8. checkMesh -region <各リージョン>  … 分割後のメッシュを確認
 ```
 
-- `ideasUnvToFoam` でUNVメッシュをOpenFOAM形式に変換する。SALOMEでmm単位のモデルを作っているため、`transformPoints` でOpenFOAMが使うm単位に変換する（v2512では `-scale` オプションで指定する）。
-- `splitMeshRegions -cellZones` は、UNVメッシュ作成時に付けたセルゾーン名（box・heatSink・heatSource・basis）を使ってメッシュを4つのリージョンに分割し、`0/` のフィールドを各リージョン（`0/box` 等）へマッピングする。
-- 分割直後のフィールドは全パッチ `calculated` の仮設定なので、`changeDictionary` が `system/<region>/changeDictionaryDict` を参照して、流入・壁・リージョン間結合（`compressible::turbulentTemperatureRadCoupledMixed` 等）の正式な境界条件に上書きする。
+- `ideasUnvToFoam` でUNVメッシュをOpenFOAM形式に変換する。SALOMEでmm単位のモデルを作っているため、`transformPoints "scale=(0.001 0.001 0.001)"` でOpenFOAMが使うm単位に変換する。
+- `splitMeshRegions -cellZones` は、UNVメッシュ作成時に付けたセルゾーン名（box・heatSink・heatSource・basis）を使ってメッシュを4つのリージョンに分割する。これにより、`constant/<region>/polyMesh` と `0/<region>` が作成される。`system/<region>` には、あらかじめ各リージョンの数値計算設定と境界条件辞書を用意している。
+- `system/<region>/changeDictionaryDict` に各パッチの境界条件を記述しておき、`changeDictionary -region <region>` で `0/<region>` の各フィールドへ反映する。流体と固体の接触面には `coupledTemperature` を設定し、リージョン間で温度と熱流束を受け渡す。
 - 各リージョンの物性値は `constant/<region>`、数値スキーム・行列ソルバ設定は `system/<region>` に用意している。
 
 
@@ -2311,17 +2336,18 @@ bash setup.sh
 
 ---
 
-### chtMultiRegionFoamの実行
+### foamMultiRunの実行
 
 セットアップが完了したら、熱流体・固体連成ソルバを実行する。
 
 ```bash
-chtMultiRegionFoam > log.chtMultiRegionFoam 2>&1
+foamMultiRun > log.foamMultiRun.of13 2>&1
 ```
 
-- `chtMultiRegionFoam` は非定常の熱流体・固体連成ソルバで、流体側は速度・圧力・乱流量・温度、固体側は温度のみを解く。
-- `system/controlDict` の設定により、時刻 `2` から `60` まで一定間隔で結果が書き出される（ケースフォルダの `2/`〜`60/`）。
-- 流入条件は `U = (0 -0.5 0) m/s`（y方向へ0.5 m/s）、初期温度は `293.15 K` としている。発熱源の設定は `system/heatSource/fvOptions`、各リージョンの詳細な境界条件は `system/<region>/changeDictionaryDict` を参照。
+- OpenFOAM 13では `foamMultiRun` が `system/controlDict` の `regionSolvers` を読み込み、`box` を流体ソルバ、`heatSink`・`heatSource`・`basis` を固体ソルバとして連成計算する。
+- 流体側は乱流モデル（`kOmegaSST`）で速度・圧力・温度・乱流量を解き、固体側は温度を解く。
+- `system/controlDict` の設定により、時刻 `2` から `60` まで2秒間隔で結果を書き出す。
+- 流入条件は `U = (0 -0.5 0) m/s`（y方向へ0.5 m/s）、初期温度は `293.15 K` としている。発熱源の設定は `constant/heatSource/fvModels`、各リージョンの境界条件は `system/<region>/changeDictionaryDict` を参照する。
 
 
 ---

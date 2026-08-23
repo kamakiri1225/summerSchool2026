@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1840" viewBox="0 0 1080 1840" role="img" aria-labelledby="title desc">
+  <title id="title">OpenFOAM 13ケースセットアップの流れ</title>
+  <desc id="desc">setup.shが実行する8工程</desc>
+  <defs>
+    <marker id="arrow" markerWidth="14" markerHeight="14" refX="11" refY="7" orient="auto">
+      <path d="M0 0L14 7L0 14Z" fill="#202020"/>
+    </marker>
+    <style>
+      text{font-family:"Noto Sans JP","Yu Gothic",sans-serif;fill:#090909;letter-spacing:0;text-anchor:middle}
+      .box{stroke:#202020;stroke-width:4;rx:14}
+      .heading{font-size:31px;font-weight:700}
+      .detail{font-size:22px}
+      .command{font-family:"Noto Sans Mono",monospace;font-size:21px}
+      .arrow{stroke:#202020;stroke-width:4;fill:none;marker-end:url(#arrow)}
+    </style>
+  </defs>
+  <rect width="1080" height="1840" fill="#fff"/>
+  <path class="arrow" d="M540 225V275M540 435V485M540 645V695M540 855V905M540 1065V1115M540 1275V1325M540 1485V1535"/>
+
+  <g transform="translate(75 45)">
+    <rect class="box" width="930" height="180" fill="#dce7f2"/>
+    <text class="heading" x="465" y="72">1　前回実行分のクリーンアップ</text>
+    <text class="detail" x="465" y="125">生成済みメッシュ・時刻フォルダ・ログを削除</text>
+  </g>
+  <g transform="translate(75 255)">
+    <rect class="box" width="930" height="180" fill="#e5f0df"/>
+    <text class="heading" x="465" y="72">2　ideasUnvToFoam</text>
+    <text class="detail" x="465" y="125">Mesh_1.unv を OpenFOAM形式へ変換</text>
+  </g>
+  <g transform="translate(75 465)">
+    <rect class="box" width="930" height="180" fill="#e5f0df"/>
+    <text class="heading" x="465" y="72">3　transformPoints</text>
+    <text class="detail" x="465" y="125">座標を mm から m へ変換（1/1000倍）</text>
+  </g>
+  <g transform="translate(75 675)">
+    <rect class="box" width="930" height="180" fill="#f5f0dc"/>
+    <text class="heading" x="465" y="58">4　splitMeshRegions -cellZones</text>
+    <text class="detail" x="465" y="112">セルゾーン名を使って4リージョンへ分割</text>
+  </g>
+  <g transform="translate(75 885)">
+    <rect class="box" width="930" height="180" fill="#e5f0df"/>
+    <text class="heading" x="465" y="48">5　初期フィールドを0/へ配置</text>
+    <text class="detail" x="465" y="88">流体: T・U・p・p_rgh　固体: T</text>
+    <text class="command" x="465" y="128">0.orig/ → 0/　境界条件: calculated</text>
+  </g>
+  <g transform="translate(75 1095)">
+    <rect class="box" width="930" height="180" fill="#f5f0dc"/>
+    <text class="heading" x="465" y="72">6　リージョン別の入力を用意</text>
+    <text class="command" x="465" y="125">0/　constant/　system/</text>
+  </g>
+  <g transform="translate(75 1305)">
+    <rect class="box" width="930" height="180" fill="#e5f0df"/>
+    <text class="heading" x="465" y="72">7　changeDictionary -region</text>
+    <text class="detail" x="465" y="125">各リージョンへ正式な境界条件を反映</text>
+  </g>
+  <g transform="translate(75 1515)">
+    <rect class="box" width="930" height="180" fill="#dce7f2"/>
+    <text class="heading" x="465" y="72">8　checkMesh -region</text>
+    <text class="detail" x="465" y="125">4リージョンすべてのメッシュ品質を確認</text>
+  </g>
+</svg>

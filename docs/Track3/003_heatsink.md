@@ -2,7 +2,7 @@
 
 ## この演習で目指すこと
 
-ヒートシンクを題材に、流体領域（box）と固体領域（heatSink・heatSource・basis）を分けたマルチリージョン用メッシュを作成する。OpenFOAMのchtMultiRegionFoamで、流体と固体を同時に扱う熱流体・固体連成解析につなげる。
+ヒートシンクを題材に、流体領域（box）と固体領域（heatSink・heatSource・basis）を分けたマルチリージョン用メッシュを作成する。OpenFOAM 13の `foamMultiRun` で流体ソルバと固体ソルバを連成し、熱流体・固体連成解析につなげる。
 
 - STEPファイルを読み込み、ソリッド単位に分解して名前を整理する
 - Partitionで4つの領域（box・heatSink・heatSource・basis）を分割する
@@ -26,9 +26,9 @@
 
 | フォルダ | 内容 |
 |----------|------|
-| `data/003_heatsink/run001_of2512` | SALOMEから出力した `Mesh_1.unv` と、OpenFOAM v2512で `chtMultiRegionFoam` を実行するケース一式（セットアップスクリプト `setup.sh`、計算結果 `2/`〜`60/`） |
+| `data/003_heatsink/run001_of13` | SALOMEから出力した `Mesh_1.unv` と、OpenFOAM 13で `foamMultiRun` を実行するケース一式（セットアップスクリプト `setup.sh` を含む） |
 
-この演習のOpenFOAM計算は **OpenFOAM v2512**（www.openfoam.com 版）で行う。`chtMultiRegionFoam` はv2512側のソルバで、OpenFOAM 13（www.openfoam.org 版）には同名のソルバは無いため注意する。
+この演習のOpenFOAM計算は **OpenFOAM 13**（www.openfoam.org 版）で行う。
 
 ---
 
@@ -339,22 +339,26 @@ OpenFOAMでは境界条件は面の名前に対して設定するため、SALOME
 ![UNVファイルをエクスポートする](img/003_heatsink/page_197.svg)
 
 - (29) `Mesh_1` を右クリック > `Export` > `UNV file` をクリックする。
-- (30) ファイル名 `Mesh_1.unv` として、OpenFOAMの計算フォルダ（`run001_of2512`。画像では `run001_of13` に保存しているが、実際の計算はv2512のケースフォルダで行った）に `Save` する。
+- (30) ファイル名 `Mesh_1.unv` として、OpenFOAMの計算フォルダ `run001_of13` に `Save` する。
 - 作成した面グループ名（YMin・YMax・ZMax・XMax・XMin・basis・heatSink・heatSource・basis_top）がそのままOpenFOAMのパッチ名になる。
 
 ---
 
 ## OpenFOAM側での計算
 
-- 作業フォルダ: `data/003_heatsink/run001_of2512`
+SALOME で作成したメッシュを OpenFOAM 形式に変換して利用する。全体の流れは以下の通り。
 
-### OpenFOAM v2512環境の読み込み
+![SALOMEからOpenFOAMへの連携フロー](img/000_salome/salome_to_openfoam_flow.png)
 
-この演習の計算はOpenFOAM v2512で行う。まずv2512の環境を読み込む。
+- 作業フォルダ: `data/003_heatsink/run001_of13`
+
+### OpenFOAM 13環境の読み込み
+
+この演習の計算はOpenFOAM 13で行う。まずOpenFOAM 13の環境を読み込む。
 
 ```bash
-cd data/003_heatsink/run001_of2512
-source /usr/lib/openfoam/openfoam2512/etc/bashrc
+source /opt/openfoam13/etc/bashrc
+cd data/003_heatsink/run001_of13
 ```
 
 ### setup.shによるメッシュ変換とケース設定
@@ -367,36 +371,41 @@ bash setup.sh
 
 `setup.sh` の中では、以下の処理を順に行っている。
 
+![OpenFOAM 13ケースセットアップの流れ](img/003_heatsink/openfoam13_setup_flow.svg)
+
 ```text
 1. 前回実行分のクリーンアップ
 2. ideasUnvToFoam Mesh_1.unv     … UNVメッシュをOpenFOAM形式へ変換
-3. transformPoints -scale '(0.001 0.001 0.001)'  … mm単位からm単位へスケール変換
-4. 0/ にフィールドテンプレート（T・p・p_rgh・U・k・omega・alphat・nut）を作成
-5. splitMeshRegions -cellZones -overwrite  … セルゾーン名を使い4リージョンへ分割
-6. 固体リージョン（heatSink・heatSource・basis）から流体専用フィールドを削除
+3. transformPoints "scale=(0.001 0.001 0.001)"  … mm単位からm単位へスケール変換
+4. splitMeshRegions -cellZones  … セルゾーン名を使い4リージョンへ分割
+5. 0.orig/ のフィールドテンプレートを 0/ へコピー
+   流体は T・U・p・p_rgh、固体は T を用意し、各境界を calculated にしておく
+6. 0・constant・system にリージョン別の入力を用意
 7. changeDictionary -region <各リージョン>  … 正式な境界条件へ上書き
+8. checkMesh -region <各リージョン>  … 分割後のメッシュを確認
 ```
 
-- `ideasUnvToFoam` でUNVメッシュをOpenFOAM形式に変換する。SALOMEでmm単位のモデルを作っているため、`transformPoints` でOpenFOAMが使うm単位に変換する（v2512では `-scale` オプションで指定する）。
-- `splitMeshRegions -cellZones` は、UNVメッシュ作成時に付けたセルゾーン名（box・heatSink・heatSource・basis）を使ってメッシュを4つのリージョンに分割し、`0/` のフィールドを各リージョン（`0/box` 等）へマッピングする。
-- 分割直後のフィールドは全パッチ `calculated` の仮設定なので、`changeDictionary` が `system/<region>/changeDictionaryDict` を参照して、流入・壁・リージョン間結合（`compressible::turbulentTemperatureRadCoupledMixed` 等）の正式な境界条件に上書きする。
+- `ideasUnvToFoam` でUNVメッシュをOpenFOAM形式に変換する。SALOMEでmm単位のモデルを作っているため、`transformPoints "scale=(0.001 0.001 0.001)"` でOpenFOAMが使うm単位に変換する。
+- `splitMeshRegions -cellZones` は、UNVメッシュ作成時に付けたセルゾーン名（box・heatSink・heatSource・basis）を使ってメッシュを4つのリージョンに分割する。これにより、`constant/<region>/polyMesh` と `0/<region>` が作成される。`system/<region>` には、あらかじめ各リージョンの数値計算設定と境界条件辞書を用意している。
+- `system/<region>/changeDictionaryDict` に各パッチの境界条件を記述しておき、`changeDictionary -region <region>` で `0/<region>` の各フィールドへ反映する。流体と固体の接触面には `coupledTemperature` を設定し、リージョン間で温度と熱流束を受け渡す。
 - 各リージョンの物性値は `constant/<region>`、数値スキーム・行列ソルバ設定は `system/<region>` に用意している。
 
 ![OpenFOAM側でメッシュ全体を確認する](img/003_heatsink/page_198.svg)
 
 - ParaView等で、box（流体）とheatSink・heatSource・basis（固体）を含むメッシュ全体像を確認する。
 
-### chtMultiRegionFoamの実行
+### foamMultiRunの実行
 
 セットアップが完了したら、熱流体・固体連成ソルバを実行する。
 
 ```bash
-chtMultiRegionFoam > log.chtMultiRegionFoam 2>&1
+foamMultiRun > log.foamMultiRun.of13 2>&1
 ```
 
-- `chtMultiRegionFoam` は非定常の熱流体・固体連成ソルバで、流体側は速度・圧力・乱流量・温度、固体側は温度のみを解く。
-- `system/controlDict` の設定により、時刻 `2` から `60` まで一定間隔で結果が書き出される（ケースフォルダの `2/`〜`60/`）。
-- 流入条件は `U = (0 -0.5 0) m/s`（y方向へ0.5 m/s）、初期温度は `293.15 K` としている。発熱源の設定は `system/heatSource/fvOptions`、各リージョンの詳細な境界条件は `system/<region>/changeDictionaryDict` を参照。
+- OpenFOAM 13では `foamMultiRun` が `system/controlDict` の `regionSolvers` を読み込み、`box` を流体ソルバ、`heatSink`・`heatSource`・`basis` を固体ソルバとして連成計算する。
+- 流体側は乱流モデル（`kOmegaSST`）で速度・圧力・温度・乱流量を解き、固体側は温度を解く。
+- `system/controlDict` の設定により、時刻 `2` から `60` まで2秒間隔で結果を書き出す。
+- 流入条件は `U = (0 -0.5 0) m/s`（y方向へ0.5 m/s）、初期温度は `293.15 K` としている。発熱源の設定は `constant/heatSource/fvModels`、各リージョンの境界条件は `system/<region>/changeDictionaryDict` を参照する。
 
 ### 計算結果の確認
 

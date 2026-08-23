@@ -93,7 +93,9 @@ SALOMEでヒートシンクの熱流体・固体連成メッシュを作る</tit
 <h1 id="heatsink-salomeでヒートシンクの熱流体固体連成メッシュを作る">003
 Heatsink: SALOMEでヒートシンクの熱流体・固体連成メッシュを作る</h1>
 <h2 id="この演習で目指すこと">この演習で目指すこと</h2>
-<p>ヒートシンクを題材に、流体領域（box）と固体領域（heatSink・heatSource・basis）を分けたマルチリージョン用メッシュを作成する。OpenFOAMのchtMultiRegionFoamで、流体と固体を同時に扱う熱流体・固体連成解析につなげる。</p>
+<p>ヒートシンクを題材に、流体領域（box）と固体領域（heatSink・heatSource・basis）を分けたマルチリージョン用メッシュを作成する。OpenFOAM
+13の <code>foamMultiRun</code>
+で流体ソルバと固体ソルバを連成し、熱流体・固体連成解析につなげる。</p>
 <ul>
 <li>STEPファイルを読み込み、ソリッド単位に分解して名前を整理する</li>
 <li>Partitionで4つの領域（box・heatSink・heatSource・basis）を分割する</li>
@@ -132,19 +134,15 @@ aria-hidden="true">モデル構成（heatSink・heatSource・basis・box）</fig
 </thead>
 <tbody>
 <tr class="odd">
-<td><code>data/003_heatsink/run001_of2512</code></td>
-<td>SALOMEから出力した <code>Mesh_1.unv</code> と、OpenFOAM v2512で
-<code>chtMultiRegionFoam</code>
-を実行するケース一式（セットアップスクリプト
-<code>setup.sh</code>、計算結果 <code>2/</code>〜<code>60/</code>）</td>
+<td><code>data/003_heatsink/run001_of13</code></td>
+<td>SALOMEから出力した <code>Mesh_1.unv</code> と、OpenFOAM 13で
+<code>foamMultiRun</code> を実行するケース一式（セットアップスクリプト
+<code>setup.sh</code> を含む）</td>
 </tr>
 </tbody>
 </table>
 <p>この演習のOpenFOAM計算は <strong>OpenFOAM
-v2512</strong>（www.openfoam.com
-版）で行う。<code>chtMultiRegionFoam</code>
-はv2512側のソルバで、OpenFOAM 13（www.openfoam.org
-版）には同名のソルバは無いため注意する。</p>
+13</strong>（www.openfoam.org 版）で行う。</p>
 <hr />
 <h2 id="geometry-stepファイルを読み込む">Geometry:
 STEPファイルを読み込む</h2>
@@ -768,24 +766,30 @@ aria-hidden="true">UNVファイルをエクスポートする</figcaption>
 <code>UNV file</code> をクリックする。</li>
 </ol></li>
 <li><ol start="30" type="1">
-<li>ファイル名 <code>Mesh_1.unv</code>
-として、OpenFOAMの計算フォルダ（<code>run001_of2512</code>。画像では
-<code>run001_of13</code>
-に保存しているが、実際の計算はv2512のケースフォルダで行った）に
-<code>Save</code> する。</li>
+<li>ファイル名 <code>Mesh_1.unv</code> として、OpenFOAMの計算フォルダ
+<code>run001_of13</code> に <code>Save</code> する。</li>
 </ol></li>
 <li>作成した面グループ名（YMin・YMax・ZMax・XMax・XMin・basis・heatSink・heatSource・basis_top）がそのままOpenFOAMのパッチ名になる。</li>
 </ul>
 <hr />
 <h2 id="openfoam側での計算">OpenFOAM側での計算</h2>
+<p>SALOME で作成したメッシュを OpenFOAM
+形式に変換して利用する。全体の流れは以下の通り。</p>
+<figure>
+<img src="img/000_salome/salome_to_openfoam_flow.png"
+alt="SALOMEからOpenFOAMへの連携フロー" />
+<figcaption
+aria-hidden="true">SALOMEからOpenFOAMへの連携フロー</figcaption>
+</figure>
 <ul>
-<li>作業フォルダ: <code>data/003_heatsink/run001_of2512</code></li>
+<li>作業フォルダ: <code>data/003_heatsink/run001_of13</code></li>
 </ul>
-<h3 id="openfoam-v2512環境の読み込み">OpenFOAM v2512環境の読み込み</h3>
-<p>この演習の計算はOpenFOAM v2512で行う。まずv2512の環境を読み込む。</p>
+<h3 id="openfoam-13環境の読み込み">OpenFOAM 13環境の読み込み</h3>
+<p>この演習の計算はOpenFOAM 13で行う。まずOpenFOAM
+13の環境を読み込む。</p>
 <div class="sourceCode" id="cb1"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> data/003_heatsink/run001_of2512</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> /usr/lib/openfoam/openfoam2512/etc/bashrc</span></code></pre></div>
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> /opt/openfoam13/etc/bashrc</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> data/003_heatsink/run001_of13</span></code></pre></div>
 <h3
 id="setup.shによるメッシュ変換とケース設定">setup.shによるメッシュ変換とケース設定</h3>
 <p>ケースフォルダには、UNVメッシュの変換からリージョン分割・境界条件設定までを一括実行する
@@ -793,27 +797,36 @@ id="setup.shによるメッシュ変換とケース設定">setup.shによるメ�
 <div class="sourceCode" id="cb2"><pre
 class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bash</span> setup.sh</span></code></pre></div>
 <p><code>setup.sh</code> の中では、以下の処理を順に行っている。</p>
+<figure>
+<img src="img/003_heatsink/openfoam13_setup_flow.svg"
+alt="OpenFOAM 13ケースセットアップの流れ" />
+<figcaption aria-hidden="true">OpenFOAM
+13ケースセットアップの流れ</figcaption>
+</figure>
 <pre class="text"><code>1. 前回実行分のクリーンアップ
 2. ideasUnvToFoam Mesh_1.unv     … UNVメッシュをOpenFOAM形式へ変換
-3. transformPoints -scale &#39;(0.001 0.001 0.001)&#39;  … mm単位からm単位へスケール変換
-4. 0/ にフィールドテンプレート（T・p・p_rgh・U・k・omega・alphat・nut）を作成
-5. splitMeshRegions -cellZones -overwrite  … セルゾーン名を使い4リージョンへ分割
-6. 固体リージョン（heatSink・heatSource・basis）から流体専用フィールドを削除
-7. changeDictionary -region &lt;各リージョン&gt;  … 正式な境界条件へ上書き</code></pre>
+3. transformPoints &quot;scale=(0.001 0.001 0.001)&quot;  … mm単位からm単位へスケール変換
+4. splitMeshRegions -cellZones  … セルゾーン名を使い4リージョンへ分割
+5. 0.orig/ のフィールドテンプレートを 0/ へコピー
+   流体は T・U・p・p_rgh、固体は T を用意し、各境界を calculated にしておく
+6. 0・constant・system にリージョン別の入力を用意
+7. changeDictionary -region &lt;各リージョン&gt;  … 正式な境界条件へ上書き
+8. checkMesh -region &lt;各リージョン&gt;  … 分割後のメッシュを確認</code></pre>
 <ul>
 <li><code>ideasUnvToFoam</code>
-でUNVメッシュをOpenFOAM形式に変換する。SALOMEでmm単位のモデルを作っているため、<code>transformPoints</code>
-でOpenFOAMが使うm単位に変換する（v2512では <code>-scale</code>
-オプションで指定する）。</li>
+でUNVメッシュをOpenFOAM形式に変換する。SALOMEでmm単位のモデルを作っているため、<code>transformPoints "scale=(0.001 0.001 0.001)"</code>
+でOpenFOAMが使うm単位に変換する。</li>
 <li><code>splitMeshRegions -cellZones</code>
-は、UNVメッシュ作成時に付けたセルゾーン名（box・heatSink・heatSource・basis）を使ってメッシュを4つのリージョンに分割し、<code>0/</code>
-のフィールドを各リージョン（<code>0/box</code>
-等）へマッピングする。</li>
-<li>分割直後のフィールドは全パッチ <code>calculated</code>
-の仮設定なので、<code>changeDictionary</code> が
-<code>system/&lt;region&gt;/changeDictionaryDict</code>
-を参照して、流入・壁・リージョン間結合（<code>compressible::turbulentTemperatureRadCoupledMixed</code>
-等）の正式な境界条件に上書きする。</li>
+は、UNVメッシュ作成時に付けたセルゾーン名（box・heatSink・heatSource・basis）を使ってメッシュを4つのリージョンに分割する。これにより、<code>constant/&lt;region&gt;/polyMesh</code>
+と <code>0/&lt;region&gt;</code>
+が作成される。<code>system/&lt;region&gt;</code>
+には、あらかじめ各リージョンの数値計算設定と境界条件辞書を用意している。</li>
+<li><code>system/&lt;region&gt;/changeDictionaryDict</code>
+に各パッチの境界条件を記述しておき、<code>changeDictionary -region &lt;region&gt;</code>
+で <code>0/&lt;region&gt;</code>
+の各フィールドへ反映する。流体と固体の接触面には
+<code>coupledTemperature</code>
+を設定し、リージョン間で温度と熱流束を受け渡す。</li>
 <li>各リージョンの物性値は
 <code>constant/&lt;region&gt;</code>、数値スキーム・行列ソルバ設定は
 <code>system/&lt;region&gt;</code> に用意している。</li>
@@ -827,20 +840,24 @@ aria-hidden="true">OpenFOAM側でメッシュ全体を確認する</figcaption>
 <ul>
 <li>ParaView等で、box（流体）とheatSink・heatSource・basis（固体）を含むメッシュ全体像を確認する。</li>
 </ul>
-<h3 id="chtmultiregionfoamの実行">chtMultiRegionFoamの実行</h3>
+<h3 id="foammultirunの実行">foamMultiRunの実行</h3>
 <p>セットアップが完了したら、熱流体・固体連成ソルバを実行する。</p>
 <div class="sourceCode" id="cb4"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">chtMultiRegionFoam</span> <span class="op">&gt;</span> log.chtMultiRegionFoam <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span></code></pre></div>
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">foamMultiRun</span> <span class="op">&gt;</span> log.foamMultiRun.of13 <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span></code></pre></div>
 <ul>
-<li><code>chtMultiRegionFoam</code>
-は非定常の熱流体・固体連成ソルバで、流体側は速度・圧力・乱流量・温度、固体側は温度のみを解く。</li>
+<li>OpenFOAM 13では <code>foamMultiRun</code> が
+<code>system/controlDict</code> の <code>regionSolvers</code>
+を読み込み、<code>box</code>
+を流体ソルバ、<code>heatSink</code>・<code>heatSource</code>・<code>basis</code>
+を固体ソルバとして連成計算する。</li>
+<li>流体側は乱流モデル（<code>kOmegaSST</code>）で速度・圧力・温度・乱流量を解き、固体側は温度を解く。</li>
 <li><code>system/controlDict</code> の設定により、時刻 <code>2</code>
-から <code>60</code> まで一定間隔で結果が書き出される（ケースフォルダの
-<code>2/</code>〜<code>60/</code>）。</li>
+から <code>60</code> まで2秒間隔で結果を書き出す。</li>
 <li>流入条件は <code>U = (0 -0.5 0) m/s</code>（y方向へ0.5
 m/s）、初期温度は <code>293.15 K</code> としている。発熱源の設定は
-<code>system/heatSource/fvOptions</code>、各リージョンの詳細な境界条件は
-<code>system/&lt;region&gt;/changeDictionaryDict</code> を参照。</li>
+<code>constant/heatSource/fvModels</code>、各リージョンの境界条件は
+<code>system/&lt;region&gt;/changeDictionaryDict</code>
+を参照する。</li>
 </ul>
 <h3 id="計算結果の確認">計算結果の確認</h3>
 <figure>

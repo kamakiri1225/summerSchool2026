@@ -4,6 +4,7 @@
 
 SALOME 9.15 を使って OpenFOAM 用のメッシュを作成する。
 
+- SALOMEの基礎
 - ヘキサメッシュ（六面体メッシュ）の作成方法
 - マルチリージョン（複数領域）に対応したメッシュ作成
 
@@ -11,7 +12,7 @@ SALOME 9.15 を使って OpenFOAM 用のメッシュを作成する。
 
 ## ダウンロード
 
-SALOMEには、プラットフォーム本体の **SALOME** と、構造解析ソルバCode_Asterを統合した **Salome-Meca** の2種類の配布形態がある（詳細は [000_salome.md](000_salome.md) を参照）。
+SALOMEには、プラットフォーム本体の **SALOME** と、構造解析ソルバCode_Asterを統合した **Salome-Meca** の2種類の配布形態がある（詳細は [000 SALOME](000_salome.html) を参照）。
 
 | 名称 | 内容 | 配布元 |
 |------|------|--------|
@@ -26,7 +27,7 @@ SALOMEには、プラットフォーム本体の **SALOME** と、構造解析�
 
 この講義では SALOME を使って OpenFOAM 用メッシュを作成するスキルを段階的に習得する。
 
-![講義の全体像](img/overview.png)
+![](img/overview_p003.svg)
 
 ### 使用データの場所
 
@@ -36,14 +37,14 @@ SALOMEには、プラットフォーム本体の **SALOME** と、構造解析�
 |------|----------------|
 | 001 Box | `data/001_box/run001_of13` |
 | 002 撹拌機 | `data/002_Stirrer/sample/mesh/mesh_of13`（メッシュ変換・バッフル作成）、`data/002_Stirrer/sample/mesh/master_curve_of13`（羽根可動化テスト） |
-| 003 ヒートシンク | `data/003_heatsink/run001_of2512` |
+| 003 ヒートシンク | `data/003_heatsink/run001_of13` |
 
 | ステップ | 演習 | 学ぶこと | ファイル |
 |----------|------|----------|----------|
-| 0 | SALOME導入 | SALOME の概要・モジュール・OpenFOAM との連携 | [000_salome.md](000_salome.md) |
-| 1 | 基礎練習（Box） | SALOME の基本操作・境界層・OpenFOAM 変換 | [001_box.md](001_box.md) |
-| 2 | 撹拌機 | ヘキサメッシュで複雑形状を作成する方法 | [002_stirrer.md](002_stirrer.md) |
-| 3 | ヒートシンク | マルチリージョンメッシュ・熱流体固体連成 | [003_heatsink.md](003_heatsink.md) |
+| 0 | SALOME導入 | SALOME の概要・モジュール・OpenFOAM との連携 | [000 SALOME](000_salome.html) |
+| 1 | 基礎練習（Box） | SALOME の基本操作・境界層・OpenFOAM 変換 | [001 Box](001_box.html) |
+| 2 | 撹拌機 | ヘキサメッシュで複雑形状を作成する方法 | [002 Stirrer](002_stirrer.html) |
+| 3 | ヒートシンク | マルチリージョンメッシュ・熱流体固体連成 | [003 Heatsink](003_heatsink.html) |
 
 **到達目標**
 

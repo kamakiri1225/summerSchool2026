@@ -30,6 +30,7 @@ SALOMEを使ったOpenFOAMメッシュ作成</h1>
 <h2 id="概要">概要</h2>
 <p>SALOME 9.15 を使って OpenFOAM 用のメッシュを作成する。</p>
 <ul>
+<li>SALOMEの基礎</li>
 <li>ヘキサメッシュ（六面体メッシュ）の作成方法</li>
 <li>マルチリージョン（複数領域）に対応したメッシュ作成</li>
 </ul>
@@ -37,8 +38,8 @@ SALOMEを使ったOpenFOAMメッシュ作成</h1>
 <h2 id="ダウンロード">ダウンロード</h2>
 <p>SALOMEには、プラットフォーム本体の <strong>SALOME</strong>
 と、構造解析ソルバCode_Asterを統合した <strong>Salome-Meca</strong>
-の2種類の配布形態がある（詳細は <a
-href="000_salome.md">000_salome.md</a> を参照）。</p>
+の2種類の配布形態がある（詳細は <a href="000_salome.html">000 SALOME</a>
+を参照）。</p>
 <table>
 <colgroup>
 <col style="width: 30%" />
@@ -71,10 +72,7 @@ href="000_salome.md">000_salome.md</a> を参照）。</p>
 <h2 id="講義の全体像">講義の全体像</h2>
 <p>この講義では SALOME を使って OpenFOAM
 用メッシュを作成するスキルを段階的に習得する。</p>
-<figure>
-<img src="img/overview.png" alt="講義の全体像" />
-<figcaption aria-hidden="true">講義の全体像</figcaption>
-</figure>
+<p><img src="img/overview_p003.svg" /></p>
 <h3 id="使用データの場所">使用データの場所</h3>
 <p>各演習で使うSALOMEメッシュ（UNV）・OpenFOAMケース・計算結果は、リポジトリの
 <code>data/</code> フォルダにある。</p>
@@ -100,7 +98,7 @@ href="000_salome.md">000_salome.md</a> を参照）。</p>
 </tr>
 <tr class="odd">
 <td>003 ヒートシンク</td>
-<td><code>data/003_heatsink/run001_of2512</code></td>
+<td><code>data/003_heatsink/run001_of13</code></td>
 </tr>
 </tbody>
 </table>
@@ -124,25 +122,25 @@ href="000_salome.md">000_salome.md</a> を参照）。</p>
 <td>0</td>
 <td>SALOME導入</td>
 <td>SALOME の概要・モジュール・OpenFOAM との連携</td>
-<td><a href="000_salome.md">000_salome.md</a></td>
+<td><a href="000_salome.html">000 SALOME</a></td>
 </tr>
 <tr class="even">
 <td>1</td>
 <td>基礎練習（Box）</td>
 <td>SALOME の基本操作・境界層・OpenFOAM 変換</td>
-<td><a href="001_box.md">001_box.md</a></td>
+<td><a href="001_box.html">001 Box</a></td>
 </tr>
 <tr class="odd">
 <td>2</td>
 <td>撹拌機</td>
 <td>ヘキサメッシュで複雑形状を作成する方法</td>
-<td><a href="002_stirrer.md">002_stirrer.md</a></td>
+<td><a href="002_stirrer.html">002 Stirrer</a></td>
 </tr>
 <tr class="even">
 <td>3</td>
 <td>ヒートシンク</td>
 <td>マルチリージョンメッシュ・熱流体固体連成</td>
-<td><a href="003_heatsink.md">003_heatsink.md</a></td>
+<td><a href="003_heatsink.html">003 Heatsink</a></td>
 </tr>
 </tbody>
 </table>
