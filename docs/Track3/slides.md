@@ -382,6 +382,7 @@ SALOMEで直方体モデルを作成し、OpenFOAMで使える境界名つきメ
 ![8. 面グループを作成する準備](img/001_box/page_011.svg)
 
 - (10) `Box_1` を選択した状態で `New Entity > Group > Create Group` を開く。
+- ※ 面グループは、メッシュ作成時の2Dでのメッシュサイズ指定にも使えるし、OpenFOAMの境界名としても使用できる。
 
 ---
 
