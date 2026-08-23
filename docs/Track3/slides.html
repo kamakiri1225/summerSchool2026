@@ -634,6 +634,46 @@ aria-hidden="true">SALOMEからOpenFOAMへの連携フロー</figcaption>
 </figure>
 <p>本講義では、メッシャーとしてSALOMEを使った場合のメッシュ作成の基礎およびテクニックを学ぶことを目的とし、最終的にOpenFOAMで計算できる形へ変換するところまでを扱う。</p>
 <p>ただし、OpenFOAMでの計算の解説は行わない。OpenFOAMの設定ファイルも同封しているため、興味があれば取り組んでほしい。</p>
+<p>各演習のデータ（SALOMEから出力したUNVメッシュ・OpenFOAMケース一式・計算結果）は、リポジトリの以下のフォルダにある。</p>
+<table>
+<colgroup>
+<col style="width: 21%" />
+<col style="width: 57%" />
+<col style="width: 21%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>演習</th>
+<th>データフォルダ</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>001 Box</td>
+<td><code>data/001_box/run001_of13</code></td>
+<td><code>Mesh_4.unv</code>、OpenFOAM 13の定常流体解析ケース（結果
+<code>90/</code>）</td>
+</tr>
+<tr class="even">
+<td>002 撹拌機</td>
+<td><code>data/002_Stirrer/sample/mesh/mesh_of13</code></td>
+<td><code>Mesh_1.unv</code>、UNV変換・topoSet・createBafflesのケース</td>
+</tr>
+<tr class="odd">
+<td>002 撹拌機</td>
+<td><code>data/002_Stirrer/sample/mesh/master_curve_of13</code></td>
+<td>羽根可動化テスト（moveDynamicMesh）のケース</td>
+</tr>
+<tr class="even">
+<td>003 ヒートシンク</td>
+<td><code>data/003_heatsink/run001_of2512</code></td>
+<td><code>Mesh_1.unv</code>、OpenFOAM
+v2512の熱流体・固体連成ケース（結果
+<code>2/</code>〜<code>60/</code>）</td>
+</tr>
+</tbody>
+</table>
 </section>
 <section class="slide level2">
 

@@ -203,3 +203,12 @@ SALOME で作成したメッシュを OpenFOAM 形式に変換して利用する
 本講義では、メッシャーとしてSALOMEを使った場合のメッシュ作成の基礎およびテクニックを学ぶことを目的とし、最終的にOpenFOAMで計算できる形へ変換するところまでを扱う。
 
 ただし、OpenFOAMでの計算の解説は行わない。OpenFOAMの設定ファイルも同封しているため、興味があれば取り組んでほしい。
+
+各演習のデータ（SALOMEから出力したUNVメッシュ・OpenFOAMケース一式・計算結果）は、リポジトリの以下のフォルダにある。
+
+| 演習 | データフォルダ | 内容 |
+|------|----------------|------|
+| 001 Box | `data/001_box/run001_of13` | `Mesh_4.unv`、OpenFOAM 13の定常流体解析ケース（結果 `90/`） |
+| 002 撹拌機 | `data/002_Stirrer/sample/mesh/mesh_of13` | `Mesh_1.unv`、UNV変換・topoSet・createBafflesのケース |
+| 002 撹拌機 | `data/002_Stirrer/sample/mesh/master_curve_of13` | 羽根可動化テスト（moveDynamicMesh）のケース |
+| 003 ヒートシンク | `data/003_heatsink/run001_of2512` | `Mesh_1.unv`、OpenFOAM v2512の熱流体・固体連成ケース（結果 `2/`〜`60/`） |
