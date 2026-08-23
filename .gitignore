@@ -10,6 +10,7 @@
 # salome915-docker/: exclude the large SALOME binary archive (download separately, see docs)
 /salome915-docker/dist/*.tar.gz
 /docs/*
+!/docs/.nojekyll
 !/docs/index.html
 !/docs/Track3
 /docs/Track3/*
