@@ -24,9 +24,11 @@ SALOMEには2種類の配布形態があり、混同しやすいので最初に�
 
 ---
 
-## SALOMEのインストール
+## SALOMEのインストール（Windows版）
 
 <https://www.salome-platform.org/> からSALOMEをダウンロードしてインストールする。ここでは**Windowsを対象にしたダウンロード方法**を記載している（Linuxの場合は、OSの選択で使用ディストリビューションに合わせたファイルを選ぶ）。
+
+**Macの方はDockerを使用すること。** 手順は [004_salome_docker.md](004_salome_docker.md) を参照（Docker Desktopをインストールし、Docker Hubで公開している講義用SALOMEイメージを取得して使う）。
 
 ![SALOME公式サイトからDOWNLOADを開く](img/000_salome/salome-install_1.png)
 
@@ -34,7 +36,7 @@ SALOMEには2種類の配布形態があり、混同しやすいので最初に�
 
 ![バージョンとOSを選んでフォームを送信する](img/000_salome/salome-install_2.png)
 
-- (2) Versionで `9.15.0` を指定する。
+- (2) Versionで `9.15.0` を指定する（本講義で使用するのは **9.15.0**。他のバージョンを選ばないこと）。
 - (3) OSで `Windows 10 (.zip)` を選択する（Windowsの場合。Linuxは使用ディストリビューションに合わせて選ぶ）。
 - (4) 名前・会社名・メールアドレスを記入する。
 - (5) ニュース配信と利用規約のチェックを入れる。
