@@ -199,3 +199,7 @@ OpenFOAM のパッチ（境界条件）に対応させるため、フェイス�
 SALOME で作成したメッシュを OpenFOAM 形式に変換して利用する。全体の流れは以下の通り。
 
 ![SALOMEからOpenFOAMへの連携フロー](img/000_salome/salome_to_openfoam_flow.png)
+
+本講義では、メッシャーとしてSALOMEを使った場合のメッシュ作成の基礎およびテクニックを学ぶことを目的とし、最終的にOpenFOAMで計算できる形へ変換するところまでを扱う。
+
+ただし、OpenFOAMでの計算の解説は行わない。OpenFOAMの設定ファイルも同封しているため、興味があれば取り組んでほしい。
