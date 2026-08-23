@@ -904,15 +904,34 @@ alt="9. inlet面グループを作成する" />
 <section class="slide level2">
 
 <h3 id="他の境界面も作成する">11. 他の境界面も作成する</h3>
+<p><code>side</code> → <code>topAndbottom</code> → <code>outlet</code>
+の順に、<code>inlet</code>
+と同様に面を選択して面グループを設定していく。</p>
+</section>
+<section class="slide level2">
+
 <figure>
-<img data-src="img/001_box/page_014.svg"
-alt="11. 他の境界面も作成する" />
-<figcaption aria-hidden="true">11. 他の境界面も作成する</figcaption>
+<img data-src="img/001_box/facegroup_p35.png"
+alt="sideグループを作成する" />
+<figcaption aria-hidden="true">sideグループを作成する</figcaption>
 </figure>
 <ul>
-<li>確認: <code>outlet</code>, <code>side</code>,
-<code>topAndbottom</code> など、解析に必要な面グループを作成する。</li>
-<li>確認: 2D解析に使う前後面は、OpenFOAM側で <code>empty</code>
+<li>y方向左右の面を選択し、Group Nameを <code>side</code> として
+<code>Add</code> → <code>Apply</code> する。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/001_box/facegroup_p36.png"
+alt="topAndbottomグループを作成する" />
+<figcaption
+aria-hidden="true">topAndbottomグループを作成する</figcaption>
+</figure>
+<ul>
+<li>z方向上下の面を選択し、Group Nameを <code>topAndbottom</code> として
+<code>Add</code> → <code>Apply</code> する。</li>
+<li>※ 2D解析に使う前後面は、OpenFOAM側で <code>empty</code>
 にする。</li>
 </ul>
 </section>
@@ -920,11 +939,13 @@ alt="11. 他の境界面も作成する" />
 
 <h3 id="面グループ作成を確定する">12. 面グループ作成を確定する</h3>
 <figure>
-<img data-src="img/001_box/page_015.svg"
-alt="12. 面グループ作成を確定する" />
-<figcaption aria-hidden="true">12. 面グループ作成を確定する</figcaption>
+<img data-src="img/001_box/facegroup_p37.png"
+alt="outletグループを作成して確定する" />
+<figcaption
+aria-hidden="true">outletグループを作成して確定する</figcaption>
 </figure>
 <ul>
+<li>x方向の面を選択し、Group Nameを <code>outlet</code> とする。</li>
 <li><ol start="16" type="1">
 <li>必要な面グループを作成したら <code>Apply and Close</code>
 で閉じる。</li>
@@ -935,7 +956,7 @@ alt="12. 面グループ作成を確定する" />
 
 <h3 id="geometryファイルを保存する">13. Geometryファイルを保存する</h3>
 <figure>
-<img data-src="img/001_box/page_016.svg"
+<img data-src="img/001_box/facegroup_p38.png"
 alt="13. Geometryファイルを保存する" />
 <figcaption aria-hidden="true">13.
 Geometryファイルを保存する</figcaption>
@@ -955,12 +976,16 @@ Geometryファイルを保存する</figcaption>
 <h3 id="線グループと面グループの役割">14.
 線グループと面グループの役割</h3>
 <figure>
-<img data-src="img/001_box/page_017.svg"
-alt="14. 線グループと面グループの役割" />
+<img data-src="img/001_box/facegroup_p39.png"
+alt="14. 線グループと面グループの一覧" />
 <figcaption aria-hidden="true">14.
-線グループと面グループの役割</figcaption>
+線グループと面グループの一覧</figcaption>
 </figure>
 <ul>
+<li>確認: ツリーに線グループ（<code>x</code> / <code>y</code> /
+<code>z</code>）と面グループ（<code>inlet</code> / <code>side</code> /
+<code>topAndbottom</code> /
+<code>outlet</code>）が揃っていることを確認する。</li>
 <li>確認: 線グループはメッシュ分割数を制御するために使う。</li>
 <li>確認: 面グループはOpenFOAMの境界パッチ名に対応する。</li>
 <li>確認: OpenFOAMへ渡す境界は、面グループとして作成しておく。</li>
