@@ -353,6 +353,12 @@ aria-hidden="true">Box_1とBox_2をFuse（結合）する</figcaption>
 をすべて指定すると、辺の分割数を優先しつつ、面・体積は指定したサイズ範囲でメッシュが生成される。具体的な操作手順は
 <a href="001_box.md">001_box.md</a>
 の「1D/2D/3Dを指定してメッシュを制御する」を参照。</p>
+<figure>
+<img src="img/001_box/page_029.svg"
+alt="断面表示で内部メッシュを確認する" />
+<figcaption
+aria-hidden="true">断面表示で内部メッシュを確認する</figcaption>
+</figure>
 <h3 id="主なアルゴリズム">主なアルゴリズム</h3>
 <table>
 <thead>
@@ -385,6 +391,52 @@ aria-hidden="true">Box_1とBox_2をFuse（結合）する</figcaption>
 </tr>
 </tbody>
 </table>
+<h3 id="同梱されているメッシャー">同梱されているメッシャー</h3>
+<p>上の表のアルゴリズムは、SALOMEに同梱された複数のメッシャー（メッシュ生成エンジン）が提供している。SALOME
+9.15には以下が入っている。</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 48%" />
+<col style="width: 18%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>メッシャー</th>
+<th>提供アルゴリズム</th>
+<th>備考</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>SMESH内蔵</td>
+<td>Wire Discretisation、Quadrangle (Mapping)、Hexahedron (i,j,k)
+など</td>
+<td>SALOME本体の基本アルゴリズム</td>
+</tr>
+<tr class="even">
+<td>NETGEN</td>
+<td>NETGEN 1D-2D-3D（テトラ）、NETGEN 1D-2D（三角形）</td>
+<td>オープンソースの自動メッシャー</td>
+</tr>
+<tr class="odd">
+<td>Gmsh</td>
+<td>Gmshの1D/2D/3Dアルゴリズム</td>
+<td>オープンソースメッシャーGmshのプラグイン</td>
+</tr>
+<tr class="even">
+<td>MMG</td>
+<td>リメッシュ（メッシュ改善）</td>
+<td>オープンソースのリメッシャー</td>
+</tr>
+<tr class="odd">
+<td>MeshGems</td>
+<td>MG-CADSurf（BLSURF）、MG-Tetra（GHS3D）、MG-Hexa（Hexotic）、MG-Hybrid</td>
+<td>商用メッシャー。プラグインは同梱されているが<strong>別途商用ライセンスが必要</strong></td>
+</tr>
+</tbody>
+</table>
+<p>本講義で使うのは、SMESH内蔵アルゴリズム（ヘキサ）とNETGEN（テトラ）だけである。</p>
 <h3 id="境界層viscous-layers">境界層（Viscous Layers）</h3>
 <p>壁面付近に薄い層状のプリズムメッシュを追加する機能。</p>
 <ul>
@@ -392,6 +444,19 @@ aria-hidden="true">Box_1とBox_2をFuse（結合）する</figcaption>
 <li><strong>厚み</strong>: 最初の層の厚さ</li>
 <li><strong>伸長率</strong>: 層ごとの厚みの増加比率</li>
 </ul>
+<figure>
+<img src="img/001_box/page_045.svg"
+alt="Viscous Layersの設定項目（トータル厚み・レイヤー数・比率）" />
+<figcaption aria-hidden="true">Viscous
+Layersの設定項目（トータル厚み・レイヤー数・比率）</figcaption>
+</figure>
+<p>実際にヒートシンクのフィン表面へ境界層を入れると、以下のようにテトラメッシュの壁面側だけに薄い層状のメッシュが積み重なる。</p>
+<figure>
+<img src="img/003_heatsink/page_190.svg"
+alt="フィン周りに生成された境界層メッシュ" />
+<figcaption
+aria-hidden="true">フィン周りに生成された境界層メッシュ</figcaption>
+</figure>
 <h3 id="サブメッシュ">サブメッシュ</h3>
 <p>特定のフェイスやエッジだけ分割設定を変えたい場合に使用。
 部分的に細かくしたり、境界条件ごとに名前（グループ）をつけるのに使う。</p>
@@ -402,18 +467,13 @@ aria-hidden="true">Box_1とBox_2をFuse（結合）する</figcaption>
 エクスポート後もパッチ名が引き継がれる。</p>
 <hr />
 <h2 id="openfoam-との連携">OpenFOAM との連携</h2>
-<p>SALOME で作成したメッシュを OpenFOAM 形式に変換して利用する。</p>
-<pre><code>SALOME（Shaper でジオメトリ作成）
-  ↓
-SALOME（Mesh モジュールでメッシュ生成）
-  ↓
-UNV 形式でエクスポート
-  ↓
-ideasUnvToFoam コマンドで OpenFOAM 形式に変換</code></pre>
-<hr />
-<h2 id="ダウンロード">ダウンロード</h2>
-<p>冒頭の「SALOMEとSalome-Mecaの違い」の通り、本講義では
-https://www.salome-platform.org/ から <strong>SALOME 9.15</strong>
-をダウンロードして使用する。</p>
+<p>SALOME で作成したメッシュを OpenFOAM
+形式に変換して利用する。全体の流れは以下の通り。</p>
+<figure>
+<img src="img/000_salome/salome_to_openfoam_flow.png"
+alt="SALOMEからOpenFOAMへの連携フロー" />
+<figcaption
+aria-hidden="true">SALOMEからOpenFOAMへの連携フロー</figcaption>
+</figure>
 </body>
 </html>

@@ -485,6 +485,15 @@ aria-hidden="true">Box_1とBox_2をFuse（結合）する</figcaption>
 </section>
 <section class="slide level2">
 
+<figure>
+<img data-src="img/001_box/page_029.svg"
+alt="断面表示で内部メッシュを確認する" />
+<figcaption
+aria-hidden="true">断面表示で内部メッシュを確認する</figcaption>
+</figure>
+</section>
+<section class="slide level2">
+
 <h3 id="主なアルゴリズム">主なアルゴリズム</h3>
 <table>
 <thead>
@@ -520,6 +529,55 @@ aria-hidden="true">Box_1とBox_2をFuse（結合）する</figcaption>
 </section>
 <section class="slide level2">
 
+<h3 id="同梱されているメッシャー">同梱されているメッシャー</h3>
+<p>上の表のアルゴリズムは、SALOMEに同梱された複数のメッシャー（メッシュ生成エンジン）が提供している。SALOME
+9.15には以下が入っている。</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 48%" />
+<col style="width: 18%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>メッシャー</th>
+<th>提供アルゴリズム</th>
+<th>備考</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>SMESH内蔵</td>
+<td>Wire Discretisation、Quadrangle (Mapping)、Hexahedron (i,j,k)
+など</td>
+<td>SALOME本体の基本アルゴリズム</td>
+</tr>
+<tr class="even">
+<td>NETGEN</td>
+<td>NETGEN 1D-2D-3D（テトラ）、NETGEN 1D-2D（三角形）</td>
+<td>オープンソースの自動メッシャー</td>
+</tr>
+<tr class="odd">
+<td>Gmsh</td>
+<td>Gmshの1D/2D/3Dアルゴリズム</td>
+<td>オープンソースメッシャーGmshのプラグイン</td>
+</tr>
+<tr class="even">
+<td>MMG</td>
+<td>リメッシュ（メッシュ改善）</td>
+<td>オープンソースのリメッシャー</td>
+</tr>
+<tr class="odd">
+<td>MeshGems</td>
+<td>MG-CADSurf（BLSURF）、MG-Tetra（GHS3D）、MG-Hexa（Hexotic）、MG-Hybrid</td>
+<td>商用メッシャー。プラグインは同梱されているが<strong>別途商用ライセンスが必要</strong></td>
+</tr>
+</tbody>
+</table>
+<p>本講義で使うのは、SMESH内蔵アルゴリズム（ヘキサ）とNETGEN（テトラ）だけである。</p>
+</section>
+<section class="slide level2">
+
 <h3 id="境界層viscous-layers">境界層（Viscous Layers）</h3>
 <p>壁面付近に薄い層状のプリズムメッシュを追加する機能。</p>
 <ul>
@@ -527,6 +585,25 @@ aria-hidden="true">Box_1とBox_2をFuse（結合）する</figcaption>
 <li><strong>厚み</strong>: 最初の層の厚さ</li>
 <li><strong>伸長率</strong>: 層ごとの厚みの増加比率</li>
 </ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/001_box/page_045.svg"
+alt="Viscous Layersの設定項目（トータル厚み・レイヤー数・比率）" />
+<figcaption aria-hidden="true">Viscous
+Layersの設定項目（トータル厚み・レイヤー数・比率）</figcaption>
+</figure>
+<p>実際にヒートシンクのフィン表面へ境界層を入れると、以下のようにテトラメッシュの壁面側だけに薄い層状のメッシュが積み重なる。</p>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/003_heatsink/page_190.svg"
+alt="フィン周りに生成された境界層メッシュ" />
+<figcaption
+aria-hidden="true">フィン周りに生成された境界層メッシュ</figcaption>
+</figure>
 </section>
 <section class="slide level2">
 
@@ -544,20 +621,17 @@ aria-hidden="true">Box_1とBox_2をFuse（結合）する</figcaption>
 </section>
 <section id="openfoam-との連携" class="slide level2">
 <h2>OpenFOAM との連携</h2>
-<p>SALOME で作成したメッシュを OpenFOAM 形式に変換して利用する。</p>
-<pre><code>SALOME（Shaper でジオメトリ作成）
-  ↓
-SALOME（Mesh モジュールでメッシュ生成）
-  ↓
-UNV 形式でエクスポート
-  ↓
-ideasUnvToFoam コマンドで OpenFOAM 形式に変換</code></pre>
+<p>SALOME で作成したメッシュを OpenFOAM
+形式に変換して利用する。全体の流れは以下の通り。</p>
 </section>
-<section id="ダウンロード" class="slide level2">
-<h2>ダウンロード</h2>
-<p>冒頭の「SALOMEとSalome-Mecaの違い」の通り、本講義では
-https://www.salome-platform.org/ から <strong>SALOME 9.15</strong>
-をダウンロードして使用する。</p>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/000_salome/salome_to_openfoam_flow.png"
+alt="SALOMEからOpenFOAMへの連携フロー" />
+<figcaption
+aria-hidden="true">SALOMEからOpenFOAMへの連携フロー</figcaption>
+</figure>
 </section>
 <section class="slide level2">
 
@@ -1497,10 +1571,10 @@ aria-hidden="true">Geometryからメッシュグループを作る</figcaption>
 が必要になる。</p>
 <p>今回は定常・非圧縮流れの計算を行うため、OpenFOAM 13のチュートリアル
 <code>incompressibleFluid/pitzDailySteady</code> をベースにする。</p>
-<div class="sourceCode" id="cb2"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> data/001_box/run001_of13</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cp</span> <span class="at">-r</span> /opt/openfoam13/tutorials/incompressibleFluid/pitzDailySteady/<span class="dt">{0</span><span class="op">,</span><span class="dt">constant</span><span class="op">,</span><span class="dt">system}</span> .</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span> <span class="at">-f</span> system/blockMeshDict</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> data/001_box/run001_of13</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cp</span> <span class="at">-r</span> /opt/openfoam13/tutorials/incompressibleFluid/pitzDailySteady/<span class="dt">{0</span><span class="op">,</span><span class="dt">constant</span><span class="op">,</span><span class="dt">system}</span> .</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span> <span class="at">-f</span> system/blockMeshDict</span></code></pre></div>
 <ul>
 <li><code>pitzDailySteady</code>
 は、非圧縮流体の定常解析用チュートリアルである。</li>
@@ -1519,8 +1593,8 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="
 
 <h4 id="openfoamへの変換">OpenFOAMへの変換</h4>
 <p>UNVを書き出した後は、OpenFOAM側で以下の計算フォルダへ移動して作業する。</p>
-<div class="sourceCode" id="cb3"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> data/001_box/run001_of13</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> data/001_box/run001_of13</span></code></pre></div>
 <ul>
 <li>計算フォルダは <code>data/001_box/run001_of13</code> とする。</li>
 <li><code>Mesh_4.unv</code> は
@@ -1530,11 +1604,11 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="
 </ul>
 <p>計算フォルダに入った後、OpenFOAM
 13を読み込み、SALOMEから出力したUNVメッシュをOpenFOAM形式へ変換する。</p>
-<div class="sourceCode" id="cb4"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="bu">.</span> /opt/openfoam13/etc/bashrc</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">ideasUnvToFoam</span> Mesh_4.unv <span class="op">&gt;</span> log.ideasUnvToFoam.of13 <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="ex">transformPoints</span> <span class="st">&quot;scale=(0.001 0.001 0.001)&quot;</span> <span class="op">&gt;</span> log.transformPoints.of13 <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="ex">checkMesh</span> <span class="op">&gt;</span> log.checkMesh.of13 <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="bu">.</span> /opt/openfoam13/etc/bashrc</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">ideasUnvToFoam</span> Mesh_4.unv <span class="op">&gt;</span> log.ideasUnvToFoam.of13 <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ex">transformPoints</span> <span class="st">&quot;scale=(0.001 0.001 0.001)&quot;</span> <span class="op">&gt;</span> log.transformPoints.of13 <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="ex">checkMesh</span> <span class="op">&gt;</span> log.checkMesh.of13 <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span></code></pre></div>
 <ul>
 <li><code>. /opt/openfoam13/etc/bashrc</code> は、OpenFOAM
 13のコマンドを使えるようにする。</li>
@@ -1579,8 +1653,8 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="
 
 <h4 id="計算を実行する">計算を実行する</h4>
 <p>境界条件を設定したら、ソルバを実行する。</p>
-<div class="sourceCode" id="cb5"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">foamRun</span> <span class="op">&gt;</span> log.foamRun.of13 <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">foamRun</span> <span class="op">&gt;</span> log.foamRun.of13 <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span></code></pre></div>
 <ul>
 <li>OpenFOAM 13では、<code>foamRun</code> が
 <code>system/controlDict</code> の
@@ -1601,8 +1675,8 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="
 <h4 id="openfoamの計算結果確認">OpenFOAMの計算結果確認</h4>
 <p>OpenFOAMで計算した後は、<code>post.foam</code>
 を作成してParaViewで結果を確認する。</p>
-<div class="sourceCode" id="cb6"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">touch</span> post.foam</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">touch</span> post.foam</span></code></pre></div>
 </section>
 <section class="slide level2">
 
@@ -2952,17 +3026,17 @@ alt="UNV形式でエクスポートする" />
 <section class="slide level2">
 
 <h3 id="メッシュ変換とバッフル作成">メッシュ変換とバッフル作成</h3>
-<div class="sourceCode" id="cb7"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> data/002_Stirrer/sample/mesh/mesh_of13</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="bu">.</span> /opt/openfoam13/etc/bashrc</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="ex">ideasUnvToFoam</span> Mesh_1.unv <span class="op">&gt;</span> log.ideasUnvToFoam <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="ex">transformPoints</span> <span class="st">&quot;scale=(0.001 0.001 0.001)&quot;</span> <span class="op">&gt;</span> log.transformPoints <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="ex">checkMesh</span> <span class="op">&gt;</span> log.checkMesh.initial <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="ex">topoSet</span> <span class="op">&gt;</span> log.topoSet <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="ex">createBaffles</span> <span class="at">-overwrite</span> <span class="op">&gt;</span> log.createBaffles <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="ex">checkMesh</span> <span class="op">&gt;</span> log.checkMesh.final <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> data/002_Stirrer/sample/mesh/mesh_of13</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="bu">.</span> /opt/openfoam13/etc/bashrc</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="ex">ideasUnvToFoam</span> Mesh_1.unv <span class="op">&gt;</span> log.ideasUnvToFoam <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="ex">transformPoints</span> <span class="st">&quot;scale=(0.001 0.001 0.001)&quot;</span> <span class="op">&gt;</span> log.transformPoints <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="ex">checkMesh</span> <span class="op">&gt;</span> log.checkMesh.initial <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="ex">topoSet</span> <span class="op">&gt;</span> log.topoSet <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="ex">createBaffles</span> <span class="at">-overwrite</span> <span class="op">&gt;</span> log.createBaffles <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="ex">checkMesh</span> <span class="op">&gt;</span> log.checkMesh.final <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span></code></pre></div>
 <p>なお、同フォルダには上記一連の処理をまとめた <code>Allrun</code>
 スクリプトがあり、<code>./Allclean &amp;&amp; ./Allrun</code>
 で最初から一括再実行できる。</p>
@@ -3064,15 +3138,15 @@ id="羽根の可動化テストmaster_curve_of13">羽根の可動化テスト（
 <code>data/002_Stirrer/sample/mesh/master_curve_of13</code>（<code>mesh_of13</code>
 で作成したバッフル済みメッシュを引き継ぐ）</li>
 </ul>
-<div class="sourceCode" id="cb8"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> data/002_Stirrer/sample/mesh/master_curve_of13</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="bu">.</span> /opt/openfoam13/etc/bashrc</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span> <span class="at">-rf</span> 0</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="fu">cp</span> <span class="at">-r</span> 0.orig 0</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="ex">moveDynamicMesh</span> <span class="op">&gt;</span> log.moveDynamicMesh <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="ex">checkMesh</span> <span class="at">-latestTime</span> <span class="op">&gt;</span> log.checkMesh <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> data/002_Stirrer/sample/mesh/master_curve_of13</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="bu">.</span> /opt/openfoam13/etc/bashrc</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span> <span class="at">-rf</span> 0</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="fu">cp</span> <span class="at">-r</span> 0.orig 0</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="ex">moveDynamicMesh</span> <span class="op">&gt;</span> log.moveDynamicMesh <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="ex">checkMesh</span> <span class="at">-latestTime</span> <span class="op">&gt;</span> log.checkMesh <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span></code></pre></div>
 <ul>
 <li><code>constant/dynamicMeshDict</code> で
 <code>displacementSBRStress</code> モーションソルバを指定する。</li>
@@ -3982,9 +4056,9 @@ aria-hidden="true">UNVファイルをエクスポートする</figcaption>
 
 <h3 id="openfoam-v2512環境の読み込み">OpenFOAM v2512環境の読み込み</h3>
 <p>この演習の計算はOpenFOAM v2512で行う。まずv2512の環境を読み込む。</p>
-<div class="sourceCode" id="cb9"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> data/003_heatsink/run001_of2512</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> /usr/lib/openfoam/openfoam2512/etc/bashrc</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> data/003_heatsink/run001_of2512</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> /usr/lib/openfoam/openfoam2512/etc/bashrc</span></code></pre></div>
 </section>
 <section class="slide level2">
 
@@ -3992,8 +4066,8 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="
 id="setup.shによるメッシュ変換とケース設定">setup.shによるメッシュ変換とケース設定</h3>
 <p>ケースフォルダには、UNVメッシュの変換からリージョン分割・境界条件設定までを一括実行する
 <code>setup.sh</code> を用意している。</p>
-<div class="sourceCode" id="cb10"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bash</span> setup.sh</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bash</span> setup.sh</span></code></pre></div>
 <p><code>setup.sh</code> の中では、以下の処理を順に行っている。</p>
 <pre class="text"><code>1. 前回実行分のクリーンアップ
 2. ideasUnvToFoam Mesh_1.unv     … UNVメッシュをOpenFOAM形式へ変換
@@ -4037,8 +4111,8 @@ aria-hidden="true">OpenFOAM側でメッシュ全体を確認する</figcaption>
 
 <h3 id="chtmultiregionfoamの実行">chtMultiRegionFoamの実行</h3>
 <p>セットアップが完了したら、熱流体・固体連成ソルバを実行する。</p>
-<div class="sourceCode" id="cb12"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ex">chtMultiRegionFoam</span> <span class="op">&gt;</span> log.chtMultiRegionFoam <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="ex">chtMultiRegionFoam</span> <span class="op">&gt;</span> log.chtMultiRegionFoam <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span></code></pre></div>
 <ul>
 <li><code>chtMultiRegionFoam</code>
 は非定常の熱流体・固体連成ソルバで、流体側は速度・圧力・乱流量・温度、固体側は温度のみを解く。</li>
