@@ -363,8 +363,8 @@ SALOMEで直方体モデルを作成し、OpenFOAMで使える境界名つきメ
 
 ![6. Compoundを方向名に変更する](img/001_box/page_009.svg)
 
-- (8) `Compound_3` をクリックし、Groupsが `Compound_3` になっていることを確認する。
-- (9) Nameを `x` に変更する。
+- (8) Compoundをクリックし、Groupsに選択したCompoundが入っていることを確認する。
+- (9) Nameを方向名に変更する。`Compound_1` を `x`、`Compound_2` を `y`、`Compound_3` を `z` にする。
 
 ---
 
