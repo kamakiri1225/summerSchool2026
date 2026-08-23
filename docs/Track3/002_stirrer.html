@@ -1130,60 +1130,79 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="
 <p>なお、同フォルダには上記一連の処理をまとめた <code>Allrun</code>
 スクリプトがあり、<code>./Allclean &amp;&amp; ./Allrun</code>
 で最初から一括再実行できる。</p>
+<p>各コマンドの役割は以下の通り。</p>
 <ul>
-<li><code>ideasUnvToFoam</code> / <code>transformPoints</code>
-は、<code>001_box.md</code> や <code>003_heatsink.md</code>
-と同様に、UNVメッシュをOpenFOAM形式へ変換し、SALOMEのmm単位からOpenFOAMのm単位へスケール変換する。</li>
-<li><code>topoSet</code>（<code>system/topoSetDict</code>、<code>topoSetDict.wing</code>、<code>topoSetDict.circ</code>、<code>topoSetDict.rotor</code>
-を使用）で、次の3種類の領域を作成する。</li>
+<li><code>ideasUnvToFoam Mesh_1.unv</code>:
+SALOMEから出力したUNVメッシュを、OpenFOAMの
+<code>constant/polyMesh</code> 形式へ変換する。</li>
+<li><code>transformPoints "scale=(0.001 0.001 0.001)"</code>:
+全座標を1/1000倍する。SALOMEはmm単位で形状を作っているため、OpenFOAMが使うm単位へスケール変換する。</li>
+<li><code>checkMesh</code>（1回目）:
+変換直後のメッシュ品質・セル数・境界面を確認する。</li>
+<li><code>topoSet</code>:
+<code>system/topoSetDict</code>（<code>topoSetDict.wing</code> /
+<code>topoSetDict.circ</code> / <code>topoSetDict.rotor</code>
+をinclude）に従い、羽根・仕切り板・回転領域の3種類のゾーンを作成する（内容は次節）。</li>
+<li><code>createBaffles -overwrite</code>:
+<code>system/createBafflesDict</code>
+に従い、topoSetで作った羽根・仕切り板の面ゾーンを厚みゼロの
+<code>wall</code>
+バッフルへ変換する。<code>owner</code>/<code>neighbour</code> それぞれに
+<code>_master</code> / <code>_slave</code>
+のパッチ名を与え、羽根・仕切り板の両面を表現する。</li>
+<li><code>checkMesh</code>（2回目）:
+バッフル作成後のメッシュ品質を再確認し、<code>Mesh OK</code>
+になっていることを確認する。</li>
 </ul>
-<p><strong>羽根（wing）の面ゾーン</strong></p>
+<h3
+id="toposetで作成する3種類のゾーン">topoSetで作成する3種類のゾーン</h3>
+<p><code>topoSet</code>
+では、後工程で使う次の3種類のゾーンをメッシュ上に定義する。wing / circ
+は <code>createBaffles</code>
+でバッフル化するための<strong>面ゾーン（faceZone）</strong>、rotor
+は回転計算用の<strong>セルゾーン（cellZone）</strong>である。</p>
+<p><strong>1. 羽根（wing）の面ゾーン</strong></p>
 <p><code>wingFaceZone</code> / <code>wingFaceZone2</code>
 は、羽根の位置にある面のゾーン（上下2枚分）。羽根のパーティション面はセクターの二等分線（30°）上にあるため、<code>rotatedBoxToFace</code>
 で30°回転させた薄い直方体を使って面を選び出す。</p>
-<p>選択ボックスのz範囲には注意が必要になる。羽根のz範囲は12.5〜17.5mmだが、メッシュの面中心の座標がちょうどz=12.5mm/17.5mmに乗っているため、ボックスの境界をぴったりそこに置くと、浮動小数点の判定次第で端の面が拾われたり拾われなかったりして、羽根のエッジがガタついたゾーンになる。これを避けるため、ボックスを上下に半セル分（0.05mm）広げて端の面を確実に含めている。さらに
-<code>normalToFace</code>
-で羽根の垂直面だけに絞り込む。この結果、上下の羽根とも480面（30列×16段）の完全な長方形のゾーンになる。</p>
+<ul>
+<li>補足:
+選択ボックスの境界がメッシュの面中心の座標とちょうど一致すると、端の面が拾われたり拾われなかったりして羽根のエッジがガタつく。これを避けるため、ボックスのz範囲は羽根より半セル分広げ、<code>normalToFace</code>
+で羽根の垂直面だけに絞っている。</li>
+</ul>
 <figure>
 <img src="img/002_stirrer/zone_wing.png"
 alt="topoSetで作成したwingFaceZone / wingFaceZone2" />
 <figcaption aria-hidden="true">topoSetで作成したwingFaceZone /
 wingFaceZone2</figcaption>
 </figure>
-<p><strong>仕切り板（circ）の面ゾーン</strong></p>
+<p><strong>2. 仕切り板（circ）の面ゾーン</strong></p>
 <p><code>circularFaceZone_z015</code> /
 <code>circularFaceZone_z035</code>
 は、仕切り板の位置にある面のゾーン。<code>cylinderToFace</code>
 で薄いz範囲を直接指定して選び出す。</p>
-<p>この形状にはシャフト（軸）が上からz=15mmの位置まで刺さっており、メッシュはシャフト部分（半径約3.3mmの円柱）をくり抜いた形になっている。そのため仕切り板は、シャフトの周りに付いた環状（ドーナツ状）の板になる。z=15mm平面には、シャフトの底面（境界面）も同じ高さに存在するため、<code>cylinderToFace</code>
-だけではこの境界面まで拾ってしまう。境界面はバッフル化できないので、<code>boundaryToFace</code>
-を <code>action delete</code>
-で使って選択から取り除き、内部面（仕切り板の環状部分）だけを残す。この結果、上下の仕切り板とも576面の同一形状のゾーンになる。</p>
+<ul>
+<li>補足:
+シャフト（軸）がz=15mmまで刺さっているため、仕切り板はシャフト周りの環状の板になる。z=15mm平面にはシャフト底面（境界面）も含まれてしまうため、<code>boundaryToFace</code>
+の <code>action delete</code>
+で境界面を取り除き、内部面だけを残している。</li>
+</ul>
 <figure>
 <img src="img/002_stirrer/zone_circ.png"
 alt="topoSetで作成したcircularFaceZone_z015 / circularFaceZone_z035" />
 <figcaption aria-hidden="true">topoSetで作成したcircularFaceZone_z015 /
 circularFaceZone_z035</figcaption>
 </figure>
-<p><strong>回転領域のセルゾーン</strong></p>
+<p><strong>3. 回転領域（rotor）のセルゾーン</strong></p>
 <p><code>rotor1</code> / <code>rotor2</code>
-は、羽根の周囲を囲む円柱状の回転領域のセルゾーン（MRFなど回転計算用）。</p>
+は、羽根の周囲を囲む円柱状の回転領域のセルゾーン（MRFなど回転計算用）。<code>cylinderToCell</code>
+で円柱範囲を指定して作成する。</p>
 <figure>
 <img src="img/002_stirrer/zone_rotor.png"
 alt="topoSetで作成したrotor1 / rotor2セルゾーン" />
 <figcaption aria-hidden="true">topoSetで作成したrotor1 /
 rotor2セルゾーン</figcaption>
 </figure>
-<ul>
-<li><code>createBaffles</code>（<code>system/createBafflesDict</code>）で、羽根・仕切り板の面ゾーンを厚みゼロの
-<code>wall</code>
-バッフルへ変換する。<code>owner</code>/<code>neighbour</code> それぞれに
-<code>_master</code> / <code>_slave</code>
-のパッチ名を与え、羽根・仕切り板の両面を表現する。</li>
-<li><code>checkMesh</code>
-で変換前後のメッシュ品質を確認し、<code>Mesh OK</code>
-になっていることを確認する。</li>
-</ul>
 <h3
 id="羽根の可動化テストmaster_curve_of13">羽根の可動化テスト（master_curve_of13）</h3>
 <p>羽根（<code>wall_wing.*</code>
@@ -1224,9 +1243,10 @@ aria-hidden="true">羽根の変位に追従して変形したメッシュ（t=1�
 <ul>
 <li>羽根表面の変位に合わせて、周囲のメッシュも破綻せず滑らかに追従変形していることを確認する。</li>
 </ul>
-<p>t=0.1〜1の変形過程をアニメーションにすると以下のようになる（赤:
-羽根パッチ、グレー: 羽根中央高さ z=0.015
-の水平断面メッシュ）。羽根がy方向へ曲線状に変位し、周囲のメッシュが滑らかに追従している。</p>
+<p>t=0.1〜1の変形過程をアニメーションにすると以下のようになる（マゼンタ:
+羽根パッチ、緑: 仕切り板、黄: 羽根下端高さの水平断面、左:
+メッシュ線あり、右:
+スムース表示）。羽根がy方向へ曲線状に変位し、周囲のメッシュが滑らかに追従している。</p>
 <figure>
 <img src="img/002_stirrer/ani_deform.gif"
 alt="羽根の変位にメッシュが追従変形するアニメーション" />

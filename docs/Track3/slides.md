@@ -1565,42 +1565,52 @@ checkMesh > log.checkMesh.final 2>&1
 
 なお、同フォルダには上記一連の処理をまとめた `Allrun` スクリプトがあり、`./Allclean && ./Allrun` で最初から一括再実行できる。
 
-- `ideasUnvToFoam` / `transformPoints` は、`001_box.md` や `003_heatsink.md` と同様に、UNVメッシュをOpenFOAM形式へ変換し、SALOMEのmm単位からOpenFOAMのm単位へスケール変換する。
-- `topoSet`（`system/topoSetDict`、`topoSetDict.wing`、`topoSetDict.circ`、`topoSetDict.rotor` を使用）で、次の3種類の領域を作成する。
+各コマンドの役割は以下の通り。
 
-**羽根（wing）の面ゾーン**
+- `ideasUnvToFoam Mesh_1.unv`: SALOMEから出力したUNVメッシュを、OpenFOAMの `constant/polyMesh` 形式へ変換する。
+- `transformPoints "scale=(0.001 0.001 0.001)"`: 全座標を1/1000倍する。SALOMEはmm単位で形状を作っているため、OpenFOAMが使うm単位へスケール変換する。
+- `checkMesh`（1回目）: 変換直後のメッシュ品質・セル数・境界面を確認する。
+- `topoSet`: `system/topoSetDict`（`topoSetDict.wing` / `topoSetDict.circ` / `topoSetDict.rotor` をinclude）に従い、羽根・仕切り板・回転領域の3種類のゾーンを作成する（内容は次節）。
+- `createBaffles -overwrite`: `system/createBafflesDict` に従い、topoSetで作った羽根・仕切り板の面ゾーンを厚みゼロの `wall` バッフルへ変換する。`owner`/`neighbour` それぞれに `_master` / `_slave` のパッチ名を与え、羽根・仕切り板の両面を表現する。
+- `checkMesh`（2回目）: バッフル作成後のメッシュ品質を再確認し、`Mesh OK` になっていることを確認する。
+
+
+---
+
+### topoSetで作成する3種類のゾーン
+
+`topoSet` では、後工程で使う次の3種類のゾーンをメッシュ上に定義する。wing / circ は `createBaffles` でバッフル化するための**面ゾーン（faceZone）**、rotor は回転計算用の**セルゾーン（cellZone）**である。
+
+**1. 羽根（wing）の面ゾーン**
 
 `wingFaceZone` / `wingFaceZone2` は、羽根の位置にある面のゾーン（上下2枚分）。羽根のパーティション面はセクターの二等分線（30°）上にあるため、`rotatedBoxToFace` で30°回転させた薄い直方体を使って面を選び出す。
 
-選択ボックスのz範囲には注意が必要になる。羽根のz範囲は12.5〜17.5mmだが、メッシュの面中心の座標がちょうどz=12.5mm/17.5mmに乗っているため、ボックスの境界をぴったりそこに置くと、浮動小数点の判定次第で端の面が拾われたり拾われなかったりして、羽根のエッジがガタついたゾーンになる。これを避けるため、ボックスを上下に半セル分（0.05mm）広げて端の面を確実に含めている。さらに `normalToFace` で羽根の垂直面だけに絞り込む。この結果、上下の羽根とも480面（30列×16段）の完全な長方形のゾーンになる。
+- 補足: 選択ボックスの境界がメッシュの面中心の座標とちょうど一致すると、端の面が拾われたり拾われなかったりして羽根のエッジがガタつく。これを避けるため、ボックスのz範囲は羽根より半セル分広げ、`normalToFace` で羽根の垂直面だけに絞っている。
 
 
 ---
 
 ![topoSetで作成したwingFaceZone / wingFaceZone2](img/002_stirrer/zone_wing.png)
 
-**仕切り板（circ）の面ゾーン**
+**2. 仕切り板（circ）の面ゾーン**
 
 `circularFaceZone_z015` / `circularFaceZone_z035` は、仕切り板の位置にある面のゾーン。`cylinderToFace` で薄いz範囲を直接指定して選び出す。
 
-この形状にはシャフト（軸）が上からz=15mmの位置まで刺さっており、メッシュはシャフト部分（半径約3.3mmの円柱）をくり抜いた形になっている。そのため仕切り板は、シャフトの周りに付いた環状（ドーナツ状）の板になる。z=15mm平面には、シャフトの底面（境界面）も同じ高さに存在するため、`cylinderToFace` だけではこの境界面まで拾ってしまう。境界面はバッフル化できないので、`boundaryToFace` を `action delete` で使って選択から取り除き、内部面（仕切り板の環状部分）だけを残す。この結果、上下の仕切り板とも576面の同一形状のゾーンになる。
+- 補足: シャフト（軸）がz=15mmまで刺さっているため、仕切り板はシャフト周りの環状の板になる。z=15mm平面にはシャフト底面（境界面）も含まれてしまうため、`boundaryToFace` の `action delete` で境界面を取り除き、内部面だけを残している。
 
 
 ---
 
 ![topoSetで作成したcircularFaceZone_z015 / circularFaceZone_z035](img/002_stirrer/zone_circ.png)
 
-**回転領域のセルゾーン**
+**3. 回転領域（rotor）のセルゾーン**
 
-`rotor1` / `rotor2` は、羽根の周囲を囲む円柱状の回転領域のセルゾーン（MRFなど回転計算用）。
+`rotor1` / `rotor2` は、羽根の周囲を囲む円柱状の回転領域のセルゾーン（MRFなど回転計算用）。`cylinderToCell` で円柱範囲を指定して作成する。
 
 
 ---
 
 ![topoSetで作成したrotor1 / rotor2セルゾーン](img/002_stirrer/zone_rotor.png)
-
-- `createBaffles`（`system/createBafflesDict`）で、羽根・仕切り板の面ゾーンを厚みゼロの `wall` バッフルへ変換する。`owner`/`neighbour` それぞれに `_master` / `_slave` のパッチ名を与え、羽根・仕切り板の両面を表現する。
-- `checkMesh` で変換前後のメッシュ品質を確認し、`Mesh OK` になっていることを確認する。
 
 
 ---
@@ -1634,7 +1644,7 @@ checkMesh -latestTime > log.checkMesh 2>&1
 
 - 羽根表面の変位に合わせて、周囲のメッシュも破綻せず滑らかに追従変形していることを確認する。
 
-t=0.1〜1の変形過程をアニメーションにすると以下のようになる（赤: 羽根パッチ、グレー: 羽根中央高さ z=0.015 の水平断面メッシュ）。羽根がy方向へ曲線状に変位し、周囲のメッシュが滑らかに追従している。
+t=0.1〜1の変形過程をアニメーションにすると以下のようになる（マゼンタ: 羽根パッチ、緑: 仕切り板、黄: 羽根下端高さの水平断面、左: メッシュ線あり、右: スムース表示）。羽根がy方向へ曲線状に変位し、周囲のメッシュが滑らかに追従している。
 
 
 ---
