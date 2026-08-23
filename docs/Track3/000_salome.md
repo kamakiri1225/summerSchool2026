@@ -44,7 +44,7 @@ SALOMEには2種類の配布形態があり、混同しやすいので最初に�
 
 ![zipファイルを保存する](img/000_salome/salome-install_3.png)
 
-- (7) `Click here to download your software` をクリックし、`SALOME-9.15.0.zip` を適当なフォルダにダウンロードする。
+- (7) `Click here to download your software` をクリックし、`SALOME-9.15.0.zip` を適当なフォルダにダウンロードする。SALOMEは動作に必要な一式のファイルがzipに同封されているため、適当なフォルダに置いても動作する。
 
 ![run_salome.batで起動する](img/000_salome/salome-install_4.png)
 
