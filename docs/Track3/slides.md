@@ -26,7 +26,7 @@ SALOMEには2種類の配布形態があり、混同しやすいので最初に�
 
 ## SALOMEのインストール
 
-<https://www.salome-platform.org/> からSALOMEをダウンロードしてインストールする。
+<https://www.salome-platform.org/> からSALOMEをダウンロードしてインストールする。ここでは**Windowsを対象にしたダウンロード方法**を記載している（Linuxの場合は、OSの選択で使用ディストリビューションに合わせたファイルを選ぶ）。
 
 
 ---
