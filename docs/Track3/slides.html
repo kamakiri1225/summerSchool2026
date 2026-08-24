@@ -1777,6 +1777,10 @@ class="title-slide slide level1">
 <li>グループを整理してOpenFOAMへ渡す境界名を作る</li>
 <li>ヘキサメッシュとサブメッシュを作成する</li>
 </ul>
+</section>
+<section class="slide level2">
+
+<h3 id="年サマースクール-track3">2020年サマースクール Track3</h3>
 <p>この撹拌槽モデルは、オープンCAEサマースクール2020
 Track3で扱った題材でもある。2020年の演習では、<code>blockMesh</code>
 で扇形の6ブロックを作成し、<code>stitchMesh</code>
@@ -1827,10 +1831,10 @@ aria-hidden="true">今回作成するヘキサメッシュのゴール（1/4セ�
 <section class="slide level2">
 
 <figure>
-<img data-src="img/002_stirrer/ani_deform.gif"
-alt="羽根の変位にメッシュが追従変形するアニメーション" />
+<img data-src="img/002_stirrer/ani_deform_pinned.gif"
+alt="rotor境界を固定した場合の変形（外側は静止・rotorは円形維持）" />
 <figcaption
-aria-hidden="true">羽根の変位にメッシュが追従変形するアニメーション</figcaption>
+aria-hidden="true">rotor境界を固定した場合の変形（外側は静止・rotorは円形維持）</figcaption>
 </figure>
 </section>
 <section class="slide level2">
@@ -3342,17 +3346,40 @@ Track3 p.37）</figcaption>
 <ul>
 <li><code>topoSet</code> で rotor1 / rotor2 セルゾーンの境界面を
 faceZone 化する。</li>
-<li><code>createBaffles</code> でその面を固定壁パッチに変換する。</li>
+<li><code>createBaffles</code>
+でその面を固定壁パッチ（<code>rotorPin</code>）に変換する。</li>
 <li><code>pointDisplacement</code> で <code>.*</code>（既定）が
 <code>fixedValue (0 0 0)</code>
 になっているため、この境界パッチも自動的に変位0で固定される。</li>
 </ul>
+<p>固定した面（<code>rotorPin</code>）は、下図のマゼンタで示した rotor1
+/ rotor2
+セルゾーンの<strong>外周表面全体</strong>である。具体的には、</p>
+<ul>
+<li><strong>外周の円筒壁（半径 r=35mm、高さ z=10〜20mm と
+z=30〜40mm）</strong> … これを固定することで rotor
+が半径方向へ広がらず、円形を保つ。</li>
+<li><strong>上下のフタ（z=10 / 20 / 30 / 40mm の水平な扇形面）</strong>
+… これを固定することで rotor が軸方向へも動かない。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/roter_pi.png"
+alt="固定した rotor 境界面 rotorPin（マゼンタ：外周円筒＋上下フタ）" />
+<figcaption aria-hidden="true">固定した rotor 境界面
+rotorPin（マゼンタ：外周円筒＋上下フタ）</figcaption>
+</figure>
+<p>この閉じた表面を変位0で固定するため、rotor
+の内側（羽根と境界の間）だけが変形を吸収し、rotor
+の外側は一切動かない。</p>
 <p>これにより、変形は rotor
 内部（羽根と境界の間）だけに閉じ込められ、<strong>rotor
 界面は円形を保ち、外側のメッシュは完全に静止する</strong>（実測で外側の変位0.000mm・界面の半径ずれ0.05mm、<code>checkMesh</code>
 も <code>Mesh OK</code>）。</p>
 <p>対処後（rotor境界を固定した場合）の変形過程は以下のようになる。羽根（マゼンタ）は変形するが、回転領域（淡青）とその外側のメッシュは動かず、rotor
-は円形を保っている（前掲の「対処前」アニメーションと見比べると違いが分かる）。</p>
+は円形を保っている（「対処前」アニメーションと見比べると違いが分かる）。</p>
 </section>
 <section class="slide level2">
 
