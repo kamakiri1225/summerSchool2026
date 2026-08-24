@@ -3351,16 +3351,17 @@ faceZone 化する。</li>
 内部（羽根と境界の間）だけに閉じ込められ、<strong>rotor
 界面は円形を保ち、外側のメッシュは完全に静止する</strong>（実測で外側の変位0.000mm・界面の半径ずれ0.05mm、<code>checkMesh</code>
 も <code>Mesh OK</code>）。</p>
+<p>対処後（rotor境界を固定した場合）の変形過程は以下のようになる。羽根（マゼンタ）は変形するが、回転領域（淡青）とその外側のメッシュは動かず、rotor
+は円形を保っている（前掲の「対処前」アニメーションと見比べると違いが分かる）。</p>
 </section>
 <section class="slide level2">
 
-<h3
-id="注意点対処しないと回転領域まで動いてしまう">注意点：対処しないと回転領域まで動いてしまう</h3>
-<p>以下のアニメーションは、対処前（一体ものをそのまま曲げた場合）の変形過程である（マゼンタ:
-羽根パッチ、緑: 仕切り板、黄: 上下の羽根高さの水平断面、淡青:
-回転領域セルゾーン rotor1 / rotor2、左: メッシュ線あり、右:
-スムース表示）。羽根がy方向へ曲線状に変位し、周囲のメッシュ（rotor
-を含む）が追従して動いてしまっている。</p>
+<figure>
+<img data-src="img/002_stirrer/ani_deform_pinned.gif"
+alt="rotor境界を固定した場合の変形（外側は静止・rotorは円形維持）" />
+<figcaption
+aria-hidden="true">rotor境界を固定した場合の変形（外側は静止・rotorは円形維持）</figcaption>
+</figure>
 </section>
 <section class="slide level2">
 
