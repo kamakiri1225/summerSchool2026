@@ -1,4 +1,4 @@
-# SALOMEとは・インストール
+# SALOMEとは
 
 ## 概要
 
@@ -26,7 +26,7 @@ SALOMEには2種類の配布形態があり、混同しやすいので最初に�
 
 ## SALOMEのインストール
 
-SALOME 9.15 のインストール手順は、Windows（zipを展開するだけ）とMac（Dockerで公開イメージを利用）で異なる。手順は別ドキュメント [install_salome.md](install_salome.md) にまとめている。
+SALOME 9.15 のインストール手順は、Windows（zipを展開するだけ）とMac（Dockerで公開イメージを利用）で異なる。手順は別ドキュメント [SALOMEのインストール（Windows / Mac）](install_salome.html) にまとめている。
 
 - Windows: 公式サイトからzipをダウンロードして展開し、`run_salome.bat` で起動する。
 - Mac: Mac版の配布は無いため、Docker Desktop＋XQuartzで講義用Dockerイメージを動かす。

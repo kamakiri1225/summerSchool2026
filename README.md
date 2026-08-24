@@ -12,7 +12,7 @@ SALOME でジオメトリ・メッシュを作成し、OpenFOAM 用に変換し�
 https://kamakiri1225.github.io/summerSchool2026/
 
 - [講義目次](https://kamakiri1225.github.io/summerSchool2026/Track3/index.html)
-- [000 SALOMEとは・インストール](https://kamakiri1225.github.io/summerSchool2026/Track3/000_salome.html)
+- [000 SALOMEとは](https://kamakiri1225.github.io/summerSchool2026/Track3/000_salome.html)
 - [001 Box: SALOMEでOpenFOAM用メッシュを作る](https://kamakiri1225.github.io/summerSchool2026/Track3/001_box.html)
 - [002 Stirrer: SALOMEで撹拌機のヘキサメッシュを作る](https://kamakiri1225.github.io/summerSchool2026/Track3/002_stirrer.html)
 - [003 Heatsink: SALOMEでヒートシンクの熱流体・固体連成メッシュを作る](https://kamakiri1225.github.io/summerSchool2026/Track3/003_heatsink.html)
