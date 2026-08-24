@@ -1,13 +1,18 @@
 # 002 Stirrer: SALOMEで撹拌機のヘキサメッシュを作る
 
+![撹拌機のヘキサメッシュ](img/002_stirrer/hexmesh_cover_photo.svg)
+
 ## この演習で目指すこと
 
 撹拌機形状を題材に、Shaperで断面形状を作成し、Geometryで回転・押し出し・分割を行い、Meshでヘキサメッシュを作成する。
 
+ヘキサメッシュを作成するには、形状を六面体として扱えるブロックに分割し、各ブロックで対向する辺同士の分割数を一致させる必要がある。複雑な形状も、回転・押し出し・Partitionを使って適切なブロックへ分けることで、すべての領域をヘキサメッシュで作成できる。この演習では、撹拌槽と羽根まわりの形状をブロックに分け、方向別の分割数を設定する考え方を扱う。
+
 - Shaperでスケッチを作成する
 - 寸法拘束と幾何拘束で形状を確定する
 - ShellをGeometryへエクスポートする
-- 回転、押し出し、Partitionでブロック分割する
+- 回転、押し出し、Partitionでヘキサメッシュ用のブロックに分割する
+- 対向する辺同士の分割数を一致させる
 - グループを整理してOpenFOAMへ渡す境界名を作る
 - ヘキサメッシュとサブメッシュを作成する
 
@@ -663,11 +668,29 @@ boundaryField
 
 **（2）一体もの（1つの連続メッシュ）の場合の対処法（今回の方法）**
 
-今回のようにメッシュが一体で作られている場合は、貼り合わせができないので、**rotor の境界（r=35mm の円筒面）を固定してしまう**方法をとる。具体的には、
+今回のようにメッシュが一体で作られている場合は、貼り合わせができないので、**rotor の境界（r=35mm の円筒面）を一時的に固定壁にして変形させ、あとで元に戻す**方法をとる。手順は次の4ステップ。
 
-- `topoSet` で rotor1 / rotor2 セルゾーンの境界面を faceZone 化する。
-- `createBaffles` でその面を固定壁パッチ（`rotorPin`）に変換する。
-- `pointDisplacement` で `.*`（既定）が `fixedValue (0 0 0)` になっているため、この境界パッチも自動的に変位0で固定される。
+1. **`topoSet`** … rotor1 / rotor2 セルゾーンの境界面を faceZone（`rotorBoundary`）にする。
+2. **`createBaffles`** … その面を**一時的な固定壁パッチ `rotorPin`** に変換する。`pointDisplacement` の `.*`（既定）が `fixedValue (0 0 0)` なので、`rotorPin` は自動的に変位0で固定される。
+3. **`moveDynamicMesh`** … 羽根を変形させる。このとき rotor 境界（`rotorPin`）は変位0で固定されているので、変形は rotor 内側だけに閉じ込められる。
+4. **`stitchMesh`** … 変形後、`rotorPin`（壁）を**内部面に戻す**。これで r=35 の壁が消え、**元の一体もの（壁のない連続メッシュ）に戻る**。ただし形状は変形済み。
+
+実際のコマンドは次の通り（`master_curve_of13` の `Allrun` に記載）。
+
+```bash
+# 1-2. rotor境界(r=35)を一時的に固定壁(rotorPin)化
+topoSet -dict system/topoSetDict.rotorpin
+createBaffles -overwrite
+
+# 3. 羽根を変形(rotorPinは変位0で固定)
+rm -rf 0 && cp -r 0.orig 0
+moveDynamicMesh
+
+# 4. 固定壁を内部面へ戻す(壁を消し、元の一体ものメッシュに戻す)
+stitchMesh -latestTime "((rotorPin_master rotorPin_slave))"
+```
+
+`createBaffles` で作る `rotorPin_master` / `rotorPin_slave` は `type wall`（両面とも壁）なので、そのままでは r=35 で流れが遮られてしまう。そこで変形が終わったら `stitchMesh` で両パッチを内部面へ結合し、**壁を消して元の状態に戻す**のがポイントである。
 
 固定した面（`rotorPin`）は、下図でピンク色に示した rotor1 / rotor2 セルゾーンの**外周表面全体**である。具体的には、
 
@@ -680,8 +703,7 @@ boundaryField
 
 これにより、変形は rotor 内部（羽根と境界の間）だけに閉じ込められ、**rotor 界面は円形を保ち、外側のメッシュは完全に静止する**（実測で外側の変位0.000mm・界面の半径ずれ0.05mm、`checkMesh` も `Mesh OK`）。
 
-対処後（rotor境界を固定した場合）の変形過程は以下のようになる。羽根（マゼンタ）は変形するが、回転領域（淡青）とその外側のメッシュは動かず、rotor は円形を保っている（「対処前」アニメーションと見比べると違いが分かる）。
+対処後（rotor境界を固定した場合）の変形過程は以下のようになる。羽根（ピンク色）は変形するが、回転領域（水色）とその外側のメッシュは動かず、rotor は円形を保っている（「対処前」アニメーションと見比べると違いが分かる）。
 
 ![rotor境界を固定した場合の変形（外側は静止・rotorは円形維持）](img/002_stirrer/ani_deform_pinned.gif)
-
 
