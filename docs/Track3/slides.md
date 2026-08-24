@@ -1804,7 +1804,7 @@ checkMesh -latestTime > log.checkMesh 2>&1
 
 **（1）別部品で作って後で貼り合わせる方法（サマースクール2020・技術書の方法）**
 
-羽根を含む部品を**別メッシュ**として作り、`createBaffles`＋`moveDynamicMesh`で羽根だけを曲げてから、`mergeMeshes`／`stitchMesh`で rotor のメッシュに貼り合わせる。こうすると変形を羽根の部品内に閉じ込められる。この手順は技術書「OpenFOAMでメッシュ作成」に詳しく解説されているので、そちらを参照。
+羽根を含む部品を**別メッシュ**として作り、`createBaffles`＋`moveDynamicMesh`で羽根だけを曲げてから、`mergeMeshes`／`stitchMesh`で rotor のメッシュに貼り合わせる。こうすると変形を羽根の部品内に閉じ込められる。この手順は技術書「[OpenFOAMでメッシュ作成](https://techbookfest.org/product/5752199185432576)」（技術書典）に詳しく解説されているので、そちらを参照。
 
 
 ---
