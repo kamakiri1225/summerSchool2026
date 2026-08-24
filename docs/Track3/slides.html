@@ -3307,7 +3307,17 @@ aria-hidden="true">羽根の変位に追従して変形したメッシュ（t=1�
 <h3
 id="回転領域メッシュが動いてしまう問題と対処">回転領域メッシュが動いてしまう問題と対処</h3>
 <p>このまま羽根を<code>moveDynamicMesh</code>で曲げると、<strong>羽根だけでなく回転領域（rotor）のメッシュまで一緒に動いてしまう</strong>（下のアニメーションで、羽根の変形が周囲へ広がり
-rotor 界面 r=35mm が円からずれる様子が確認できる）。回転計算では rotor
+rotor 界面 r=35mm が円からずれる様子が確認できる）。</p>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/ani_deform.gif"
+alt="羽根の変位にメッシュが追従変形するアニメーション" />
+<figcaption
+aria-hidden="true">羽根の変位にメッシュが追従変形するアニメーション</figcaption>
+</figure>
+<p>回転領域に使用する rotor
 は円柱状のきれいな領域であってほしいので、これは望ましくない。</p>
 <p>対処法は、メッシュの作り方によって2通りある。</p>
 <p><strong>（1）別部品で作って後で貼り合わせる方法（サマースクール2020・技術書の方法）</strong></p>
@@ -3340,20 +3350,16 @@ faceZone 化する。</li>
 内部（羽根と境界の間）だけに閉じ込められ、<strong>rotor
 界面は円形を保ち、外側のメッシュは完全に静止する</strong>（実測で外側の変位0.000mm・界面の半径ずれ0.05mm、<code>checkMesh</code>
 も <code>Mesh OK</code>）。</p>
+</section>
+<section class="slide level2">
+
+<h3
+id="注意点対処しないと回転領域まで動いてしまう">注意点：対処しないと回転領域まで動いてしまう</h3>
 <p>以下のアニメーションは、対処前（一体ものをそのまま曲げた場合）の変形過程である（マゼンタ:
 羽根パッチ、緑: 仕切り板、黄: 上下の羽根高さの水平断面、淡青:
 回転領域セルゾーン rotor1 / rotor2、左: メッシュ線あり、右:
 スムース表示）。羽根がy方向へ曲線状に変位し、周囲のメッシュ（rotor
 を含む）が追従して動いてしまっている。</p>
-</section>
-<section class="slide level2">
-
-<figure>
-<img data-src="img/002_stirrer/ani_deform.gif"
-alt="羽根の変位にメッシュが追従変形するアニメーション" />
-<figcaption
-aria-hidden="true">羽根の変位にメッシュが追従変形するアニメーション</figcaption>
-</figure>
 </section>
 <section class="slide level2">
 
