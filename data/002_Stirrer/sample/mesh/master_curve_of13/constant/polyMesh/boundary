@@ -14,14 +14,16 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-9
+
+11
 (
     defaultFaces
     {
         type            patch;
         nFaces          28464;
-        startFace       654984;
+        startFace       647352;
     }
+
     wall_wing_master
     {
         type            wall;
@@ -33,8 +35,9 @@ wall_wing
 )
 ;
         nFaces          480;
-        startFace       683448;
+        startFace       675816;
     }
+
     wall_wing_slave
     {
         type            wall;
@@ -46,8 +49,9 @@ wall_wing
 )
 ;
         nFaces          480;
-        startFace       683928;
+        startFace       676296;
     }
+
     wall_wing2_master
     {
         type            wall;
@@ -59,8 +63,9 @@ wall_wing2
 )
 ;
         nFaces          480;
-        startFace       684408;
+        startFace       676776;
     }
+
     wall_wing2_slave
     {
         type            wall;
@@ -72,8 +77,9 @@ wall_wing2
 )
 ;
         nFaces          480;
-        startFace       684888;
+        startFace       677256;
     }
+
     wall_circ_z015_master
     {
         type            wall;
@@ -85,8 +91,9 @@ wall_circ_z015
 )
 ;
         nFaces          576;
-        startFace       685368;
+        startFace       677736;
     }
+
     wall_circ_z015_slave
     {
         type            wall;
@@ -98,8 +105,9 @@ wall_circ_z015
 )
 ;
         nFaces          576;
-        startFace       685944;
+        startFace       678312;
     }
+
     wall_circ_z035_master
     {
         type            wall;
@@ -111,8 +119,9 @@ wall_circ_z035
 )
 ;
         nFaces          576;
-        startFace       686520;
+        startFace       678888;
     }
+
     wall_circ_z035_slave
     {
         type            wall;
@@ -124,8 +133,38 @@ wall_circ_z035
 )
 ;
         nFaces          576;
-        startFace       687096;
+        startFace       679464;
     }
+
+    rotorPin_master
+    {
+        type            wall;
+        inGroups        List<word> 
+2
+(
+wall
+rotorPin
 )
+;
+        nFaces          7632;
+        startFace       680040;
+    }
+
+    rotorPin_slave
+    {
+        type            wall;
+        inGroups        List<word> 
+2
+(
+wall
+rotorPin
+)
+;
+        nFaces          7632;
+        startFace       687672;
+    }
+
+)
+
 
 // ************************************************************************* //

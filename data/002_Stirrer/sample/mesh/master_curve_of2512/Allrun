@@ -1,23 +1,14 @@
 #!/bin/sh
-cd "${0%/*}" || exit                                # Run from this directory
-. ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions        # Tutorial run functions
+cd "${0%/*}" || exit
+. ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions
 #------------------------------------------------------------------------------
-
-cp -rf \
-    "$FOAM_TUTORIALS"/resources/geometry/SnakeRiverCanyon \
-    constant/triSurface
-
-restore0Dir
-
-runApplication blockMesh
-
-runApplication decomposePar
-
-runParallel $(getApplication)
-
-runParallel redistributePar -reconstruct
-
-# test `directionalMeshWave`
-runApplication checkMesh -writeAllFields -latestTime
-
+# rotor境界(r=35)を固定壁(baffle)化 → 羽根変形をrotor内に閉じ込め外側を静止させる
+if ! grep -q rotorPin constant/polyMesh/boundary 2>/dev/null; then
+    runApplication topoSet -dict system/topoSetDict.rotorpin
+    runApplication createBaffles -overwrite
+fi
+rm -rf 0
+cp -r 0.orig 0
+runApplication moveDynamicMesh
+touch post.foam
 #------------------------------------------------------------------------------

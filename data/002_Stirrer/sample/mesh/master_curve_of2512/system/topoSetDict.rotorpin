@@ -1,0 +1,12 @@
+FoamFile{ version 2.0; format ascii; class dictionary; object topoSetDict; }
+actions
+(
+    { name rotorCells; type cellSet; action new; source zoneToCell; zone rotor1; }
+    { name rotorCells; type cellSet; action add; source zoneToCell; zone rotor2; }
+    // rotorセルの全faces
+    { name rotorFaces; type faceSet; action new; source cellToFace; set rotorCells; option all; }
+    // 内部(両側rotor)を除く → 境界faceだけ残る
+    { name rotorFaces; type faceSet; action delete; source cellToFace; set rotorCells; option both; }
+    // faceZone化(rotor側をmaster)
+    { name rotorBoundary; type faceZoneSet; action new; source setsToFaceZone; faceSet rotorFaces; cellSet rotorCells; }
+);

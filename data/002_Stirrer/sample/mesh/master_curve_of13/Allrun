@@ -3,6 +3,14 @@ cd "${0%/*}" || exit                                # Run from this directory
 . ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions        # Tutorial run functions
 #------------------------------------------------------------------------------
 
+# rotor境界(r=35円筒面)を固定壁(baffle)化する。
+# これにより羽根の変形がrotor内部に閉じ込められ、rotorは円形を保ち外側は静止する。
+# 既に適用済み(committedメッシュにrotorPinあり)なら二重適用を避けてスキップ。
+if ! grep -q rotorPin constant/polyMesh/boundary 2>/dev/null; then
+    runApplication topoSet -dict system/topoSetDict.rotorpin
+    runApplication createBaffles -overwrite
+fi
+
 rm -rf 0
 cp -r 0.orig 0
 

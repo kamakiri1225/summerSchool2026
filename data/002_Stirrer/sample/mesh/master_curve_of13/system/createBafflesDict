@@ -1,0 +1,14 @@
+FoamFile{ version 2.0; format ascii; class dictionary; object createBafflesDict; }
+internalFacesOnly true;
+baffles
+{
+    rotorPin
+    {
+        type faceZone; zoneName rotorBoundary;
+        patches
+        {
+            master { name rotorPin_master; type wall; }
+            slave  { name rotorPin_slave;  type wall; }
+        }
+    }
+}
