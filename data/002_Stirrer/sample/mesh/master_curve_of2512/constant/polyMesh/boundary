@@ -16,97 +16,70 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-
-11
+9
 (
     defaultFaces
     {
         type            patch;
         nFaces          31110;
-        startFace       819267;
+        startFace       830982;
     }
-
     wall_wing_master
     {
         type            wall;
-        inGroups        2 ( wall wall_wing );
+        inGroups        2(wall wall_wing);
         nFaces          444;
-        startFace       850377;
+        startFace       862092;
     }
-
     wall_wing_slave
     {
         type            wall;
-        inGroups        2 ( wall wall_wing );
+        inGroups        2(wall wall_wing);
         nFaces          444;
-        startFace       850821;
+        startFace       862536;
     }
-
     wall_wing2_master
     {
         type            wall;
-        inGroups        2 ( wall wall_wing2 );
+        inGroups        2(wall wall_wing2);
         nFaces          444;
-        startFace       851265;
+        startFace       862980;
     }
-
     wall_wing2_slave
     {
         type            wall;
-        inGroups        2 ( wall wall_wing2 );
+        inGroups        2(wall wall_wing2);
         nFaces          444;
-        startFace       851709;
+        startFace       863424;
     }
-
     wall_circ_z015_master
     {
         type            wall;
-        inGroups        2 ( wall wall_circ_z015 );
+        inGroups        2(wall wall_circ_z015);
         nFaces          1200;
-        startFace       852153;
+        startFace       863868;
     }
-
     wall_circ_z015_slave
     {
         type            wall;
-        inGroups        2 ( wall wall_circ_z015 );
+        inGroups        2(wall wall_circ_z015);
         nFaces          1200;
-        startFace       853353;
+        startFace       865068;
     }
-
     wall_circ_z035_master
     {
         type            wall;
-        inGroups        2 ( wall wall_circ_z035 );
+        inGroups        2(wall wall_circ_z035);
         nFaces          1200;
-        startFace       854553;
+        startFace       866268;
     }
-
     wall_circ_z035_slave
     {
         type            wall;
-        inGroups        2 ( wall wall_circ_z035 );
+        inGroups        2(wall wall_circ_z035);
         nFaces          1200;
-        startFace       855753;
+        startFace       867468;
     }
-
-    rotorPin_master
-    {
-        type            wall;
-        inGroups        2 ( wall rotorPin );
-        nFaces          11715;
-        startFace       856953;
-    }
-
-    rotorPin_slave
-    {
-        type            wall;
-        inGroups        2 ( wall rotorPin );
-        nFaces          11715;
-        startFace       868668;
-    }
-
 )
-
 
 // ************************************************************************* //

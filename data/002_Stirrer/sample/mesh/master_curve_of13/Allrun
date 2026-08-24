@@ -2,10 +2,12 @@
 cd "${0%/*}" || exit                                # Run from this directory
 . ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions        # Tutorial run functions
 #------------------------------------------------------------------------------
+# 羽根を変形させつつ、回転領域(rotor)のメッシュを動かさないための手順。
+#   1. rotor1/rotor2 セルゾーンの境界(r=35)を faceZone 化 (topoSet)
+#   2. その面を一時的に固定壁 rotorPin に変換 (createBaffles)
+#   3. 羽根を変形。rotorPin は pointDisplacement の .* により変位0で固定
+#   4. 変形後、rotorPin を内部面に戻す (stitchMesh) = 元の一体ものメッシュへ
 
-# rotor境界(r=35円筒面)を固定壁(baffle)化する。
-# これにより羽根の変形がrotor内部に閉じ込められ、rotorは円形を保ち外側は静止する。
-# 既に適用済み(committedメッシュにrotorPinあり)なら二重適用を避けてスキップ。
 if ! grep -q rotorPin constant/polyMesh/boundary 2>/dev/null; then
     runApplication topoSet -dict system/topoSetDict.rotorpin
     runApplication createBaffles -overwrite
@@ -13,9 +15,9 @@ fi
 
 rm -rf 0
 cp -r 0.orig 0
-
 runApplication moveDynamicMesh
 
-touch post.foam
+runApplication stitchMesh -latestTime "((rotorPin_master rotorPin_slave))"
 
+touch post.foam
 #------------------------------------------------------------------------------
