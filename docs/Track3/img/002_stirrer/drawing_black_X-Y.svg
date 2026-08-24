@@ -1,0 +1,141 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="800" viewBox="0 0 1000 800">
+  <defs>
+    <marker id="aE" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto" markerUnits="userSpaceOnUse">
+      <polygon points="0,0 10,3.5 0,7" fill="#000"/>
+    </marker>
+    <marker id="aS" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto" markerUnits="userSpaceOnUse">
+      <polygon points="10,0 0,3.5 10,7" fill="#000"/>
+    </marker>
+  </defs>
+
+  <rect width="1000" height="800" fill="#ffffff"/>
+
+  <!-- =========================================================
+       主投影図　原点 (300,620) / 縮尺 14px = 1
+       円弧半径 R3, R10, R15, R25, R35, R40 / 半径線 0°,30°,60°
+       ========================================================= -->
+
+  <!-- 寸法補助線 -->
+  <g stroke="#000" stroke-width="0.8" fill="none">
+    <line x1="300" y1="620" x2="300" y2="762"/>
+    <line x1="440" y1="620" x2="440" y2="658"/>
+    <line x1="510" y1="620" x2="510" y2="684"/>
+    <line x1="650" y1="620" x2="650" y2="710"/>
+    <line x1="790" y1="620" x2="790" y2="736"/>
+    <line x1="860" y1="620" x2="860" y2="762"/>
+    <!-- 角度寸法用 -->
+    <line x1="860" y1="620" x2="975" y2="620"/>
+    <line x1="784.9" y1="340" x2="832.6" y2="312.5"/>
+    <line x1="580" y1="135" x2="637.5" y2="35.4"/>
+  </g>
+
+  <!-- 寸法線 -->
+  <g stroke="#000" stroke-width="1" fill="none">
+    <line x1="300" y1="650" x2="440" y2="650" marker-start="url(#aS)" marker-end="url(#aE)"/>
+    <line x1="300" y1="676" x2="510" y2="676" marker-start="url(#aS)" marker-end="url(#aE)"/>
+    <line x1="300" y1="702" x2="650" y2="702" marker-start="url(#aS)" marker-end="url(#aE)"/>
+    <line x1="300" y1="728" x2="790" y2="728" marker-start="url(#aS)" marker-end="url(#aE)"/>
+    <line x1="300" y1="754" x2="860" y2="754" marker-start="url(#aS)" marker-end="url(#aE)"/>
+    <path d="M 900 620 A 600 600 0 0 0 819.6 320" marker-start="url(#aS)" marker-end="url(#aE)"/>
+    <path d="M 960 620 A 660 660 0 0 0 630 48.4" marker-start="url(#aS)" marker-end="url(#aE)"/>
+  </g>
+
+  <!-- 図形 -->
+  <g stroke="#000" stroke-width="2.4" fill="none" stroke-linecap="round">
+    <!-- 半径線 -->
+    <line x1="300" y1="620" x2="860" y2="620"/>
+    <line x1="300" y1="620" x2="784.9" y2="340"/>
+    <line x1="300" y1="620" x2="580" y2="135"/>
+    <!-- 円弧 -->
+    <path d="M 342 620 A 42 42 0 0 0 321 583.6"/>
+    <path d="M 440 620 A 140 140 0 0 0 370 498.7"/>
+    <path d="M 510 620 A 210 210 0 0 0 405 438.1"/>
+    <path d="M 650 620 A 350 350 0 0 0 475 316.9"/>
+    <path d="M 790 620 A 490 490 0 0 0 545 195.7"/>
+    <path d="M 860 620 A 560 560 0 0 0 580 135"/>
+    <!-- 中心部の折れ線 -->
+    <path d="M 316.8 620 L 318.2 609.5 L 308.4 605.5"/>
+  </g>
+
+  <!-- 原点 -->
+  <g stroke="#000" stroke-width="1.2">
+    <line x1="292" y1="620" x2="308" y2="620"/>
+    <line x1="300" y1="612" x2="300" y2="628"/>
+  </g>
+
+  <!-- 寸法文字 -->
+  <g fill="#000" font-family="Arial, Helvetica, sans-serif" font-size="17" text-anchor="middle">
+    <text x="370" y="645">10</text>
+    <text x="405" y="671">15</text>
+    <text x="475" y="697">25</text>
+    <text x="545" y="723">35</text>
+    <text x="580" y="749">40</text>
+    <text x="908" y="457">30°</text>
+    <text x="897" y="275">60°</text>
+  </g>
+
+  <!-- =========================================================
+       拡大詳細図（中心部）　原点 (60,655) / 縮尺 52px = 1
+       ========================================================= -->
+
+  <!-- 詳細範囲の枠と引出線 -->
+  <g stroke="#000" stroke-width="1.2" fill="none" stroke-dasharray="7 4">
+    <rect x="290" y="564" width="79" height="65"/>
+    <line x1="290" y1="564" x2="285" y2="420"/>
+    <line x1="290" y1="629" x2="285" y2="700"/>
+  </g>
+
+  <rect x="20" y="420" width="265" height="280" fill="#ffffff" stroke="#000" stroke-width="2"/>
+
+  <!-- 補助線・寸法線（詳細図） -->
+  <g stroke="#000" stroke-width="0.8" fill="none">
+    <line x1="60" y1="655" x2="60" y2="689"/>
+    <line x1="122.4" y1="655" x2="122.4" y2="689"/>
+    <line x1="60" y1="655" x2="25.4" y2="635"/>
+    <line x1="91.2" y1="601" x2="56.6" y2="581"/>
+  </g>
+  <g stroke="#000" stroke-width="1" fill="none">
+    <line x1="60" y1="683" x2="122.4" y2="683" marker-start="url(#aS)" marker-end="url(#aE)"/>
+    <line x1="35.8" y1="641" x2="67" y2="587" marker-start="url(#aS)" marker-end="url(#aE)"/>
+    <line x1="71" y1="674" x2="138.5" y2="635" marker-start="url(#aS)" marker-end="url(#aE)"/>
+  </g>
+
+  <!-- 図形（詳細図） -->
+  <g stroke="#000" stroke-width="2.4" fill="none" stroke-linecap="round">
+    <line x1="60" y1="655" x2="268" y2="655"/>
+    <line x1="127.5" y1="616" x2="263.5" y2="537.5"/>
+    <line x1="60" y1="655" x2="182.5" y2="442.8"/>
+    <path d="M 216 655 A 156 156 0 0 0 138 519.9"/>
+    <path d="M 122.4 655 L 127.5 616 L 91.2 601"/>
+  </g>
+  <!-- 構成線 R1.5（0°〜60°の全域） -->
+  <path d="M 138 655 A 78 78 0 0 0 99 587.4" stroke="#000" stroke-width="1" fill="none" stroke-dasharray="10 3 2 3"/>
+  <!-- 構成線 原点〜30°上の1.5点 -->
+  <line x1="60" y1="655" x2="127.5" y2="616" stroke="#000" stroke-width="1" stroke-dasharray="10 3 2 3"/>
+
+  <!-- R3 半径寸法 -->
+  <g stroke="#000" stroke-width="1" fill="none">
+    <line x1="60" y1="655" x2="170.3" y2="544.7" marker-end="url(#aE)"/>
+    <line x1="170.3" y1="544.7" x2="205" y2="510"/>
+  </g>
+
+  <!-- 点・原点（詳細図） -->
+  <g fill="#000">
+    <circle cx="122.4" cy="655" r="3"/>
+    <circle cx="127.5" cy="616" r="3"/>
+    <circle cx="91.2" cy="601" r="3"/>
+  </g>
+  <g stroke="#000" stroke-width="1.2">
+    <line x1="52" y1="655" x2="68" y2="655"/>
+    <line x1="60" y1="647" x2="60" y2="663"/>
+  </g>
+
+  <!-- 文字（詳細図） -->
+  <g fill="#000" font-family="Arial, Helvetica, sans-serif" font-size="16" text-anchor="middle">
+    <text x="91" y="678">1.2</text>
+    <text x="41" y="608" transform="rotate(-60 41 608)">1.2</text>
+    <text x="110" y="636" transform="rotate(-30 110 636)">1.5</text>
+    <text x="209" y="504" text-anchor="start">3</text>
+  </g>
+  <text x="32" y="445" fill="#000" font-family="'Hiragino Sans','Yu Gothic',Meiryo,sans-serif" font-size="18" font-weight="bold">拡大（中心部）</text>
+</svg>

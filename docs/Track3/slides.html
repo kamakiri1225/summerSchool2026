@@ -2019,6 +2019,23 @@ alt="寸法拘束と平行拘束を入れる" />
 </section>
 <section id="追加断面のスケッチ" class="slide level2">
 <h2>追加断面のスケッチ</h2>
+<p>2つ目のスケッチは、上から見た（X-Y平面）扇形の断面である。下図のように、中心から半径
+<code>10 / 15 / 25 / 35 / 40</code> mm の円弧で領域を分け、全体を
+<code>60°</code> の扇形とする。<code>30°</code>
+の二等分線が羽根の位置になる。中心付近は羽根の根本にあたるため、拡大図のように
+<code>1.2</code> / <code>1.5</code> / <code>3</code> mm
+の細かい寸法で形を整える。</p>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/drawing_black_X-Y.svg"
+alt="X-Y平面に描く扇形の断面（半径・角度つき）" />
+<figcaption
+aria-hidden="true">X-Y平面に描く扇形の断面（半径・角度つき）</figcaption>
+</figure>
+<p>この扇形をZ軸方向に押し出すことで、槽の底や羽根まわりのブロックを作る。円弧で分けた半径方向の区切りは、後でヘキサメッシュのブロック境界（サブメッシュの
+<code>r1</code>〜<code>r6</code> など）として使う。</p>
 </section>
 <section class="slide level2">
 
@@ -2165,6 +2182,11 @@ alt="TOP表示へ切り替える" />
 </section>
 <section id="羽根形状のスケッチ" class="slide level2">
 <h2>羽根形状のスケッチ</h2>
+<p>ここで描いているのは、先ほどのX-Y平面スケッチ（<a
+href="#/追加断面のスケッチ">追加断面のスケッチ</a>
+の図）の<strong>中心付近の拡大部分</strong>にあたる。拡大図の
+<code>1.2</code> / <code>1.5</code> / <code>3</code> mm
+の寸法で示された、羽根の根本まわりの細かい円弧と補助線を作り込んでいく作業である。</p>
 </section>
 <section class="slide level2">
 
