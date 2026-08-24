@@ -1456,5 +1456,63 @@ alt="rotor境界を固定した場合の変形（外側は静止・rotorは円�
 <figcaption
 aria-hidden="true">rotor境界を固定した場合の変形（外側は静止・rotorは円形維持）</figcaption>
 </figure>
+<h3
+id="フルモデルの組み立て回転コピー結合">フルモデルの組み立て（回転コピー＋結合）</h3>
+<p>ここまでで作った変形済みの 1/6
+セクター（60°）を、<strong>60°ずつ回転コピーして6個結合</strong>すると、全周（360°）の撹拌槽フルモデルになる。作業フォルダは
+<code>data/002_Stirrer/sample/mesh/fullmodel_of13</code>。</p>
+<p>基準セクターには、<code>master_curve_of13</code> を
+<code>Allrun</code>
+で回した最終時刻（<code>1/</code>）の変形メッシュ（羽根が曲がり、rotor
+境界は円形のまま、壁も無い一体もの）を使う。</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> data/002_Stirrer/sample/mesh/fullmodel_of13</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="bu">.</span> /opt/openfoam13/etc/bashrc</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="va">SEC</span><span class="op">=</span>../master_curve_of13/1/polyMesh   <span class="co"># 変形済みセクター</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co"># 基準(0°)を配置</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span> <span class="at">-rf</span> constant/polyMesh</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="fu">cp</span> <span class="at">-r</span> <span class="st">&quot;</span><span class="va">$SEC</span><span class="st">&quot;</span> constant/polyMesh</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="co"># 60/120/180/240/300°の回転コピーを一時ケースに作成</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> k <span class="kw">in</span> 1 2 3 4 5<span class="kw">;</span> <span class="cf">do</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    <span class="va">ang</span><span class="op">=</span><span class="va">$((k</span><span class="op">*</span><span class="dv">60</span><span class="va">))</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mkdir</span> <span class="at">-p</span> /tmp/sec<span class="va">$k</span>/constant /tmp/sec<span class="va">$k</span>/system</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cp</span> <span class="at">-r</span> <span class="st">&quot;</span><span class="va">$SEC</span><span class="st">&quot;</span> /tmp/sec<span class="va">$k</span>/constant/polyMesh</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cp</span> system/controlDict /tmp/sec<span class="va">$k</span>/system/</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>    <span class="ex">transformPoints</span> <span class="at">-case</span> /tmp/sec<span class="va">$k</span> <span class="st">&quot;Rz=</span><span class="va">$ang</span><span class="st">&quot;</span>     <span class="co"># z軸まわりに ang 度回転</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="co"># 6セクターを1つに結合</span></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a><span class="ex">mergeMeshes</span> <span class="at">-addCases</span> <span class="st">&#39;(&quot;/tmp/sec1&quot; &quot;/tmp/sec2&quot; &quot;/tmp/sec3&quot; &quot;/tmp/sec4&quot; &quot;/tmp/sec5&quot;)&#39;</span></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a><span class="ex">checkMesh</span></span></code></pre></div>
+<p>各コマンドの役割は以下の通り。</p>
+<ul>
+<li><strong><code>transformPoints -case &lt;dir&gt; "Rz=&lt;角度&gt;"</code></strong>
+…
+指定ケースのメッシュ全体を、z軸まわりに指定角度だけ回転させる。60°の倍数（60/120/180/240/300）で5個の回転コピーを作る。</li>
+<li><strong><code>mergeMeshes -addCases '(...)'</code></strong> …
+基準セクター（カレント）に、5個の回転コピーを追加して1つのメッシュに結合する。結果は6セクター分＝223,776
+× 6 = <strong>1,342,656
+セル</strong>の全周メッシュになる（<code>checkMesh</code> で
+<code>Mesh OK</code>）。</li>
+</ul>
+<p>出来上がった全周モデルを可視化すると次のようになる。曲がった羽根が全周（12枚）に並び、中央に仕切り板（緑）とシャフト穴が見える。</p>
+<figure>
+<img src="img/002_stirrer/fullmodel_of13.png"
+alt="回転コピー＋結合で作った全周（360°）フルモデル（赤: 羽根、緑: 仕切り板）" />
+<figcaption
+aria-hidden="true">回転コピー＋結合で作った全周（360°）フルモデル（赤:
+羽根、緑: 仕切り板）</figcaption>
+</figure>
+<ul>
+<li>上記の一連の手順は、<code>fullmodel_of13/Allrun</code>
+にまとめてある（<code>./Allrun</code> で再生成できる）。</li>
+<li>補足: <code>mergeMeshes</code>
+はセクター同士を並べて結合するだけで、隣り合うセクターの接合面はまだ一致しているだけの別パッチである。実際に流体計算するときは、この接合面を
+<code>stitchMesh</code> で内部面に結合して連続メッシュにする。</li>
+</ul>
 </body>
 </html>

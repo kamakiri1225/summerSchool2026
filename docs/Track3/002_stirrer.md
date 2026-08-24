@@ -707,3 +707,46 @@ stitchMesh -latestTime "((rotorPin_master rotorPin_slave))"
 
 ![rotor境界を固定した場合の変形（外側は静止・rotorは円形維持）](img/002_stirrer/ani_deform_pinned.gif)
 
+
+### フルモデルの組み立て（回転コピー＋結合）
+
+ここまでで作った変形済みの 1/6 セクター（60°）を、**60°ずつ回転コピーして6個結合**すると、全周（360°）の撹拌槽フルモデルになる。作業フォルダは `data/002_Stirrer/sample/mesh/fullmodel_of13`。
+
+基準セクターには、`master_curve_of13` を `Allrun` で回した最終時刻（`1/`）の変形メッシュ（羽根が曲がり、rotor 境界は円形のまま、壁も無い一体もの）を使う。
+
+```bash
+cd data/002_Stirrer/sample/mesh/fullmodel_of13
+. /opt/openfoam13/etc/bashrc
+
+SEC=../master_curve_of13/1/polyMesh   # 変形済みセクター
+
+# 基準(0°)を配置
+rm -rf constant/polyMesh
+cp -r "$SEC" constant/polyMesh
+
+# 60/120/180/240/300°の回転コピーを一時ケースに作成
+for k in 1 2 3 4 5; do
+    ang=$((k*60))
+    mkdir -p /tmp/sec$k/constant /tmp/sec$k/system
+    cp -r "$SEC" /tmp/sec$k/constant/polyMesh
+    cp system/controlDict /tmp/sec$k/system/
+    transformPoints -case /tmp/sec$k "Rz=$ang"     # z軸まわりに ang 度回転
+done
+
+# 6セクターを1つに結合
+mergeMeshes -addCases '("/tmp/sec1" "/tmp/sec2" "/tmp/sec3" "/tmp/sec4" "/tmp/sec5")'
+
+checkMesh
+```
+
+各コマンドの役割は以下の通り。
+
+- **`transformPoints -case <dir> "Rz=<角度>"`** … 指定ケースのメッシュ全体を、z軸まわりに指定角度だけ回転させる。60°の倍数（60/120/180/240/300）で5個の回転コピーを作る。
+- **`mergeMeshes -addCases '(...)'`** … 基準セクター（カレント）に、5個の回転コピーを追加して1つのメッシュに結合する。結果は6セクター分＝223,776 × 6 = **1,342,656 セル**の全周メッシュになる（`checkMesh` で `Mesh OK`）。
+
+出来上がった全周モデルを可視化すると次のようになる。曲がった羽根が全周（12枚）に並び、中央に仕切り板（緑）とシャフト穴が見える。
+
+![回転コピー＋結合で作った全周（360°）フルモデル（赤: 羽根、緑: 仕切り板）](img/002_stirrer/fullmodel_of13.png)
+
+- 上記の一連の手順は、`fullmodel_of13/Allrun` にまとめてある（`./Allrun` で再生成できる）。
+- 補足: `mergeMeshes` はセクター同士を並べて結合するだけで、隣り合うセクターの接合面はまだ一致しているだけの別パッチである。実際に流体計算するときは、この接合面を `stitchMesh` で内部面に結合して連続メッシュにする。

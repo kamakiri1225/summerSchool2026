@@ -1,0 +1,33 @@
+#!/bin/sh
+cd "${0%/*}" || exit
+. ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions
+#------------------------------------------------------------------------------
+# 変形済みの1/6セクター(60°)を、60°ずつ回転コピーして6個結合し、
+# 全周(360°)のフルモデルにする。
+#   基準セクター: ../master_curve_of13 を Allrun で回した最終時刻の変形メッシュ
+#------------------------------------------------------------------------------
+SEC=../master_curve_of13/1/polyMesh
+
+# 基準(0°)セクターを配置
+rm -rf constant/polyMesh
+cp -r "$SEC" constant/polyMesh
+
+# 60,120,180,240,300°の回転コピーを一時ケースに作成
+CASES=""
+for k in 1 2 3 4 5; do
+    ang=$((k*60))
+    d=/tmp/sec$k
+    rm -rf "$d"; mkdir -p "$d/constant" "$d/system"
+    cp -r "$SEC" "$d/constant/polyMesh"
+    cp system/controlDict "$d/system/"
+    transformPoints -case "$d" "Rz=$ang"
+    CASES="$CASES \"$d\""
+done
+
+# 6セクターを結合
+runApplication mergeMeshes -addCases "($CASES)"
+
+runApplication checkMesh
+
+touch post.foam
+#------------------------------------------------------------------------------

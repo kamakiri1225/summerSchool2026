@@ -1,0 +1,6 @@
+# 生成される巨大メッシュ・結果は追跡しない(Allrunで再生成)
+/constant/polyMesh/
+/[0-9]*/
+/log.*
+/*.foam
+/processor*/
