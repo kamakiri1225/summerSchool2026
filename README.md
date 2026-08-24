@@ -16,5 +16,5 @@ https://kamakiri1225.github.io/summerSchool2026/
 - [001 Box: SALOMEでOpenFOAM用メッシュを作る](https://kamakiri1225.github.io/summerSchool2026/Track3/001_box.html)
 - [002 Stirrer: SALOMEで撹拌機のヘキサメッシュを作る](https://kamakiri1225.github.io/summerSchool2026/Track3/002_stirrer.html)
 - [003 Heatsink: SALOMEでヒートシンクの熱流体・固体連成メッシュを作る](https://kamakiri1225.github.io/summerSchool2026/Track3/003_heatsink.html)
-- [Mac向け: DockerでSALOME 9.15を使う](https://kamakiri1225.github.io/summerSchool2026/Track3/salome_docker_mac.html)
+- [SALOMEのインストール（Windows / Mac）](https://kamakiri1225.github.io/summerSchool2026/Track3/install_salome.html)
 - [スライド版（reveal.js）](https://kamakiri1225.github.io/summerSchool2026/Track3/slides.html)

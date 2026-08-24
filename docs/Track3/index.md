@@ -21,6 +21,8 @@ SALOMEには、プラットフォーム本体の **SALOME** と、構造解析�
 
 本講義ではソルバとしてOpenFOAMを使うため、Salome Platform配布の **SALOME 9.15**（ソルバなし版）を使用する。
 
+インストール手順（Windows / Mac）は [SALOMEのインストール](install_salome.html) を参照。
+
 ---
 
 ## 講義の全体像

@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>Mac向け: DockerでSALOME 9.15を使う</title>
+  <title>SALOME 9.15 のインストール（Windows / Mac）</title>
   <style>
     code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
@@ -89,9 +89,87 @@
   <link rel="stylesheet" href="pandoc.css" />
 </head>
 <body>
-<h1 id="mac向け-dockerでsalome-9.15を使う">Mac向け: DockerでSALOME
-9.15を使う</h1>
-<p>SALOMEのWindows版はzipを展開するだけで使えるが、<strong>Mac向けのSALOME配布は無い</strong>。そこでMacの受講者は、Dockerを使ってLinux版のSALOME
+<h1 id="salome-9.15-のインストールwindows-mac">SALOME 9.15
+のインストール（Windows / Mac）</h1>
+<p>本講義で使う <strong>SALOME 9.15</strong>
+の導入手順をまとめる。OSによって方法が異なる。</p>
+<ul>
+<li><strong>Windows</strong> …
+公式サイトからzipをダウンロードして展開するだけ（インストーラ不要）。→
+<a href="#windows-salomeをインストールする">Windows編</a></li>
+<li><strong>Mac</strong> …
+Mac向けのSALOME配布は無いため、Dockerで公開イメージを動かす。→ <a
+href="#mac-dockerでsalomeを使う">Mac編</a></li>
+</ul>
+<hr />
+<h1 id="windows-salomeをインストールする">Windows:
+SALOMEをインストールする</h1>
+<p><a href="https://www.salome-platform.org/"
+class="uri">https://www.salome-platform.org/</a>
+からSALOMEをダウンロードする（ここではWindows向けの手順。Linuxの場合はOS選択で使用ディストリビューションに合わせたファイルを選ぶ）。</p>
+<figure>
+<img src="img/000_salome/salome-install_1.png"
+alt="SALOME公式サイトからDOWNLOADを開く" />
+<figcaption
+aria-hidden="true">SALOME公式サイトからDOWNLOADを開く</figcaption>
+</figure>
+<ul>
+<li><ol type="1">
+<li>公式サイトのトップページで <code>DOWNLOAD</code> の
+<code>READ MORE</code> をクリックする。</li>
+</ol></li>
+</ul>
+<figure>
+<img src="img/000_salome/salome-install_2.png"
+alt="バージョンとOSを選んでフォームを送信する" />
+<figcaption
+aria-hidden="true">バージョンとOSを選んでフォームを送信する</figcaption>
+</figure>
+<ul>
+<li><ol start="2" type="1">
+<li>Versionで <code>9.15.0</code> を指定する（本講義で使用するのは
+<strong>9.15.0</strong>。他のバージョンを選ばないこと）。</li>
+</ol></li>
+<li><ol start="3" type="1">
+<li>OSで <code>Windows 10 (.zip)</code> を選択する。</li>
+</ol></li>
+<li><ol start="4" type="1">
+<li>名前・会社名・メールアドレスを記入する。</li>
+</ol></li>
+<li><ol start="5" type="1">
+<li>ニュース配信と利用規約のチェックを入れる。</li>
+</ol></li>
+<li><ol start="6" type="1">
+<li><code>Submit</code> をクリックする。</li>
+</ol></li>
+</ul>
+<figure>
+<img src="img/000_salome/salome-install_3.png"
+alt="zipファイルを保存する" />
+<figcaption aria-hidden="true">zipファイルを保存する</figcaption>
+</figure>
+<ul>
+<li><ol start="7" type="1">
+<li><code>Click here to download your software</code>
+をクリックし、<code>SALOME-9.15.0.zip</code>
+を適当なフォルダにダウンロードする。SALOMEは動作に必要な一式のファイルがzipに同封されているため、適当なフォルダに置いても動作する。</li>
+</ol></li>
+</ul>
+<figure>
+<img src="img/000_salome/salome-install_4.png"
+alt="run_salome.batで起動する" />
+<figcaption aria-hidden="true">run_salome.batで起動する</figcaption>
+</figure>
+<ul>
+<li><ol start="8" type="1">
+<li>zipを展開し、<code>SALOME-9.15.0</code> フォルダ内の
+<code>run_salome.bat</code>
+をダブルクリックするとSALOMEが起動する（インストーラは無く、展開するだけで使える）。</li>
+</ol></li>
+</ul>
+<hr />
+<h1 id="mac-dockerでsalomeを使う">Mac: DockerでSALOMEを使う</h1>
+<p><strong>Mac向けのSALOME配布は無い</strong>ため、Macの受講者はDockerでLinux版のSALOME
 9.15を動かす。</p>
 <p>講義用に、Ubuntu 24.04にSALOME 9.15を組み込んだDockerイメージを
 <strong>Docker Hub</strong>
@@ -113,7 +191,6 @@ Docker Hub からイメージを pull
 docker run でコンテナ起動
  ↓
 SALOME 9.15 のGUIがMacに表示される</code></pre>
-<hr />
 <h2 id="docker-desktop-をインストールする">1. Docker Desktop
 をインストールする</h2>
 <p>以下からDocker Desktop for
@@ -125,7 +202,6 @@ Macをダウンロードしてインストールする。</p>
 <li>インストール後、Docker Desktopを起動したままにしておく（左下に
 <code>Engine running</code> と表示されていればOK）。</li>
 </ul>
-<hr />
 <h2 id="xquartz-をインストールする">2. XQuartz をインストールする</h2>
 <p>SALOMEのGUIをMacの画面に表示するために、X11サーバのXQuartzを使う。</p>
 <pre class="text"><code>https://www.xquartz.org/</code></pre>
@@ -140,7 +216,6 @@ Macをダウンロードしてインストールする。</p>
 <p>Macのターミナルで実行する。</p>
 <div class="sourceCode" id="cb6"><pre
 class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">xhost</span> +localhost</span></code></pre></div>
-<hr />
 <h2 id="docker-hub-からイメージを取得する">3. Docker Hub
 からイメージを取得する</h2>
 <p>Macのターミナルで実行する。</p>
@@ -152,7 +227,6 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="
 <li>イメージには SALOME 9.15
 本体と必要なライブラリがすべて入っているため、数GBのダウンロードになる。<strong>講義当日ではなく事前に</strong>取得しておくこと。</li>
 </ul>
-<hr />
 <h2 id="コンテナを起動する">4. コンテナを起動する</h2>
 <p>作業フォルダを用意する（SALOMEで保存したファイルはここに残る）。</p>
 <div class="sourceCode" id="cb8"><pre
@@ -170,7 +244,6 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="
 <p>成功すると、</p>
 <pre class="text"><code>salome@xxxxxxxx:/work$</code></pre>
 <p>のようなプロンプトになる。</p>
-<hr />
 <h2 id="gui表示を確認してsalomeを起動する">5.
 GUI表示を確認してSALOMEを起動する</h2>
 <p>まず動作確認として、コンテナ内で、</p>
@@ -181,7 +254,6 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb11-1"><a href=
 <div class="sourceCode" id="cb12"><pre
 class="sourceCode bash"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ex">/opt/salome/mesa_salome</span></span></code></pre></div>
 <p>を実行すると、SALOME 9.15のGUIがMacに表示される。</p>
-<hr />
 <h2 id="うまくいかないとき">うまくいかないとき</h2>
 <ul>
 <li><code>docker: image not found</code> 等が出る →
@@ -194,7 +266,7 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb12-1"><a href=
 Siliconのエミュレーションのため、3D表示はネイティブより遅くなる。事前にシンプルな操作で一度動作確認しておくとよい。</li>
 </ul>
 <hr />
-<p>Windowsの受講者向けの手順（WSLg利用）を含む詳細は、リポジトリの
+<p>Windowsの受講者向けのDocker手順（WSLg利用）を含む詳細は、リポジトリの
 <code>salome915-docker/README.md</code> を参照。</p>
 </body>
 </html>

@@ -158,87 +158,17 @@
 Platform配布のSALOME 9.15</strong>（ソルバなし版）を使用する。</li>
 </ul>
 </section>
-<section id="salomeのインストールwindows版" class="slide level2">
-<h2>SALOMEのインストール（Windows版）</h2>
-<p><a href="https://www.salome-platform.org/"
-class="uri">https://www.salome-platform.org/</a>
-からSALOMEをダウンロードしてインストールする。ここでは<strong>Windowsを対象にしたダウンロード方法</strong>を記載している（Linuxの場合は、OSの選択で使用ディストリビューションに合わせたファイルを選ぶ）。</p>
-<p><strong>Macの方はDockerを使用すること。</strong> 手順は <a
-href="salome_docker_mac.md">salome_docker_mac.md</a> を参照（Docker
-Desktopをインストールし、Docker
-Hubで公開している講義用SALOMEイメージを取得して使う）。</p>
-</section>
-<section class="slide level2">
-
-<figure>
-<img data-src="img/000_salome/salome-install_1.png"
-alt="SALOME公式サイトからDOWNLOADを開く" />
-<figcaption
-aria-hidden="true">SALOME公式サイトからDOWNLOADを開く</figcaption>
-</figure>
+<section id="salomeのインストール" class="slide level2">
+<h2>SALOMEのインストール</h2>
+<p>SALOME 9.15
+のインストール手順は、Windows（zipを展開するだけ）とMac（Dockerで公開イメージを利用）で異なる。手順は別ドキュメント
+<a href="install_salome.md">install_salome.md</a> にまとめている。</p>
 <ul>
-<li><ol type="1">
-<li>公式サイトのトップページで <code>DOWNLOAD</code> の
-<code>READ MORE</code> をクリックする。</li>
-</ol></li>
-</ul>
-</section>
-<section class="slide level2">
-
-<figure>
-<img data-src="img/000_salome/salome-install_2.png"
-alt="バージョンとOSを選んでフォームを送信する" />
-<figcaption
-aria-hidden="true">バージョンとOSを選んでフォームを送信する</figcaption>
-</figure>
-<ul>
-<li><ol start="2" type="1">
-<li>Versionで <code>9.15.0</code> を指定する（本講義で使用するのは
-<strong>9.15.0</strong>。他のバージョンを選ばないこと）。</li>
-</ol></li>
-<li><ol start="3" type="1">
-<li>OSで <code>Windows 10 (.zip)</code>
-を選択する（Windowsの場合。Linuxは使用ディストリビューションに合わせて選ぶ）。</li>
-</ol></li>
-<li><ol start="4" type="1">
-<li>名前・会社名・メールアドレスを記入する。</li>
-</ol></li>
-<li><ol start="5" type="1">
-<li>ニュース配信と利用規約のチェックを入れる。</li>
-</ol></li>
-<li><ol start="6" type="1">
-<li><code>Submit</code> をクリックする。</li>
-</ol></li>
-</ul>
-</section>
-<section class="slide level2">
-
-<figure>
-<img data-src="img/000_salome/salome-install_3.png"
-alt="zipファイルを保存する" />
-<figcaption aria-hidden="true">zipファイルを保存する</figcaption>
-</figure>
-<ul>
-<li><ol start="7" type="1">
-<li><code>Click here to download your software</code>
-をクリックし、<code>SALOME-9.15.0.zip</code>
-を適当なフォルダにダウンロードする。SALOMEは動作に必要な一式のファイルがzipに同封されているため、適当なフォルダに置いても動作する。</li>
-</ol></li>
-</ul>
-</section>
-<section class="slide level2">
-
-<figure>
-<img data-src="img/000_salome/salome-install_4.png"
-alt="run_salome.batで起動する" />
-<figcaption aria-hidden="true">run_salome.batで起動する</figcaption>
-</figure>
-<ul>
-<li><ol start="8" type="1">
-<li>zipを展開し、<code>SALOME-9.15.0</code> フォルダ内の
-<code>run_salome.bat</code>
-をダブルクリックするとSALOMEが起動する（インストーラは無く、展開するだけで使える）。</li>
-</ol></li>
+<li>Windows:
+公式サイトからzipをダウンロードして展開し、<code>run_salome.bat</code>
+で起動する。</li>
+<li>Mac: Mac版の配布は無いため、Docker
+Desktop＋XQuartzで講義用Dockerイメージを動かす。</li>
 </ul>
 </section>
 <section id="主なモジュール" class="slide level2">
@@ -4223,7 +4153,7 @@ alt="OpenFOAM 13ケースセットアップの流れ" />
 3. transformPoints &quot;scale=(0.001 0.001 0.001)&quot;  … mm単位からm単位へスケール変換
 4. splitMeshRegions -cellZones  … セルゾーン名を使い4リージョンへ分割
 5. 0.orig/ のフィールドテンプレートを 0/ へコピー
-   流体は T・U・p・p_rgh、固体は T を用意し、各境界を calculated にしておく
+   流体は T・U・p・p_rgh・k・omega・alphat・nut、固体は T を用意し、各境界を calculated にしておく
 6. 0・constant・system にリージョン別の入力を用意
 7. changeDictionary -region &lt;各リージョン&gt;  … 正式な境界条件へ上書き
 8. checkMesh -region &lt;各リージョン&gt;  … 分割後のメッシュを確認</code></pre>
@@ -4272,6 +4202,10 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb11-1"><a href=
 を流体ソルバ、<code>heatSink</code>・<code>heatSource</code>・<code>basis</code>
 を固体ソルバとして連成計算する。</li>
 <li>流体側は乱流モデル（<code>kOmegaSST</code>）で速度・圧力・温度・乱流量を解き、固体側は温度を解く。</li>
+<li>v2512の参照ケースと同じ <code>maxCo 100</code> を使用する。OpenFOAM
+13の固体ソルバは <code>maxDi</code> を直接読まないため、参照計算の
+<code>maxDi 100</code> に相当する <code>maxDeltaT 0.0217</code>
+秒を設定している。</li>
 <li><code>system/controlDict</code> の設定により、時刻 <code>2</code>
 から <code>60</code> まで2秒間隔で結果を書き出す。</li>
 <li>流入条件は <code>U = (0 -0.5 0) m/s</code>（y方向へ0.5

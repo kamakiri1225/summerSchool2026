@@ -24,43 +24,12 @@ SALOMEには2種類の配布形態があり、混同しやすいので最初に�
 
 ---
 
-## SALOMEのインストール（Windows版）
+## SALOMEのインストール
 
-<https://www.salome-platform.org/> からSALOMEをダウンロードしてインストールする。ここでは**Windowsを対象にしたダウンロード方法**を記載している（Linuxの場合は、OSの選択で使用ディストリビューションに合わせたファイルを選ぶ）。
+SALOME 9.15 のインストール手順は、Windows（zipを展開するだけ）とMac（Dockerで公開イメージを利用）で異なる。手順は別ドキュメント [install_salome.md](install_salome.md) にまとめている。
 
-**Macの方はDockerを使用すること。** 手順は [salome_docker_mac.md](salome_docker_mac.md) を参照（Docker Desktopをインストールし、Docker Hubで公開している講義用SALOMEイメージを取得して使う）。
-
-
----
-
-![SALOME公式サイトからDOWNLOADを開く](img/000_salome/salome-install_1.png)
-
-- (1) 公式サイトのトップページで `DOWNLOAD` の `READ MORE` をクリックする。
-
-
----
-
-![バージョンとOSを選んでフォームを送信する](img/000_salome/salome-install_2.png)
-
-- (2) Versionで `9.15.0` を指定する（本講義で使用するのは **9.15.0**。他のバージョンを選ばないこと）。
-- (3) OSで `Windows 10 (.zip)` を選択する（Windowsの場合。Linuxは使用ディストリビューションに合わせて選ぶ）。
-- (4) 名前・会社名・メールアドレスを記入する。
-- (5) ニュース配信と利用規約のチェックを入れる。
-- (6) `Submit` をクリックする。
-
-
----
-
-![zipファイルを保存する](img/000_salome/salome-install_3.png)
-
-- (7) `Click here to download your software` をクリックし、`SALOME-9.15.0.zip` を適当なフォルダにダウンロードする。SALOMEは動作に必要な一式のファイルがzipに同封されているため、適当なフォルダに置いても動作する。
-
-
----
-
-![run_salome.batで起動する](img/000_salome/salome-install_4.png)
-
-- (8) zipを展開し、`SALOME-9.15.0` フォルダ内の `run_salome.bat` をダブルクリックするとSALOMEが起動する（インストーラは無く、展開するだけで使える）。
+- Windows: 公式サイトからzipをダウンロードして展開し、`run_salome.bat` で起動する。
+- Mac: Mac版の配布は無いため、Docker Desktop＋XQuartzで講義用Dockerイメージを動かす。
 
 ---
 
@@ -2315,7 +2284,7 @@ bash setup.sh
 3. transformPoints "scale=(0.001 0.001 0.001)"  … mm単位からm単位へスケール変換
 4. splitMeshRegions -cellZones  … セルゾーン名を使い4リージョンへ分割
 5. 0.orig/ のフィールドテンプレートを 0/ へコピー
-   流体は T・U・p・p_rgh、固体は T を用意し、各境界を calculated にしておく
+   流体は T・U・p・p_rgh・k・omega・alphat・nut、固体は T を用意し、各境界を calculated にしておく
 6. 0・constant・system にリージョン別の入力を用意
 7. changeDictionary -region <各リージョン>  … 正式な境界条件へ上書き
 8. checkMesh -region <各リージョン>  … 分割後のメッシュを確認
@@ -2346,6 +2315,7 @@ foamMultiRun > log.foamMultiRun.of13 2>&1
 
 - OpenFOAM 13では `foamMultiRun` が `system/controlDict` の `regionSolvers` を読み込み、`box` を流体ソルバ、`heatSink`・`heatSource`・`basis` を固体ソルバとして連成計算する。
 - 流体側は乱流モデル（`kOmegaSST`）で速度・圧力・温度・乱流量を解き、固体側は温度を解く。
+- v2512の参照ケースと同じ `maxCo 100` を使用する。OpenFOAM 13の固体ソルバは `maxDi` を直接読まないため、参照計算の `maxDi 100` に相当する `maxDeltaT 0.0217` 秒を設定している。
 - `system/controlDict` の設定により、時刻 `2` から `60` まで2秒間隔で結果を書き出す。
 - 流入条件は `U = (0 -0.5 0) m/s`（y方向へ0.5 m/s）、初期温度は `293.15 K` としている。発熱源の設定は `constant/heatSource/fvModels`、各リージョンの境界条件は `system/<region>/changeDictionaryDict` を参照する。
 

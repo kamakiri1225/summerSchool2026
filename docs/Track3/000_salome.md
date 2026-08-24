@@ -24,31 +24,12 @@ SALOMEには2種類の配布形態があり、混同しやすいので最初に�
 
 ---
 
-## SALOMEのインストール（Windows版）
+## SALOMEのインストール
 
-<https://www.salome-platform.org/> からSALOMEをダウンロードしてインストールする。ここでは**Windowsを対象にしたダウンロード方法**を記載している（Linuxの場合は、OSの選択で使用ディストリビューションに合わせたファイルを選ぶ）。
+SALOME 9.15 のインストール手順は、Windows（zipを展開するだけ）とMac（Dockerで公開イメージを利用）で異なる。手順は別ドキュメント [install_salome.md](install_salome.md) にまとめている。
 
-**Macの方はDockerを使用すること。** 手順は [salome_docker_mac.md](salome_docker_mac.md) を参照（Docker Desktopをインストールし、Docker Hubで公開している講義用SALOMEイメージを取得して使う）。
-
-![SALOME公式サイトからDOWNLOADを開く](img/000_salome/salome-install_1.png)
-
-- (1) 公式サイトのトップページで `DOWNLOAD` の `READ MORE` をクリックする。
-
-![バージョンとOSを選んでフォームを送信する](img/000_salome/salome-install_2.png)
-
-- (2) Versionで `9.15.0` を指定する（本講義で使用するのは **9.15.0**。他のバージョンを選ばないこと）。
-- (3) OSで `Windows 10 (.zip)` を選択する（Windowsの場合。Linuxは使用ディストリビューションに合わせて選ぶ）。
-- (4) 名前・会社名・メールアドレスを記入する。
-- (5) ニュース配信と利用規約のチェックを入れる。
-- (6) `Submit` をクリックする。
-
-![zipファイルを保存する](img/000_salome/salome-install_3.png)
-
-- (7) `Click here to download your software` をクリックし、`SALOME-9.15.0.zip` を適当なフォルダにダウンロードする。SALOMEは動作に必要な一式のファイルがzipに同封されているため、適当なフォルダに置いても動作する。
-
-![run_salome.batで起動する](img/000_salome/salome-install_4.png)
-
-- (8) zipを展開し、`SALOME-9.15.0` フォルダ内の `run_salome.bat` をダブルクリックするとSALOMEが起動する（インストーラは無く、展開するだけで使える）。
+- Windows: 公式サイトからzipをダウンロードして展開し、`run_salome.bat` で起動する。
+- Mac: Mac版の配布は無いため、Docker Desktop＋XQuartzで講義用Dockerイメージを動かす。
 
 ---
 
