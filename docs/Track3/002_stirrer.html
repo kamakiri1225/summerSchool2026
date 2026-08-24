@@ -1285,6 +1285,65 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="
 <li>各時刻（<code>0.1</code>〜<code>1</code>）でメッシュが破綻せず追従できているかを、最終時刻の
 <code>checkMesh</code> で確認する（<code>Mesh OK</code>）。</li>
 </ul>
+<p><code>0.orig/pointDisplacement</code>（実行時に <code>0/</code>
+へコピーされる）の中身は次の通り。各点の変位（<code>pointVectorField</code>）を定義するファイルである。</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>dimensions      <span class="op">[</span><span class="dv">0</span> <span class="dv">1</span> <span class="dv">0</span> <span class="dv">0</span> <span class="dv">0</span> <span class="dv">0</span> <span class="dv">0</span><span class="op">];</span>      <span class="co">// 変位なので単位は [m]</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>internalField   uniform <span class="op">(</span><span class="dv">0</span> <span class="dv">0</span> <span class="dv">0</span><span class="op">);</span>      <span class="co">// 内部の初期変位は0</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>boundaryField</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;.*&quot;</span>                              <span class="co">// 既定: すべての境界を変位0で固定</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="op">{</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>        type            fixedValue<span class="op">;</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>        value           uniform <span class="op">(</span><span class="dv">0</span> <span class="dv">0</span> <span class="dv">0</span><span class="op">);</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;wall_wing.*&quot;</span>                     <span class="co">// 羽根パッチだけ上書き（コードで変位を計算）</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    <span class="op">{</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>        type            codedFixedValue<span class="op">;</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>        name            makecurve<span class="op">;</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>        value           uniform <span class="op">(</span><span class="dv">0</span> <span class="dv">0</span> <span class="dv">0</span><span class="op">);</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>        code</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>        <span class="pp">#</span><span class="er">{</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>            <span class="at">const</span> scalar<span class="op">&amp;</span> t <span class="op">=</span> <span class="kw">this</span><span class="op">-&gt;</span>db<span class="op">().</span>time<span class="op">().</span>value<span class="op">();</span>       <span class="co">// 現在時刻</span></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>            <span class="at">const</span> vectorField<span class="op">&amp;</span> pos <span class="op">=</span> patch<span class="op">().</span>localPoints<span class="op">();</span>    <span class="co">// 羽根表面の点座標</span></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>            vectorField f<span class="op">(</span>pos<span class="op">.</span>size<span class="op">(),</span> vector<span class="op">(</span><span class="dv">0</span><span class="op">,</span><span class="dv">0</span><span class="op">,</span><span class="dv">0</span><span class="op">));</span></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>            forAll<span class="op">(</span>f<span class="op">,</span> i<span class="op">)</span></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>            <span class="op">{</span></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>                <span class="at">const</span> scalar x <span class="op">=</span> pos<span class="op">[</span>i<span class="op">][</span><span class="dv">0</span><span class="op">];</span>        <span class="co">// 各点のx座標(半径方向)</span></span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>                <span class="at">const</span> scalar height <span class="op">=</span> <span class="fl">4e-3</span><span class="op">;</span>        <span class="co">// 曲げの最大たわみ 4mm</span></span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>                <span class="at">const</span> scalar x0 <span class="op">=</span> <span class="fl">15.0e-3</span><span class="op">;</span>         <span class="co">// 曲げ始める半径 15mm</span></span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>                <span class="at">const</span> scalar x1 <span class="op">=</span> <span class="fl">25.0e-3</span><span class="op">;</span>         <span class="co">// 羽根先端の半径 25mm</span></span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>                scalar y <span class="op">=</span> <span class="fl">0.0</span><span class="op">;</span></span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span><span class="op">(</span>x <span class="op">&gt;</span> x0<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>                    <span class="co">// x0〜x1 を円弧状にたわませる（半径rの円の一部）</span></span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>                    <span class="at">const</span> scalar r <span class="op">=</span> <span class="op">(</span>pow<span class="op">((</span>x1 <span class="op">-</span> x0<span class="op">),</span> <span class="dv">2</span><span class="op">)</span> <span class="op">+</span> pow<span class="op">(</span>height<span class="op">,</span> <span class="dv">2</span><span class="op">))</span> <span class="op">/</span> <span class="fl">2.0</span> <span class="op">/</span> height<span class="op">;</span></span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>                    y <span class="op">=</span> r <span class="op">-</span> sqrt<span class="op">(</span>pow<span class="op">(</span>r<span class="op">,</span> <span class="dv">2</span><span class="op">)</span> <span class="op">-</span> pow<span class="op">((</span>x <span class="op">-</span> x0<span class="op">),</span> <span class="dv">2</span><span class="op">));</span></span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>                <span class="op">}</span></span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>                f<span class="op">[</span>i<span class="op">]</span> <span class="op">=</span> vector<span class="op">(</span><span class="fl">0.0</span><span class="op">,</span> y<span class="op">*</span>t<span class="op">,</span> <span class="fl">0.0</span><span class="op">);</span>      <span class="co">// y方向に y*t だけ変位（時刻に比例）</span></span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span></span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a>            <span class="kw">operator</span><span class="op">==(</span>f<span class="op">);</span>                          <span class="co">// この変位を境界に課す</span></span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a>        <span class="pp">#</span><span class="er">};</span></span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>ポイントは以下の通り。</p>
+<ul>
+<li><strong><code>".*"</code> → <code>fixedValue (0 0 0)</code></strong>
+… すべての境界を「動かない」に既定する。前述の
+<code>rotorPin</code>（rotor境界）や外周壁も、個別記述が無いのでこの既定にマッチして自動的に変位0で固定される。</li>
+<li><strong><code>"wall_wing.*"</code> →
+<code>codedFixedValue</code></strong> …
+羽根パッチだけを上書きし、C++コードで変位を計算する（正規表現は後に書いた方が優先されるため、羽根は固定ではなく変形する）。</li>
+<li><strong>コードの中身</strong> …
+羽根の半径15mm（<code>x0</code>）より外側を、先端25mm（<code>x1</code>）で最大たわみ4mm（<code>height</code>）になる円弧状にy方向へ曲げる。<code>y*t</code>
+としているので、時刻
+<code>t</code>（0〜1）に比例して少しずつ曲がる。</li>
+</ul>
 <figure>
 <img src="img/002_stirrer/deformed_result.png"
 alt="羽根の変位に追従して変形したメッシュ（t=1）" />

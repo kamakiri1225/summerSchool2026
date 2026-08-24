@@ -1784,6 +1784,60 @@ checkMesh -latestTime > log.checkMesh 2>&1
 - `system/controlDict` で `application moveDynamicMesh`、`endTime 1`、`deltaT 0.1` として、10ステップに分けてメッシュを追従変形させる。
 - 各時刻（`0.1`〜`1`）でメッシュが破綻せず追従できているかを、最終時刻の `checkMesh` で確認する（`Mesh OK`）。
 
+`0.orig/pointDisplacement`（実行時に `0/` へコピーされる）の中身は次の通り。各点の変位（`pointVectorField`）を定義するファイルである。
+
+```cpp
+dimensions      [0 1 0 0 0 0 0];      // 変位なので単位は [m]
+
+internalField   uniform (0 0 0);      // 内部の初期変位は0
+
+boundaryField
+{
+    ".*"                              // 既定: すべての境界を変位0で固定
+    {
+        type            fixedValue;
+        value           uniform (0 0 0);
+    }
+
+    "wall_wing.*"                     // 羽根パッチだけ上書き（コードで変位を計算）
+    {
+        type            codedFixedValue;
+        name            makecurve;
+        value           uniform (0 0 0);
+
+        code
+        #{
+            const scalar& t = this->db().time().value();       // 現在時刻
+            const vectorField& pos = patch().localPoints();    // 羽根表面の点座標
+            vectorField f(pos.size(), vector(0,0,0));
+
+            forAll(f, i)
+            {
+                const scalar x = pos[i][0];        // 各点のx座標(半径方向)
+                const scalar height = 4e-3;        // 曲げの最大たわみ 4mm
+                const scalar x0 = 15.0e-3;         // 曲げ始める半径 15mm
+                const scalar x1 = 25.0e-3;         // 羽根先端の半径 25mm
+
+                scalar y = 0.0;
+                if(x > x0) {
+                    // x0〜x1 を円弧状にたわませる（半径rの円の一部）
+                    const scalar r = (pow((x1 - x0), 2) + pow(height, 2)) / 2.0 / height;
+                    y = r - sqrt(pow(r, 2) - pow((x - x0), 2));
+                }
+                f[i] = vector(0.0, y*t, 0.0);      // y方向に y*t だけ変位（時刻に比例）
+            }
+            operator==(f);                          // この変位を境界に課す
+        #};
+    }
+}
+```
+
+ポイントは以下の通り。
+
+- **`".*"` → `fixedValue (0 0 0)`** … すべての境界を「動かない」に既定する。前述の `rotorPin`（rotor境界）や外周壁も、個別記述が無いのでこの既定にマッチして自動的に変位0で固定される。
+- **`"wall_wing.*"` → `codedFixedValue`** … 羽根パッチだけを上書きし、C++コードで変位を計算する（正規表現は後に書いた方が優先されるため、羽根は固定ではなく変形する）。
+- **コードの中身** … 羽根の半径15mm（`x0`）より外側を、先端25mm（`x1`）で最大たわみ4mm（`height`）になる円弧状にy方向へ曲げる。`y*t` としているので、時刻 `t`（0〜1）に比例して少しずつ曲がる。
+
 
 ---
 
