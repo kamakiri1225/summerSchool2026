@@ -952,6 +952,15 @@ touch post.foam
 
 ![rotor境界を固定した場合の変形（外側は静止・rotorは円形維持）](img/002_stirrer/ani_deform_pinned.gif)
 
+---
+
+![回転コピー＋結合で作った全周（360°）フルモデル（半透明のタンク、赤: 羽根、緑: 仕切り板）](img/002_stirrer/fullmodel_of13.png)
+
+
+---
+
+![フルモデル内部のヘキサメッシュと全周の羽根](img/002_stirrer/フルモデル.png)
+
 
 ---
 
@@ -1887,17 +1896,23 @@ boundaryField
 実際のコマンドは次の通り（`master_curve_of13` の `Allrun` に記載）。
 
 ```bash
-# 1-2. rotor境界(r=35)を一時的に固定壁(rotorPin)化
+# 1. 半径3 mmのシャフト面をdefaultFacesからshaftへ分離
+topoSet -dict system/topoSetDict.shaft
+createPatch -dict system/createPatchDict.shaft
+
+# 2-3. rotor境界(r=35)を一時的に固定壁(rotorPin)化
 topoSet -dict system/topoSetDict.rotorpin
 createBaffles -overwrite
 
-# 3. 羽根を変形(rotorPinは変位0で固定)
+# 4. 羽根を変形(rotorPinは変位0で固定)
 rm -rf 0 && cp -r 0.orig 0
 moveDynamicMesh
 
-# 4. 固定壁を内部面へ戻す(壁を消し、元の一体ものメッシュに戻す)
+# 5. 固定壁を内部面へ戻す(壁を消し、元の一体ものメッシュに戻す)
 stitchMesh -latestTime "((rotorPin_master rotorPin_slave))"
 ```
+
+`system/topoSetDict.shaft` は `defaultFaces` のうち半径3 mmの円筒面を選択し、`system/createPatchDict.shaft` は選択した面を `type wall` の `shaft` パッチへ変更する。形状やセルは変更せず、境界名だけを分離している。1/6セクターでは `shaft` が4,512面になり、変形・結合後もこの境界名が保持される。
 
 `createBaffles` で作る `rotorPin_master` / `rotorPin_slave` は `type wall`（両面とも壁）なので、そのままでは r=35 で流れが遮られてしまう。そこで変形が終わったら `stitchMesh` で両パッチを内部面へ結合し、**壁を消して元の状態に戻す**のがポイントである。
 
@@ -1932,45 +1947,134 @@ stitchMesh -latestTime "((rotorPin_master rotorPin_slave))"
 
 基準セクターには、`master_curve_of13` を `Allrun` で回した最終時刻（`1/`）の変形メッシュ（羽根が曲がり、rotor 境界は円形のまま、壁も無い一体もの）を使う。
 
+
+---
+
+#### 1. OpenFOAM 13の環境を読み込む
+
 ```bash
-cd data/002_Stirrer/sample/mesh/fullmodel_of13
 . /opt/openfoam13/etc/bashrc
-
-SEC=../master_curve_of13/1/polyMesh   # 変形済みセクター
-
-# 基準(0°)を配置
-rm -rf constant/polyMesh
-cp -r "$SEC" constant/polyMesh
-
-# 60/120/180/240/300°の回転コピーを一時ケースに作成
-for k in 1 2 3 4 5; do
-    ang=$((k*60))
-    mkdir -p /tmp/sec$k/constant /tmp/sec$k/system
-    cp -r "$SEC" /tmp/sec$k/constant/polyMesh
-    cp system/controlDict /tmp/sec$k/system/
-    transformPoints -case /tmp/sec$k "Rz=$ang"     # z軸まわりに ang 度回転
-done
-
-# 6セクターを1つに結合
-mergeMeshes -addCases '("/tmp/sec1" "/tmp/sec2" "/tmp/sec3" "/tmp/sec4" "/tmp/sec5")'
-
-checkMesh
 ```
-
-各コマンドの役割は以下の通り。
-
-- **`transformPoints -case <dir> "Rz=<角度>"`** … 指定ケースのメッシュ全体を、z軸まわりに指定角度だけ回転させる。60°の倍数（60/120/180/240/300）で5個の回転コピーを作る。
-- **`mergeMeshes -addCases '(...)'`** … 基準セクター（カレント）に、5個の回転コピーを追加して1つのメッシュに結合する。結果は6セクター分＝223,776 × 6 = **1,342,656 セル**の全周メッシュになる（`checkMesh` で `Mesh OK`）。
-
-出来上がった全周モデルを可視化すると次のようになる。曲がった羽根が全周（12枚）に並び、中央に仕切り板（緑）とシャフト穴が見える。
 
 
 ---
 
-![回転コピー＋結合で作った全周（360°）フルモデル（赤: 羽根、緑: 仕切り板）](img/002_stirrer/fullmodel_of13.png)
+#### 2. 変形済みの1/6セクターを作成する
+
+先に `master_curve_of13` を実行する。この処理で、半径3 mmの面を `shaft` に変更し、rotor境界を固定した状態で羽根を曲げ、最後にrotor境界を内部面へ戻す。
+
+```bash
+cd data/002_Stirrer/sample/mesh/master_curve_of13
+./Allrun
+```
+
+計算後は `1/polyMesh/boundary` に `shaft` があることと、メッシュ品質を確認する。
+
+```bash
+grep -A6 '^[[:space:]]*shaft$' 1/polyMesh/boundary
+checkMesh -latestTime
+```
+
+今回の実行結果は、223,776セルがすべて六面体、`shaft` は4,512面で、`Mesh OK` となった。
+
+
+---
+
+#### 3. フルモデル用フォルダへ移動する
+
+```bash
+cd ../fullmodel_of13
+
+SEC=../master_curve_of13/1/polyMesh
+```
+
+`SEC` は、手順2で作成した変形済み1/6セクターの `polyMesh` を指す。
+
+
+---
+
+#### 4. 基準となる0°セクターを配置する
+
+```bash
+rm -rf constant/polyMesh
+cp -r "$SEC" constant/polyMesh
+```
+
+この時点では、フルモデル用ケースに0°の1/6セクターだけが入っている。
+
+
+---
+
+#### 5. 回転コピー用のセクターを作る
+
+60°から300°までの5個を、フルモデルフォルダ内の `sec1`〜`sec5` に作り、それぞれへ同じ変形済みセクターをコピーする。
+
+```bash
+for k in 1 2 3 4 5; do
+    mkdir -p sec$k/constant sec$k/system
+    cp -r "$SEC" sec$k/constant/polyMesh
+    cp system/controlDict sec$k/system/
+done
+```
+
+
+---
+
+#### 6. 各セクターをz軸まわりに回転する
+
+```bash
+transformPoints -case sec1 "Rz=60"
+transformPoints -case sec2 "Rz=120"
+transformPoints -case sec3 "Rz=180"
+transformPoints -case sec4 "Rz=240"
+transformPoints -case sec5 "Rz=300"
+```
+
+基準セクターを含め、0°・60°・120°・180°・240°・300°の6セクターがそろう。
+
+
+---
+
+#### 7. 6セクターを結合する
+
+```bash
+mergeMeshes -addCases '("sec1" "sec2" "sec3" "sec4" "sec5")'
+```
+
+`mergeMeshes` は、0°の基準セクターへ5個の回転済みセクターを追加する。これにより、1,342,656セルの360°フルモデルが `constant/polyMesh` に作成される。結合後、一時セクターは削除してよい（`rm -rf sec1 sec2 sec3 sec4 sec5`）。
+
+
+---
+
+#### 8. フルモデルのメッシュを確認する
+
+```bash
+checkMesh
+```
+
+今回の実行結果は、1,342,656セルがすべて六面体で `Mesh OK` となった。
+
+以上の手順（4〜8）は `fullmodel_of13/Allrun` にまとめてあり、`./Allrun` で一括実行できる。
+
+
+---
+
+#### 9. フルモデルを可視化する
+
+`post.foam` をParaViewで開き、タンクを半透明にして羽根（赤）と仕切り板（緑）を表示する。曲がった羽根が全周に12枚並んでいることを確認する。
+
+
+---
+
+![回転コピー＋結合で作った全周（360°）フルモデル（半透明のタンク、赤: 羽根、緑: 仕切り板）](img/002_stirrer/fullmodel_of13.png)
+
+
+---
+
+![フルモデル内部のヘキサメッシュと全周の羽根](img/002_stirrer/フルモデル.png)
 
 - 上記の一連の手順は、`fullmodel_of13/Allrun` にまとめてある（`./Allrun` で再生成できる）。
-- 補足: `mergeMeshes` はセクター同士を並べて結合するだけで、隣り合うセクターの接合面はまだ一致しているだけの別パッチである。実際に流体計算するときは、この接合面を `stitchMesh` で内部面に結合して連続メッシュにする。
+- `mergeMeshes` 後の `checkMesh` では、6セクターが別々の領域として残っているため `Number of regions: 6` と表示される。このフルモデルを流体計算に使う場合は、隣り合うセクターの接合面を `stitchMesh` で内部面にして連続メッシュへ変更する。
 
 ---
 

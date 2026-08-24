@@ -4,3 +4,4 @@
 /log.*
 /*.foam
 /processor*/
+/sec[1-9]/

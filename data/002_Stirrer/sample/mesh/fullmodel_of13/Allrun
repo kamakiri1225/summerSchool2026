@@ -2,32 +2,30 @@
 cd "${0%/*}" || exit
 . ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions
 #------------------------------------------------------------------------------
-# 変形済みの1/6セクター(60°)を、60°ずつ回転コピーして6個結合し、
-# 全周(360°)のフルモデルにする。
-#   基準セクター: ../master_curve_of13 を Allrun で回した最終時刻の変形メッシュ
+# 変形済みの1/6セクター(60°)を60°ずつ回転コピーして6個結合し、全周(360°)にする。
+# 基準セクター = ../master_curve_of13 を回した最終時刻(1/)の変形メッシュ。
 #------------------------------------------------------------------------------
 SEC=../master_curve_of13/1/polyMesh
 
-# 基準(0°)セクターを配置
-rm -rf constant/polyMesh
+# 前回分を掃除し、基準(0°)セクターを配置
+rm -rf constant/polyMesh sec1 sec2 sec3 sec4 sec5
 cp -r "$SEC" constant/polyMesh
 
-# 60,120,180,240,300°の回転コピーを一時ケースに作成
-CASES=""
+# 60/120/180/240/300°の回転コピーを sec1〜sec5 に作成
 for k in 1 2 3 4 5; do
     ang=$((k*60))
-    d=/tmp/sec$k
-    rm -rf "$d"; mkdir -p "$d/constant" "$d/system"
-    cp -r "$SEC" "$d/constant/polyMesh"
-    cp system/controlDict "$d/system/"
-    transformPoints -case "$d" "Rz=$ang"
-    CASES="$CASES \"$d\""
+    mkdir -p sec$k/constant sec$k/system
+    cp -r "$SEC" sec$k/constant/polyMesh
+    cp system/controlDict sec$k/system/
+    transformPoints -case sec$k "Rz=$ang"
 done
 
-# 6セクターを結合
-runApplication mergeMeshes -addCases "($CASES)"
-
+# 6セクター(基準＋sec1〜5)を1つに結合
+runApplication mergeMeshes -addCases '("sec1" "sec2" "sec3" "sec4" "sec5")'
 runApplication checkMesh
+
+# 一時セクターを掃除
+rm -rf sec1 sec2 sec3 sec4 sec5
 
 touch post.foam
 #------------------------------------------------------------------------------
