@@ -397,7 +397,7 @@ OpenFOAMへ渡す面や線を整理するため、Geometry側でグループを�
 
 ### 1. Meshモジュールへ切り替える
 
-![Meshへ切り替える](img/002_stirrer/page_135.svg)
+![Meshへ切り替える](img/002_stirrer/mesh_switch_p147.png)
 
 - (1) `Mesh` に変更し、Mesh画面へ切り替える。
 
