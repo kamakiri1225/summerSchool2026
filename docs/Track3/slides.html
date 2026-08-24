@@ -3352,24 +3352,25 @@ faceZone 化する。</li>
 <code>fixedValue (0 0 0)</code>
 になっているため、この境界パッチも自動的に変位0で固定される。</li>
 </ul>
-<p>固定した面（<code>rotorPin</code>）は、下図のマゼンタで示した rotor1
+<p>固定した面（<code>rotorPin</code>）は、下図でピンク色に示した rotor1
 / rotor2
 セルゾーンの<strong>外周表面全体</strong>である。具体的には、</p>
 <ul>
 <li><strong>外周の円筒壁（半径 r=35mm、高さ z=10〜20mm と
 z=30〜40mm）</strong> … これを固定することで rotor
 が半径方向へ広がらず、円形を保つ。</li>
-<li><strong>上下のフタ（z=10 / 20 / 30 / 40mm の水平な扇形面）</strong>
-… これを固定することで rotor が軸方向へも動かない。</li>
+<li><strong>上下のフタ（z=10 / 20 / 30 / 40mm
+の水平な扇形面。下図のピンクの扇形4枚）</strong> … これを固定することで
+rotor が軸方向へも動かない。</li>
 </ul>
 </section>
 <section class="slide level2">
 
 <figure>
 <img data-src="img/002_stirrer/roter_pi.png"
-alt="固定した rotor 境界面 rotorPin（マゼンタ：外周円筒＋上下フタ）" />
+alt="固定した rotor 境界面 rotorPin（ピンク色：外周円筒＋上下フタ）" />
 <figcaption aria-hidden="true">固定した rotor 境界面
-rotorPin（マゼンタ：外周円筒＋上下フタ）</figcaption>
+rotorPin（ピンク色：外周円筒＋上下フタ）</figcaption>
 </figure>
 <p>この閉じた表面を変位0で固定するため、rotor
 の内側（羽根と境界の間）だけが変形を吸収し、rotor
