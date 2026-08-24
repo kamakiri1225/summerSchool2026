@@ -1245,9 +1245,9 @@ touch post.foam
 
 ---
 
-![もう一つのShellを作成する](img/002_stirrer/page_104.svg)
+![もう一つのShellを作成する](img/002_stirrer/shell2_p116.png)
 
-- (14) `Shell` をクリックし、`Sketch_2` を選択する（画像内の説明文は `Sketch_1` になっているが、実際に選択しているのは2つ目のスケッチ `Sketch_2`）。
+- (14) `Shell` をクリックし、`Sketch_2` を選択する。
 - (15) チェックをクリックし、スケッチから `Shell_2` を作成する。
 
 
