@@ -21,6 +21,7 @@
 !/docs/Track3/img
 /docs/Track3/img/*.pdf
 /docs/Track3/img/*.svg
+!/docs/Track3/img/overview_p003.svg
 /docs/Track3/img/**/*.pdf
 
 # data/: exclude computed results, keep case setup
