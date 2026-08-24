@@ -1826,6 +1826,15 @@ aria-hidden="true">今回作成するヘキサメッシュのゴール（1/4セ�
 </section>
 <section class="slide level2">
 
+<figure>
+<img data-src="img/002_stirrer/ani_deform.gif"
+alt="羽根の変位にメッシュが追従変形するアニメーション" />
+<figcaption
+aria-hidden="true">羽根の変位にメッシュが追従変形するアニメーション</figcaption>
+</figure>
+</section>
+<section class="slide level2">
+
 <h3 id="使用データの場所-1">使用データの場所</h3>
 <p>この演習で使うファイル・計算結果は、リポジトリの以下のフォルダにある。</p>
 <table>
@@ -1853,6 +1862,26 @@ aria-hidden="true">今回作成するヘキサメッシュのゴール（1/4セ�
 </tr>
 </tbody>
 </table>
+</section>
+<section id="モデルの作り方" class="slide level2">
+<h2>モデルの作り方</h2>
+<p>この撹拌槽の形状は、<strong>向きの違う2つの平面にスケッチを描き、それぞれ別の方法で立体化する</strong>ことで作る。下図がその全体像である。</p>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/002_stirrer/model_overview_p82.png"
+alt="2つのスケッチから回転と押し出しで撹拌槽形状を作る" />
+<figcaption
+aria-hidden="true">2つのスケッチから回転と押し出しで撹拌槽形状を作る</figcaption>
+</figure>
+<ul>
+<li>①
+<strong>X-Z平面</strong>にスケッチした断面を、<strong>Z軸まわりに回転</strong>させて、撹拌槽の壁（円筒状の外周）を作る。</li>
+<li>②
+<strong>X-Y平面</strong>にスケッチした断面を、<strong>Z軸方向に押し出し</strong>て、槽の底や羽根まわりのブロックを作る。</li>
+</ul>
+<p>このように「回転で作る部分」と「押し出しで作る部分」を組み合わせ、最後にPartitionで分割してヘキサメッシュ用のブロック形状に仕上げていく。以降の手順では、この2つのスケッチを順に作成していく。</p>
 </section>
 <section id="モデル作成-1" class="slide level2">
 <h2>モデル作成</h2>

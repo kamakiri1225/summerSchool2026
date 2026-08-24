@@ -938,6 +938,10 @@ touch post.foam
 
 ![今回作成するヘキサメッシュのゴール（1/4セクター）](img/002_stirrer/page_140.svg)
 
+---
+
+![羽根の変位にメッシュが追従変形するアニメーション](img/002_stirrer/ani_deform.gif)
+
 
 ---
 
@@ -949,6 +953,22 @@ touch post.foam
 |----------|------|
 | `data/002_Stirrer/sample/mesh/mesh_of13` | SALOMEから出力した `Mesh_1.unv` と、UNV変換・topoSet・createBaffles を行うOpenFOAMケース（OpenFOAM 13） |
 | `data/002_Stirrer/sample/mesh/master_curve_of13` | 羽根の可動化テスト（moveDynamicMesh）用のOpenFOAMケース（OpenFOAM 13） |
+
+---
+
+## モデルの作り方
+
+この撹拌槽の形状は、**向きの違う2つの平面にスケッチを描き、それぞれ別の方法で立体化する**ことで作る。下図がその全体像である。
+
+
+---
+
+![2つのスケッチから回転と押し出しで撹拌槽形状を作る](img/002_stirrer/model_overview_p82.png)
+
+- ① **X-Z平面**にスケッチした断面を、**Z軸まわりに回転**させて、撹拌槽の壁（円筒状の外周）を作る。
+- ② **X-Y平面**にスケッチした断面を、**Z軸方向に押し出し**て、槽の底や羽根まわりのブロックを作る。
+
+このように「回転で作る部分」と「押し出しで作る部分」を組み合わせ、最後にPartitionで分割してヘキサメッシュ用のブロック形状に仕上げていく。以降の手順では、この2つのスケッチを順に作成していく。
 
 ---
 
