@@ -3077,9 +3077,17 @@ alt="サブメッシュ一覧を確認する" />
 </figure>
 <ul>
 <li><code>r1</code>〜<code>r6</code>、<code>theta1</code>、<code>z3</code>
-すべての線グループに対して、同様にサブメッシュ（<code>Number of Segments</code>）を設定する。</li>
+すべての線グループに対して、同様にサブメッシュ（<code>Number of Segments</code>）を設定する。各グループの分割数は以下の通り。
+<ul>
+<li><code>r1</code> / <code>r2</code> / <code>r3</code> /
+<code>r6</code> … <code>12</code></li>
+<li><code>r4</code> / <code>r5</code> …
+<code>18</code>（羽根まわりを細かくするため他のr方向より多くする）</li>
+<li><code>theta1</code>（周方向） … <code>12</code></li>
+<li><code>z3</code>（軸方向） … <code>32</code></li>
+</ul></li>
 <li><code>SubMeshes on Compound</code>
-の下に、設定した数だけサブメッシュが並んでいることを確認する。</li>
+の下に、設定した数だけ（<code>Sub-mesh_r1</code>〜<code>r6</code>・<code>Sub-mesh_theta1</code>・<code>Sub-mesh_z3</code>）サブメッシュが並んでいることを確認する。</li>
 </ul>
 </section>
 <section class="slide level2">
@@ -3160,8 +3168,8 @@ alt="UNV形式でエクスポートする" />
 </ol></li>
 </ul>
 </section>
-<section id="openfoam側での計算-1" class="slide level2">
-<h2>OpenFOAM側での計算</h2>
+<section id="余裕がある人向けopenfoam側での計算" class="slide level2">
+<h2>（余裕がある人向け）OpenFOAM側での計算</h2>
 <p>SALOMEから出力した <code>Mesh_1.unv</code>
 は、そのままではOpenFOAMで使えない。UNV形式からOpenFOAM形式へ変換し、スケール変換（mm→m）を行った上で、羽根（wing）と仕切り板（circ）の位置に
 <code>topoSet</code> + <code>createBaffles</code>
@@ -4505,7 +4513,7 @@ aria-hidden="true">UNVファイルをエクスポートする</figcaption>
 <li>作成した面グループ名（YMin・YMax・ZMax・XMax・XMin・basis・heatSink・heatSource・basis_top）がそのままOpenFOAMのパッチ名になる。</li>
 </ul>
 </section>
-<section id="openfoam側での計算-2" class="slide level2">
+<section id="openfoam側での計算-1" class="slide level2">
 <h2>OpenFOAM側での計算</h2>
 <p>SALOME で作成したメッシュを OpenFOAM
 形式に変換して利用する。全体の流れは以下の通り。</p>
