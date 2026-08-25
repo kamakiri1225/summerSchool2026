@@ -1579,11 +1579,10 @@ aria-hidden="true">フルモデル内部のヘキサメッシュと全周の羽�
 <ul>
 <li>上記の一連の手順は、<code>fullmodel_of13/Allrun</code>
 にまとめてある（<code>./Allrun</code> で再生成できる）。</li>
-<li><code>mergeMeshes</code> 後の <code>checkMesh</code>
-では、6セクターが別々の領域として残っているため
-<code>Number of regions: 6</code>
-と表示される。このフルモデルを流体計算に使う場合は、隣り合うセクターの接合面を
-<code>stitchMesh</code> で内部面にして連続メッシュへ変更する。</li>
+<li>補足：<code>mergeMeshes</code>
+は6個のセクターを1つのケースに並べて置くだけで、<strong>隣り合うセクターどうしの接合面はまだつながっていない</strong>（メッシュとしては6個のブロックが接触して並んでいるだけの状態）。形状の確認や可視化だけならこのままでよい。もしこのフルモデルで実際に流体計算をするなら、接合面を
+<code>stitchMesh</code>
+で内部面に結合し、セクター間で流れが行き来できる<strong>1つの連続したメッシュ</strong>にする必要がある。</li>
 </ul>
 </body>
 </html>
