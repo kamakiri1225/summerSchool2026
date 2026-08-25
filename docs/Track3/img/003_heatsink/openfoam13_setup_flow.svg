@@ -40,8 +40,9 @@
   <g transform="translate(75 885)">
     <rect class="box" width="930" height="180" fill="#e5f0df"/>
     <text class="heading" x="465" y="48">5　初期フィールドを0/へ配置</text>
-    <text class="detail" x="465" y="88">流体: T・U・p・p_rgh　固体: T</text>
-    <text class="command" x="465" y="128">0.orig/ → 0/　境界条件: calculated</text>
+    <text class="detail" x="465" y="78">流体: T・U・p・p_rgh・k・omega</text>
+    <text class="detail" x="465" y="112">alphat・nut　固体: T</text>
+    <text class="command" x="465" y="145">0.orig/ → 0/　境界条件: calculated</text>
   </g>
   <g transform="translate(75 1095)">
     <rect class="box" width="930" height="180" fill="#f5f0dc"/>

@@ -26,7 +26,12 @@
 
 | フォルダ | 内容 |
 |----------|------|
+| `data/003_heatsink/sample/model` | FreeCADで作成したCADモデル `model.FCStd` と、SALOMEへ読み込むために出力したSTEPファイル `model.step` の保存場所 |
 | `data/003_heatsink/run001_of13` | SALOMEから出力した `Mesh_1.unv` と、OpenFOAM 13で `foamMultiRun` を実行するケース一式（セットアップスクリプト `setup.sh` を含む） |
+
+なお、CADモデルはFreeCADで作成しており、FreeCADの編集用ファイルを `model.FCStd`、SALOMEへ渡す形状データを `model.step` として保存している。この演習では、作成済みのCADモデルから出力したSTEPファイルをSALOMEへ読み込み、OpenFOAM用のマルチリージョンメッシュを作成するところまでを行う。
+
+![FreeCADで作成したヒートシンクと流体領域のCADモデル](img/003_heatsink/FreeCADmodel.png)
 
 この演習のOpenFOAM計算は **OpenFOAM 13**（www.openfoam.org 版）で行う。
 
@@ -379,7 +384,7 @@ bash setup.sh
 3. transformPoints "scale=(0.001 0.001 0.001)"  … mm単位からm単位へスケール変換
 4. splitMeshRegions -cellZones  … セルゾーン名を使い4リージョンへ分割
 5. 0.orig/ のフィールドテンプレートを 0/ へコピー
-   流体は T・U・p・p_rgh、固体は T を用意し、各境界を calculated にしておく
+   流体は T・U・p・p_rgh・k・omega・alphat・nut、固体は T を用意し、各境界を calculated にしておく
 6. 0・constant・system にリージョン別の入力を用意
 7. changeDictionary -region <各リージョン>  … 正式な境界条件へ上書き
 8. checkMesh -region <各リージョン>  … 分割後のメッシュを確認
@@ -404,6 +409,7 @@ foamMultiRun > log.foamMultiRun.of13 2>&1
 
 - OpenFOAM 13では `foamMultiRun` が `system/controlDict` の `regionSolvers` を読み込み、`box` を流体ソルバ、`heatSink`・`heatSource`・`basis` を固体ソルバとして連成計算する。
 - 流体側は乱流モデル（`kOmegaSST`）で速度・圧力・温度・乱流量を解き、固体側は温度を解く。
+- v2512の参照ケースと同じ `maxCo 100` を使用する。OpenFOAM 13の固体ソルバは `maxDi` を直接読まないため、参照計算の `maxDi 100` に相当する `maxDeltaT 0.0217` 秒を設定している。
 - `system/controlDict` の設定により、時刻 `2` から `60` まで2秒間隔で結果を書き出す。
 - 流入条件は `U = (0 -0.5 0) m/s`（y方向へ0.5 m/s）、初期温度は `293.15 K` としている。発熱源の設定は `constant/heatSource/fvModels`、各リージョンの境界条件は `system/<region>/changeDictionaryDict` を参照する。
 

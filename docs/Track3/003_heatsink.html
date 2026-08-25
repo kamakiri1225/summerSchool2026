@@ -96,6 +96,16 @@ Heatsink: SALOMEでヒートシンクの熱流体・固体連成メッシュを�
 <p>ヒートシンクを題材に、流体領域（box）と固体領域（heatSink・heatSource・basis）を分けたマルチリージョン用メッシュを作成する。OpenFOAM
 13の <code>foamMultiRun</code>
 で流体ソルバと固体ソルバを連成し、熱流体・固体連成解析につなげる。</p>
+<p>CADモデルはFreeCADで作成しており、FreeCADの編集用ファイルを
+<code>model.FCStd</code>、SALOMEへ渡す形状データを
+<code>model.step</code>
+として保存している。この演習では、作成済みのCADモデルから出力したSTEPファイルをSALOMEへ読み込み、OpenFOAM用のマルチリージョンメッシュを作成するところまでを行う。</p>
+<figure>
+<img src="img/003_heatsink/FreeCADmodel.png"
+alt="FreeCADで作成したヒートシンクと流体領域のCADモデル" />
+<figcaption
+aria-hidden="true">FreeCADで作成したヒートシンクと流体領域のCADモデル</figcaption>
+</figure>
 <ul>
 <li>STEPファイルを読み込み、ソリッド単位に分解して名前を整理する</li>
 <li>Partitionで4つの領域（box・heatSink・heatSource・basis）を分割する</li>
@@ -134,6 +144,12 @@ aria-hidden="true">モデル構成（heatSink・heatSource・basis・box）</fig
 </thead>
 <tbody>
 <tr class="odd">
+<td><code>data/003_heatsink/sample/model</code></td>
+<td>FreeCADで作成したCADモデル <code>model.FCStd</code>
+と、SALOMEへ読み込むために出力したSTEPファイル <code>model.step</code>
+の保存場所</td>
+</tr>
+<tr class="even">
 <td><code>data/003_heatsink/run001_of13</code></td>
 <td>SALOMEから出力した <code>Mesh_1.unv</code> と、OpenFOAM 13で
 <code>foamMultiRun</code> を実行するケース一式（セットアップスクリプト
@@ -808,7 +824,7 @@ alt="OpenFOAM 13ケースセットアップの流れ" />
 3. transformPoints &quot;scale=(0.001 0.001 0.001)&quot;  … mm単位からm単位へスケール変換
 4. splitMeshRegions -cellZones  … セルゾーン名を使い4リージョンへ分割
 5. 0.orig/ のフィールドテンプレートを 0/ へコピー
-   流体は T・U・p・p_rgh、固体は T を用意し、各境界を calculated にしておく
+   流体は T・U・p・p_rgh・k・omega・alphat・nut、固体は T を用意し、各境界を calculated にしておく
 6. 0・constant・system にリージョン別の入力を用意
 7. changeDictionary -region &lt;各リージョン&gt;  … 正式な境界条件へ上書き
 8. checkMesh -region &lt;各リージョン&gt;  … 分割後のメッシュを確認</code></pre>
@@ -851,6 +867,10 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="
 を流体ソルバ、<code>heatSink</code>・<code>heatSource</code>・<code>basis</code>
 を固体ソルバとして連成計算する。</li>
 <li>流体側は乱流モデル（<code>kOmegaSST</code>）で速度・圧力・温度・乱流量を解き、固体側は温度を解く。</li>
+<li>v2512の参照ケースと同じ <code>maxCo 100</code> を使用する。OpenFOAM
+13の固体ソルバは <code>maxDi</code> を直接読まないため、参照計算の
+<code>maxDi 100</code> に相当する <code>maxDeltaT 0.0217</code>
+秒を設定している。</li>
 <li><code>system/controlDict</code> の設定により、時刻 <code>2</code>
 から <code>60</code> まで2秒間隔で結果を書き出す。</li>
 <li>流入条件は <code>U = (0 -0.5 0) m/s</code>（y方向へ0.5

@@ -35,7 +35,6 @@ writeControl    adjustableRunTime;
 
 writeInterval   2;
 
-purgeWrite      0;
 
 writeFormat     ascii;
 
@@ -53,7 +52,12 @@ maxCo           100;
 
 maxDi           100;
 
+
 adjustTimeStep  yes;
+
+
+
+// *************************************************************************
 
 
 // ************************************************************************* //

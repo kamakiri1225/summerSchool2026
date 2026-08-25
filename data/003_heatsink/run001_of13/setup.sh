@@ -12,7 +12,10 @@ cd "$case_dir"
 
 rm -rf constant/polyMesh constant/box/polyMesh constant/heatSink/polyMesh
 rm -rf constant/heatSource/polyMesh constant/basis/polyMesh 0
-rm -f log.ideasUnvToFoam log.transformPoints log.splitMeshRegions log.checkMesh
+rm -f log.ideasUnvToFoam log.transformPoints log.splitMeshRegions
+rm -f log.changeDictionary log.checkMesh log.foamMultiRun.of13
+find . -maxdepth 1 -name '[0-9]*.[0-9]*' -type d -exec rm -rf {} + 2>/dev/null || true
+find . -maxdepth 1 -name '[1-9]*' -type d -exec rm -rf {} + 2>/dev/null || true
 
 ideasUnvToFoam Mesh_1.unv 2>&1 | tee log.ideasUnvToFoam
 transformPoints "scale=(0.001 0.001 0.001)" 2>&1 | tee log.transformPoints
