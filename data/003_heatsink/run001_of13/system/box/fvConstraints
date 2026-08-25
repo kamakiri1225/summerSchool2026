@@ -1,0 +1,36 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Website:  https://openfoam.org
+    \\  /    A nd           | Version:  13
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    format      ascii;
+    class       dictionary;
+    object      fvConstraints;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+// 初期過渡でフィン近傍の境界層セルに負温度・速度スパイクが出て、時間刻みが
+// 極端に小さくなったり発散したりするのを防ぐ。
+// (v2512のchtMultiRegionFoamは同条件で安定なため、Foundation版のみ必要)
+
+limitT
+{
+    type        limitTemperature;
+    cellZone    all;
+    min         280;
+    max         400;
+}
+
+limitU
+{
+    type        limitMag;
+    cellZone    all;
+    field       U;
+    max         5;      // 流入0.5m/s+自然対流の想定最大より十分大きい値
+}
+
+// ************************************************************************* //

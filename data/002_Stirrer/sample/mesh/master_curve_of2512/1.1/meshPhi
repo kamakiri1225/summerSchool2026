@@ -47,6 +47,16 @@ boundaryField
         type            calculated;
         value           uniform 0;
     }
+    wall_wing
+    {
+        type            calculated;
+        value           uniform 0;
+    }
+    wall_wing2
+    {
+        type            calculated;
+        value           uniform 0;
+    }
     rotorPin_master
     {
         type            calculated;

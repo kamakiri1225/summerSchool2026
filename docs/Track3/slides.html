@@ -3228,8 +3228,13 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="
 の挙動差）</strong>: ESI版の <code>ideasUnvToFoam</code>
 は、UNVに含まれる2Dシート要素（羽根・仕切り板のシェル面）を最初から<strong>境界面として変換</strong>する（Foundation版は内部面のまま残す）。このため、Foundation版と同じ「topoSetで内部面を拾って
 <code>createBaffles</code>
-でバッフル化する」手順では、<strong>羽根の面が内部面として見つからず、バッフルが0面になる</strong>。本講義のOpenFOAM側の手順は
-<strong>OpenFOAM 13（Foundation版）を前提</strong>とする。</p>
+でバッフル化する」手順では、<strong>羽根の面が内部面として見つからず、バッフルが0面になる</strong>。<code>mesh_of2512</code>
+の <code>Allrun</code> では、この差への対応として羽根の境界面を
+<code>topoSet</code>＋<code>createPatch</code> で <code>wall_wing</code>
+/ <code>wall_wing2</code> パッチへ移すステップを追加している（仕切り板
+circ 系は内部面なので <code>createBaffles</code>
+で変換できる）。本講義のOpenFOAM側の手順の解説は <strong>OpenFOAM
+13（Foundation版）を前提</strong>とする。</p>
 </blockquote>
 <p>各コマンドの役割は以下の通り。</p>
 <ul>
@@ -3558,9 +3563,12 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href=
 のfaceSet削除は <code>subtract</code>、<code>stitchMesh</code> は
 <code>stitchMesh -perfect rotorPin_master rotorPin_slave</code>
 の2引数形式、最終時刻への適用は <code>startFrom latestTime</code>
-への切り替えが必要）。ただし前述のESI版 <code>ideasUnvToFoam</code>
-の挙動差（羽根バッフルが作れない）があるため、<strong>羽根の可動化テストはOpenFOAM
-13で行うことを推奨</strong>する。</p>
+への切り替えが必要）。<code>./Allrun</code> で羽根の変形（先端4
+mm）・rotor固定・stitchまで動作する。ただし前述のESI版
+<code>ideasUnvToFoam</code>
+の挙動差により羽根がセクター境界面の一部になるため、<strong>変形後に羽根先端の縁で少数（32/223,776面）の高歪み面が発生</strong>し
+<code>checkMesh</code> が警告を出す。きれいな品質が必要な場合は OpenFOAM
+13（<code>master_curve_of13</code>）を使う。</p>
 </section>
 <section class="slide level2">
 

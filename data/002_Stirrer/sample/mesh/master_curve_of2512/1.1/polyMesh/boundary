@@ -16,55 +16,69 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-7
+9
 (
     defaultFaces
     {
         type            patch;
-        nFaces          28464;
-        startFace       634632;
+        nFaces          27504;
+        startFace       655944;
     }
     wall_circ_z015_master
     {
         type            wall;
         inGroups        2(wall wall_circ_z015);
-        nFaces          21888;
-        startFace       663096;
+        nFaces          576;
+        startFace       683448;
     }
     wall_circ_z015_slave
     {
         type            wall;
         inGroups        2(wall wall_circ_z015);
-        nFaces          21888;
-        startFace       684984;
+        nFaces          576;
+        startFace       684024;
     }
     wall_circ_z035_master
     {
         type            wall;
         inGroups        2(wall wall_circ_z035);
         nFaces          576;
-        startFace       706872;
+        startFace       684600;
     }
     wall_circ_z035_slave
     {
         type            wall;
         inGroups        2(wall wall_circ_z035);
         nFaces          576;
-        startFace       707448;
+        startFace       685176;
+    }
+    wall_wing
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          480;
+        startFace       685752;
+    }
+    wall_wing2
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          480;
+        startFace       686232;
     }
     rotorPin_master
     {
         type            wall;
         inGroups        2(wall rotorPin);
         nFaces          0;
-        startFace       708024;
+        startFace       686712;
     }
     rotorPin_slave
     {
         type            wall;
         inGroups        2(wall rotorPin);
         nFaces          0;
-        startFace       708024;
+        startFace       686712;
     }
 )
 

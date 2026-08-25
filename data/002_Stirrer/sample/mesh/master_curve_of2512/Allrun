@@ -10,6 +10,11 @@ cd "${0%/*}" || exit
 #   - topoSet の faceSet 削除は action subtract (13では delete)
 #   - stitchMesh は「master slave」の2引数 + -perfect (13では "((A B))")
 #   - stitchMesh を最終時刻へ適用するため startFrom latestTime に切り替える
+# 既知の注意(ESI版):
+#   ESI版の ideasUnvToFoam では羽根がセクター境界面の一部になるため、変形後に
+#   羽根先端の縁(x=25mm)で高歪み面が少数(32/223776面)発生し checkMesh が
+#   警告を出す。変形(4mm)・rotor固定・stitch自体は正しく動作する。
+#   きれいな品質が必要な場合は OpenFOAM 13 (master_curve_of13) を使用する。
 #------------------------------------------------------------------------------
 
 # rotor境界(r=35)を固定壁(baffle)化 → 羽根変形をrotor内に閉じ込め外側を静止させる

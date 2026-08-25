@@ -1,0 +1,39 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   A nd           | Version:  v2512                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      createPatchDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+// topoSetDict.wingpatch で拾った羽根の境界面を wall パッチへ移す。
+// pointDisplacement の "wall_wing.*" にマッチする名前にしておくことで、
+// 羽根の可動化テスト(master_curve_of2512)がそのまま動く。
+
+pointSync false;
+
+patches
+(
+    {
+        name wall_wing;
+        patchInfo { type wall; }
+        constructFrom set;
+        set wingPatchFaces;
+    }
+    {
+        name wall_wing2;
+        patchInfo { type wall; }
+        constructFrom set;
+        set wingPatchFaces2;
+    }
+);
+
+// ************************************************************************* //
