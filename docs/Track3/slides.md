@@ -1648,10 +1648,10 @@ OpenFOAMへ渡す面や線を整理するため、Geometry側でグループを�
 ![サブメッシュ一覧を確認する](img/002_stirrer/page_150.svg)
 
 - `r1`〜`r6`、`theta1`、`z3` すべての線グループに対して、同様にサブメッシュ（`Number of Segments`）を設定する。各グループの分割数は以下の通り。
-    - `r1` / `r2` / `r3` / `r6` … `12`
+    - `r1` / `r2` / `r3` / `r6`　の`Number of Segments`を `12`
     - `r4` / `r5` … `18`（羽根まわりを細かくするため他のr方向より多くする）
-    - `theta1`（周方向） … `12`
-    - `z3`（軸方向） … `32`
+    - `theta1`（周方向） の`Number of Segments`を `12`
+    - `z3`（軸方向） の`Number of Segments`を`32`
 - `SubMeshes on Compound` の下に、設定した数だけ（`Sub-mesh_r1`〜`r6`・`Sub-mesh_theta1`・`Sub-mesh_z3`）サブメッシュが並んでいることを確認する。
 
 
