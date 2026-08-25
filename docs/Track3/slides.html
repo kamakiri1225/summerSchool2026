@@ -3522,6 +3522,16 @@ alt="rotor境界を固定した場合の変形（外側は静止・rotorは円�
 <figcaption
 aria-hidden="true">rotor境界を固定した場合の変形（外側は静止・rotorは円形維持）</figcaption>
 </figure>
+<p>このアニメーションは
+<code>rotorPin</code>（固定用の壁）が入ったままの状態である。変形が終わったら、前述の手順4のとおり
+<strong><code>stitchMesh</code> で <code>rotorPin</code>
+の壁を内部面に戻し、壁のない一体もの（変形済み）のメッシュにする</strong>。</p>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">stitchMesh</span> <span class="at">-latestTime</span> <span class="st">&quot;((rotorPin_master rotorPin_slave))&quot;</span></span></code></pre></div>
+<p>こうしてできた「壁のない・羽根が曲がった変形済みメッシュ」（<code>master_curve_of13</code>
+の最終時刻
+<code>1/</code>）が、次のフルモデル組み立ての<strong>基準セクター</strong>になる。以上のpin→変形→壁戻しの一連の処理は
+<code>master_curve_of13/Allrun</code> にまとめてある。</p>
 </section>
 <section class="slide level2">
 
@@ -3538,8 +3548,8 @@ id="フルモデルの組み立て回転コピー結合">フルモデルの組�
 <section class="slide level2">
 
 <h4 id="openfoam-13の環境を読み込む">1. OpenFOAM 13の環境を読み込む</h4>
-<div class="sourceCode" id="cb10"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="bu">.</span> /opt/openfoam13/etc/bashrc</span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="bu">.</span> /opt/openfoam13/etc/bashrc</span></code></pre></div>
 </section>
 <section class="slide level2">
 
@@ -3548,14 +3558,14 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href=
 <p>先に <code>master_curve_of13</code> を実行する。この処理で、半径3
 mmの面を <code>shaft</code>
 に変更し、rotor境界を固定した状態で羽根を曲げ、最後にrotor境界を内部面へ戻す。</p>
-<div class="sourceCode" id="cb11"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> data/002_Stirrer/sample/mesh/master_curve_of13</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./Allrun</span></span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> data/002_Stirrer/sample/mesh/master_curve_of13</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./Allrun</span></span></code></pre></div>
 <p>計算後は <code>1/polyMesh/boundary</code> に <code>shaft</code>
 があることと、メッシュ品質を確認する。</p>
-<div class="sourceCode" id="cb12"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="at">-A6</span> <span class="st">&#39;^[[:space:]]*shaft$&#39;</span> 1/polyMesh/boundary</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="ex">checkMesh</span> <span class="at">-latestTime</span></span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="at">-A6</span> <span class="st">&#39;^[[:space:]]*shaft$&#39;</span> 1/polyMesh/boundary</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="ex">checkMesh</span> <span class="at">-latestTime</span></span></code></pre></div>
 <p>今回の実行結果は、223,776セルがすべて六面体、<code>shaft</code>
 は4,512面で、<code>Mesh OK</code> となった。</p>
 </section>
@@ -3563,10 +3573,10 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb12-1"><a href=
 
 <h4 id="フルモデル用フォルダへ移動する">3.
 フルモデル用フォルダへ移動する</h4>
-<div class="sourceCode" id="cb13"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ../fullmodel_of13</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="va">SEC</span><span class="op">=</span>../master_curve_of13/1/polyMesh</span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ../fullmodel_of13</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="va">SEC</span><span class="op">=</span>../master_curve_of13/1/polyMesh</span></code></pre></div>
 <p><code>SEC</code> は、手順2で作成した変形済み1/6セクターの
 <code>polyMesh</code> を指す。</p>
 </section>
@@ -3574,9 +3584,9 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb13-1"><a href=
 
 <h4 id="基準となる0セクターを配置する">4.
 基準となる0°セクターを配置する</h4>
-<div class="sourceCode" id="cb14"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span> <span class="at">-rf</span> constant/polyMesh</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cp</span> <span class="at">-r</span> <span class="st">&quot;</span><span class="va">$SEC</span><span class="st">&quot;</span> constant/polyMesh</span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span> <span class="at">-rf</span> constant/polyMesh</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cp</span> <span class="at">-r</span> <span class="st">&quot;</span><span class="va">$SEC</span><span class="st">&quot;</span> constant/polyMesh</span></code></pre></div>
 <p>この時点では、フルモデル用ケースに0°の1/6セクターだけが入っている。</p>
 </section>
 <section class="slide level2">
@@ -3586,30 +3596,30 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb14-1"><a href=
 <p>60°から300°までの5個を、フルモデルフォルダ内の
 <code>sec1</code>〜<code>sec5</code>
 に作り、それぞれへ同じ変形済みセクターをコピーする。</p>
-<div class="sourceCode" id="cb15"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> k <span class="kw">in</span> 1 2 3 4 5<span class="kw">;</span> <span class="cf">do</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mkdir</span> <span class="at">-p</span> sec<span class="va">$k</span>/constant sec<span class="va">$k</span>/system</span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cp</span> <span class="at">-r</span> <span class="st">&quot;</span><span class="va">$SEC</span><span class="st">&quot;</span> sec<span class="va">$k</span>/constant/polyMesh</span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cp</span> system/controlDict sec<span class="va">$k</span>/system/</span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> k <span class="kw">in</span> 1 2 3 4 5<span class="kw">;</span> <span class="cf">do</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mkdir</span> <span class="at">-p</span> sec<span class="va">$k</span>/constant sec<span class="va">$k</span>/system</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cp</span> <span class="at">-r</span> <span class="st">&quot;</span><span class="va">$SEC</span><span class="st">&quot;</span> sec<span class="va">$k</span>/constant/polyMesh</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cp</span> system/controlDict sec<span class="va">$k</span>/system/</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span></code></pre></div>
 </section>
 <section class="slide level2">
 
 <h4 id="各セクターをz軸まわりに回転する">6.
 各セクターをz軸まわりに回転する</h4>
-<div class="sourceCode" id="cb16"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="ex">transformPoints</span> <span class="at">-case</span> sec1 <span class="st">&quot;Rz=60&quot;</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="ex">transformPoints</span> <span class="at">-case</span> sec2 <span class="st">&quot;Rz=120&quot;</span></span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="ex">transformPoints</span> <span class="at">-case</span> sec3 <span class="st">&quot;Rz=180&quot;</span></span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="ex">transformPoints</span> <span class="at">-case</span> sec4 <span class="st">&quot;Rz=240&quot;</span></span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="ex">transformPoints</span> <span class="at">-case</span> sec5 <span class="st">&quot;Rz=300&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb17"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="ex">transformPoints</span> <span class="at">-case</span> sec1 <span class="st">&quot;Rz=60&quot;</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="ex">transformPoints</span> <span class="at">-case</span> sec2 <span class="st">&quot;Rz=120&quot;</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="ex">transformPoints</span> <span class="at">-case</span> sec3 <span class="st">&quot;Rz=180&quot;</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="ex">transformPoints</span> <span class="at">-case</span> sec4 <span class="st">&quot;Rz=240&quot;</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="ex">transformPoints</span> <span class="at">-case</span> sec5 <span class="st">&quot;Rz=300&quot;</span></span></code></pre></div>
 <p>基準セクターを含め、0°・60°・120°・180°・240°・300°の6セクターがそろう。</p>
 </section>
 <section class="slide level2">
 
 <h4 id="セクターを結合する">7. 6セクターを結合する</h4>
-<div class="sourceCode" id="cb17"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="ex">mergeMeshes</span> <span class="at">-addCases</span> <span class="st">&#39;(&quot;sec1&quot; &quot;sec2&quot; &quot;sec3&quot; &quot;sec4&quot; &quot;sec5&quot;)&#39;</span></span></code></pre></div>
+<div class="sourceCode" id="cb18"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="ex">mergeMeshes</span> <span class="at">-addCases</span> <span class="st">&#39;(&quot;sec1&quot; &quot;sec2&quot; &quot;sec3&quot; &quot;sec4&quot; &quot;sec5&quot;)&#39;</span></span></code></pre></div>
 <p><code>mergeMeshes</code>
 は、0°の基準セクターへ5個の回転済みセクターを追加する。これにより、1,342,656セルの360°フルモデルが
 <code>constant/polyMesh</code>
@@ -3619,8 +3629,8 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb17-1"><a href=
 
 <h4 id="フルモデルのメッシュを確認する">8.
 フルモデルのメッシュを確認する</h4>
-<div class="sourceCode" id="cb18"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="ex">checkMesh</span></span></code></pre></div>
+<div class="sourceCode" id="cb19"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="ex">checkMesh</span></span></code></pre></div>
 <p>今回の実行結果は、1,342,656セルがすべて六面体で <code>Mesh OK</code>
 となった。</p>
 <p>以上の手順（4〜8）は <code>fullmodel_of13/Allrun</code>
@@ -4537,9 +4547,9 @@ aria-hidden="true">SALOMEからOpenFOAMへの連携フロー</figcaption>
 <h3 id="openfoam-13環境の読み込み">OpenFOAM 13環境の読み込み</h3>
 <p>この演習の計算はOpenFOAM 13で行う。まずOpenFOAM
 13の環境を読み込む。</p>
-<div class="sourceCode" id="cb19"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> /opt/openfoam13/etc/bashrc</span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> data/003_heatsink/run001_of13</span></code></pre></div>
+<div class="sourceCode" id="cb20"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> /opt/openfoam13/etc/bashrc</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> data/003_heatsink/run001_of13</span></code></pre></div>
 </section>
 <section class="slide level2">
 
@@ -4547,8 +4557,8 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb19-1"><a href=
 id="setup.shによるメッシュ変換とケース設定">setup.shによるメッシュ変換とケース設定</h3>
 <p>ケースフォルダには、UNVメッシュの変換からリージョン分割・境界条件設定までを一括実行する
 <code>setup.sh</code> を用意している。</p>
-<div class="sourceCode" id="cb20"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bash</span> setup.sh</span></code></pre></div>
+<div class="sourceCode" id="cb21"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bash</span> setup.sh</span></code></pre></div>
 <p><code>setup.sh</code> の中では、以下の処理を順に行っている。</p>
 </section>
 <section class="slide level2">
@@ -4604,8 +4614,8 @@ aria-hidden="true">OpenFOAM側でメッシュ全体を確認する</figcaption>
 
 <h3 id="foammultirunの実行">foamMultiRunの実行</h3>
 <p>セットアップが完了したら、熱流体・固体連成ソルバを実行する。</p>
-<div class="sourceCode" id="cb22"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="ex">foamMultiRun</span> <span class="op">&gt;</span> log.foamMultiRun.of13 <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span></code></pre></div>
+<div class="sourceCode" id="cb23"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="ex">foamMultiRun</span> <span class="op">&gt;</span> log.foamMultiRun.of13 <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span></code></pre></div>
 <ul>
 <li>OpenFOAM 13では <code>foamMultiRun</code> が
 <code>system/controlDict</code> の <code>regionSolvers</code>

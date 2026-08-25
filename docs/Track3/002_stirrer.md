@@ -720,6 +720,13 @@ stitchMesh -latestTime "((rotorPin_master rotorPin_slave))"
 
 ![rotor境界を固定した場合の変形（外側は静止・rotorは円形維持）](img/002_stirrer/ani_deform_pinned.gif)
 
+このアニメーションは `rotorPin`（固定用の壁）が入ったままの状態である。変形が終わったら、前述の手順4のとおり **`stitchMesh` で `rotorPin` の壁を内部面に戻し、壁のない一体もの（変形済み）のメッシュにする**。
+
+```bash
+stitchMesh -latestTime "((rotorPin_master rotorPin_slave))"
+```
+
+こうしてできた「壁のない・羽根が曲がった変形済みメッシュ」（`master_curve_of13` の最終時刻 `1/`）が、次のフルモデル組み立ての**基準セクター**になる。以上のpin→変形→壁戻しの一連の処理は `master_curve_of13/Allrun` にまとめてある。
 
 ### フルモデルの組み立て（回転コピー＋結合）
 
