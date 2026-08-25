@@ -4,27 +4,57 @@ cd "${0%/*}" || exit
 #------------------------------------------------------------------------------
 # 変形済みの1/6セクター(60°)を60°ずつ回転コピーして6個結合し、全周(360°)にする。
 # 基準セクター = ../master_curve_of13 を回した最終時刻(1/)の変形メッシュ。
+# さらに放射側面を stitchMesh で貼り合わせ、セクター間がつながった1つの
+# 連続メッシュ（計算可能なフルモデル）にする。作業はすべてこのフォルダ内で行う。
+#
+# 注意（Windows/WSL の /mnt/f = drvfs で実行する場合）:
+#   drvfs 上では、cp でコピーした polyMesh/points が読み取り専用になり、
+#   transformPoints による「その場上書き」が失敗する（回転が反映されず、
+#   rm も Permission denied になる）。そこで回転は transformPoints を使わず、
+#   基準 points を読み込んで回転後の points を「別ファイルとして新規書き出し」
+#   する（system/rotatePointsTo.py）。新規作成は drvfs でも確実に書ける。
 #------------------------------------------------------------------------------
 SEC=../master_curve_of13/1/polyMesh
 
-# 前回分を掃除し、基準(0°)セクターを配置
-rm -rf constant/polyMesh sec1 sec2 sec3 sec4 sec5
-cp -r "$SEC" constant/polyMesh
+# 前回分を掃除（drvfs の読み取り専用対策で chmod してから削除）
+chmod -R u+w sec1 sec2 sec3 sec4 sec5 constant/polyMesh 2>/dev/null
+rm -rf constant/polyMesh sec1 sec2 sec3 sec4 sec5 log.*
 
-# 60/120/180/240/300°の回転コピーを sec1〜sec5 に作成
+# 基準(0°)セクターを配置し、ASCII 形式に統一（points をテキストで扱うため）
+cp -r "$SEC" constant/polyMesh
+foamFormatConvert -constant > log.foamFormatConvert 2>&1
+
+# 基準セクターの両放射側面を side_0deg / side_60deg パッチに切り出す
+# （回転コピー前に付けておくと、6個すべてが同じ側面パッチを持つ）
+topoSet     -dict system/topoSetDict.sides                > log.topoSet     2>&1
+createPatch -dict system/createPatchDict.sides -overwrite > log.createPatch 2>&1
+
+# 60/120/180/240/300°の回転コピーを sec1〜sec5 に作成。
+# 回転で変わらないトポロジ系ファイルはコピーで流用し（読み取り専用でも読むだけ）、
+# points だけを回転させて新規ファイルとして書き出す。
 for k in 1 2 3 4 5; do
-    ang=$((k*60))
-    mkdir -p sec$k/constant sec$k/system
-    cp -r "$SEC" sec$k/constant/polyMesh
+    ang=$((k * 60))
+    mkdir -p sec$k/constant/polyMesh sec$k/system
+    for f in faces owner neighbour boundary faceZones cellZones pointZones; do
+        [ -f constant/polyMesh/$f ] && cp constant/polyMesh/$f sec$k/constant/polyMesh/
+    done
     cp system/controlDict sec$k/system/
-    transformPoints -case sec$k "Rz=$ang"
+    python3 system/rotatePointsTo.py \
+        constant/polyMesh/points sec$k/constant/polyMesh/points "$ang"
 done
 
-# 6セクター(基準＋sec1〜5)を1つに結合
-runApplication mergeMeshes -addCases '("sec1" "sec2" "sec3" "sec4" "sec5")'
-runApplication checkMesh
+# 6セクター(基準＋sec1〜5)を1つのケースに結合（この時点では接触して並ぶだけ）
+mergeMeshes -addCases '("sec1" "sec2" "sec3" "sec4" "sec5")' > log.mergeMeshes 2>&1
 
-# 一時セクターを掃除
+# 隣り合うセクターの放射面(side_0deg と side_60deg)を貼り合わせ、内部面に戻す。
+# 一致点を確実にマージするため -tol は既定(1e-4)より緩めの 1e-3 を使う
+# （既定のままだと接合線に微小スリバー面ができ、非直交エラーになる）。
+stitchMesh -tol 1e-3 '((side_0deg side_60deg))' > log.stitchMesh 2>&1
+
+checkMesh -constant > log.checkMesh 2>&1
+
+# 一時セクターを掃除（読み取り専用対策で chmod してから削除）
+chmod -R u+w sec1 sec2 sec3 sec4 sec5 2>/dev/null
 rm -rf sec1 sec2 sec3 sec4 sec5
 
 touch post.foam

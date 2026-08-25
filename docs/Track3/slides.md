@@ -2016,32 +2016,39 @@ cp -r "$SEC" constant/polyMesh
 
 ---
 
-#### 5. 回転コピー用のセクターを作る
+#### 5. セクターの両放射側面をパッチにする
 
-60°から300°までの5個を、フルモデルフォルダ内の `sec1`〜`sec5` に作り、それぞれへ同じ変形済みセクターをコピーする。
+回転コピーして並べただけでは、隣り合うセクターの境目（放射面）はつながらず、メッシュは6個のブロックが接触して並んでいるだけの状態になる。あとで `stitchMesh` を使ってこの境目を貼り合わせ、**セクター間が面でつながった1つの連続メッシュ**にする。
+
+`stitchMesh` は「2つの名前付きパッチどうし」を貼り合わせる。ところが結合直後は、放射面（θ=0° と θ=60° の2枚）は外周壁・天面・底面といっしょに `defaultFaces` に混ざっていて、そのままでは指定できない。そこで先に、基準セクターの両放射面を `topoSet`＋`createPatch` で専用パッチ `side_0deg` / `side_60deg` として切り出しておく。
 
 ```bash
-for k in 1 2 3 4 5; do
-    mkdir -p sec$k/constant sec$k/system
-    cp -r "$SEC" sec$k/constant/polyMesh
-    cp system/controlDict sec$k/system/
-done
+topoSet     -dict system/topoSetDict.sides
+createPatch -dict system/createPatchDict.sides -overwrite
 ```
+
+`topoSetDict.sides` は、`defaultFaces` に限定してから面の法線でθ=0°面（法線 `(0 -1 0)`）とθ=60°面（法線 `(-sin60 cos60 0)`）を選ぶ。`createPatchDict.sides` は、それを `side_0deg` / `side_60deg` という名前のパッチにする。1/6セクターでは、それぞれ8,784面が切り出される。回転コピー前に付けておくと、6個すべてが同じ側面パッチを持つ。
 
 
 ---
 
-#### 6. 各セクターをz軸まわりに回転する
+#### 6. 回転コピーを作ってz軸まわりに回す
+
+60°から300°までの5個を `sec1`〜`sec5` に作り、それぞれ60°ずつ回す。通常は側面パッチ付きの `constant/polyMesh` をコピーして `transformPoints` で回せばよい。
 
 ```bash
-transformPoints -case sec1 "Rz=60"
-transformPoints -case sec2 "Rz=120"
-transformPoints -case sec3 "Rz=180"
-transformPoints -case sec4 "Rz=240"
-transformPoints -case sec5 "Rz=300"
+for k in 1 2 3 4 5; do
+    ang=$((k * 60))
+    mkdir -p sec$k/constant sec$k/system
+    cp -r constant/polyMesh sec$k/constant/polyMesh
+    cp system/controlDict sec$k/system/
+    transformPoints -case sec$k "Rz=$ang"
+done
 ```
 
 基準セクターを含め、0°・60°・120°・180°・240°・300°の6セクターがそろう。
+
+> **補足（Windows/WSL の `/mnt/f` = drvfs で実行する場合）**: drvfs 上では、`cp` でコピーした `polyMesh/points` が読み取り専用になり、`transformPoints` による「その場上書き」が失敗する（回転が反映されず、`rm` も Permission denied になる）。このため `fullmodel_of13/Allrun` では `transformPoints` を使わず、回転で変わらないトポロジ系ファイル（`faces`・`owner` など）はコピーで流用し、**回転後の `points` だけを別ファイルとして新規書き出し**する（`system/rotatePointsTo.py`）。新規作成なら drvfs でも確実に書けるため、6セクターすべてが確実に回転する。Linux ネイティブFS上ではこの回避策は不要で、上の `transformPoints` 版でよい。
 
 
 ---
@@ -2052,25 +2059,38 @@ transformPoints -case sec5 "Rz=300"
 mergeMeshes -addCases '("sec1" "sec2" "sec3" "sec4" "sec5")'
 ```
 
-`mergeMeshes` は、0°の基準セクターへ5個の回転済みセクターを追加する。これにより、1,342,656セルの360°フルモデルが `constant/polyMesh` に作成される。結合後、一時セクターは削除してよい（`rm -rf sec1 sec2 sec3 sec4 sec5`）。
+`mergeMeshes` は、0°の基準セクターへ5個の回転済みセクターを追加する。これにより、1,342,656セルの360°フルモデルが `constant/polyMesh` にできる。ただしこの時点ではまだ6個のブロックが接触して並んでいるだけで、`checkMesh` すると `Number of regions: 6`（互いに面でつながっていない6領域）になる。
 
 
 ---
 
-#### 8. フルモデルのメッシュを確認する
+#### 8. 放射面を貼り合わせて1つの連続メッシュにする
+
+隣り合うセクターの `side_0deg` と `side_60deg` は幾何的にぴったり重なっている。`stitchMesh` で両パッチを貼り合わせて内部面に戻すと、6個の境目が全部つながって `Number of regions: 1` の一体メッシュになる。
+
+```bash
+stitchMesh -tol 1e-3 '((side_0deg side_60deg))'
+```
+
+`-tol` は一致点をマージする許容量（局所辺長に対する相対値）で、既定は `1e-4`。回転コピー時のわずかな数値誤差で接合線に微小なスリバー面ができ非直交エラーになることがあるため、ここでは少し緩めの `1e-3` を使う。実行すると `Source/target coverage = 1/1`（両側とも完全に貼り合わさった）となり、`side_0deg` / `side_60deg` は境界から消えて内部面になる。結合後、一時セクターは削除してよい（`rm -rf sec1 sec2 sec3 sec4 sec5`）。
+
+
+---
+
+#### 9. フルモデルのメッシュを確認する
 
 ```bash
 checkMesh
 ```
 
-今回の実行結果は、1,342,656セルがすべて六面体で `Mesh OK` となった。
+今回の実行結果は、1,342,656セルがすべて六面体、`Number of regions: 1`、非直交 Max 49°・スキュネス 0.79 で `Mesh OK` となった。セクター間がつながった、計算にも使える1つの連続メッシュである。
 
-以上の手順（4〜8）は `fullmodel_of13/Allrun` にまとめてあり、`./Allrun` で一括実行できる。
+以上の手順（4〜9）は `fullmodel_of13/Allrun` にまとめてあり、`./Allrun` で一括実行できる（作業はすべてこのフォルダ内で完結する）。
 
 
 ---
 
-#### 9. フルモデルを可視化する
+#### 10. フルモデルを可視化する
 
 `post.foam` をParaViewで開き、タンクを半透明にして羽根（赤）と仕切り板（緑）を表示する。曲がった羽根が全周に12枚並んでいることを確認する。
 
@@ -2085,7 +2105,9 @@ checkMesh
 ![フルモデル内部のヘキサメッシュと全周の羽根](img/002_stirrer/フルモデル.png)
 
 - 上記の一連の手順は、`fullmodel_of13/Allrun` にまとめてある（`./Allrun` で再生成できる）。
-- 補足：`mergeMeshes` は6個のセクターを1つのケースに並べて置くだけで、**隣り合うセクターどうしの接合面はまだつながっていない**（メッシュとしては6個のブロックが接触して並んでいるだけの状態）。形状の確認や可視化だけならこのままでよい。もしこのフルモデルで実際に流体計算をするなら、接合面を `stitchMesh` で内部面に結合し、セクター間で流れが行き来できる**1つの連続したメッシュ**にする必要がある。
+- この方法（セクターをOpenFOAM側で回転コピー＋stitch）は、変形済みセクターから全周モデルを組み立てる手軽な手段である。一方で、最初から整った全周メッシュが欲しいだけなら、次のようなやり方もある。
+    - **SALOMEで最初から全周360°をメッシュする**（タンク＋6枚の羽根を含む全体形状を1つの連続メッシュとして生成する）。接合面がそもそも存在しないので、最初から1つにつながっている。
+    - **1セクター（60°）の両側面を cyclic（周期）境界にして、回転周期性で計算する**。フルモデルを作らずに1/6だけで解ける（撹拌計算では MRF/AMI とあわせてよく使われる定石）。
 
 ---
 
@@ -2123,7 +2145,15 @@ checkMesh
 
 | フォルダ | 内容 |
 |----------|------|
+| `data/003_heatsink/sample/model` | FreeCADで作成したCADモデル `model.FCStd` と、SALOMEへ読み込むために出力したSTEPファイル `model.step` の保存場所 |
 | `data/003_heatsink/run001_of13` | SALOMEから出力した `Mesh_1.unv` と、OpenFOAM 13で `foamMultiRun` を実行するケース一式（セットアップスクリプト `setup.sh` を含む） |
+
+なお、CADモデルはFreeCADで作成しており、FreeCADの編集用ファイルを `model.FCStd`、SALOMEへ渡す形状データを `model.step` として保存している。この演習では、作成済みのCADモデルから出力したSTEPファイルをSALOMEへ読み込み、OpenFOAM用のマルチリージョンメッシュを作成するところまでを行う。
+
+
+---
+
+![FreeCADで作成したヒートシンクと流体領域のCADモデル](img/003_heatsink/FreeCADmodel.png)
 
 この演習のOpenFOAM計算は **OpenFOAM 13**（www.openfoam.org 版）で行う。
 

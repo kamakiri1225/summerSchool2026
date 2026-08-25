@@ -3591,29 +3591,61 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb15-1"><a href=
 </section>
 <section class="slide level2">
 
-<h4 id="回転コピー用のセクターを作る">5.
-回転コピー用のセクターを作る</h4>
-<p>60°から300°までの5個を、フルモデルフォルダ内の
-<code>sec1</code>〜<code>sec5</code>
-に作り、それぞれへ同じ変形済みセクターをコピーする。</p>
+<h4 id="セクターの両放射側面をパッチにする">5.
+セクターの両放射側面をパッチにする</h4>
+<p>回転コピーして並べただけでは、隣り合うセクターの境目（放射面）はつながらず、メッシュは6個のブロックが接触して並んでいるだけの状態になる。あとで
+<code>stitchMesh</code>
+を使ってこの境目を貼り合わせ、<strong>セクター間が面でつながった1つの連続メッシュ</strong>にする。</p>
+<p><code>stitchMesh</code>
+は「2つの名前付きパッチどうし」を貼り合わせる。ところが結合直後は、放射面（θ=0°
+と θ=60° の2枚）は外周壁・天面・底面といっしょに
+<code>defaultFaces</code>
+に混ざっていて、そのままでは指定できない。そこで先に、基準セクターの両放射面を
+<code>topoSet</code>＋<code>createPatch</code> で専用パッチ
+<code>side_0deg</code> / <code>side_60deg</code>
+として切り出しておく。</p>
 <div class="sourceCode" id="cb16"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> k <span class="kw">in</span> 1 2 3 4 5<span class="kw">;</span> <span class="cf">do</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mkdir</span> <span class="at">-p</span> sec<span class="va">$k</span>/constant sec<span class="va">$k</span>/system</span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cp</span> <span class="at">-r</span> <span class="st">&quot;</span><span class="va">$SEC</span><span class="st">&quot;</span> sec<span class="va">$k</span>/constant/polyMesh</span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cp</span> system/controlDict sec<span class="va">$k</span>/system/</span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span></code></pre></div>
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="ex">topoSet</span>     <span class="at">-dict</span> system/topoSetDict.sides</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="ex">createPatch</span> <span class="at">-dict</span> system/createPatchDict.sides <span class="at">-overwrite</span></span></code></pre></div>
+<p><code>topoSetDict.sides</code> は、<code>defaultFaces</code>
+に限定してから面の法線でθ=0°面（法線
+<code>(0 -1 0)</code>）とθ=60°面（法線
+<code>(-sin60 cos60 0)</code>）を選ぶ。<code>createPatchDict.sides</code>
+は、それを <code>side_0deg</code> / <code>side_60deg</code>
+という名前のパッチにする。1/6セクターでは、それぞれ8,784面が切り出される。回転コピー前に付けておくと、6個すべてが同じ側面パッチを持つ。</p>
 </section>
 <section class="slide level2">
 
-<h4 id="各セクターをz軸まわりに回転する">6.
-各セクターをz軸まわりに回転する</h4>
+<h4 id="回転コピーを作ってz軸まわりに回す">6.
+回転コピーを作ってz軸まわりに回す</h4>
+<p>60°から300°までの5個を <code>sec1</code>〜<code>sec5</code>
+に作り、それぞれ60°ずつ回す。通常は側面パッチ付きの
+<code>constant/polyMesh</code> をコピーして <code>transformPoints</code>
+で回せばよい。</p>
 <div class="sourceCode" id="cb17"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="ex">transformPoints</span> <span class="at">-case</span> sec1 <span class="st">&quot;Rz=60&quot;</span></span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="ex">transformPoints</span> <span class="at">-case</span> sec2 <span class="st">&quot;Rz=120&quot;</span></span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="ex">transformPoints</span> <span class="at">-case</span> sec3 <span class="st">&quot;Rz=180&quot;</span></span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="ex">transformPoints</span> <span class="at">-case</span> sec4 <span class="st">&quot;Rz=240&quot;</span></span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="ex">transformPoints</span> <span class="at">-case</span> sec5 <span class="st">&quot;Rz=300&quot;</span></span></code></pre></div>
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> k <span class="kw">in</span> 1 2 3 4 5<span class="kw">;</span> <span class="cf">do</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>    <span class="va">ang</span><span class="op">=</span><span class="va">$((k</span> <span class="op">*</span> <span class="dv">60</span><span class="va">))</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mkdir</span> <span class="at">-p</span> sec<span class="va">$k</span>/constant sec<span class="va">$k</span>/system</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cp</span> <span class="at">-r</span> constant/polyMesh sec<span class="va">$k</span>/constant/polyMesh</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cp</span> system/controlDict sec<span class="va">$k</span>/system/</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>    <span class="ex">transformPoints</span> <span class="at">-case</span> sec<span class="va">$k</span> <span class="st">&quot;Rz=</span><span class="va">$ang</span><span class="st">&quot;</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span></code></pre></div>
 <p>基準セクターを含め、0°・60°・120°・180°・240°・300°の6セクターがそろう。</p>
+<blockquote>
+<p><strong>補足（Windows/WSL の <code>/mnt/f</code> = drvfs
+で実行する場合）</strong>: drvfs 上では、<code>cp</code> でコピーした
+<code>polyMesh/points</code>
+が読み取り専用になり、<code>transformPoints</code>
+による「その場上書き」が失敗する（回転が反映されず、<code>rm</code> も
+Permission denied になる）。このため <code>fullmodel_of13/Allrun</code>
+では <code>transformPoints</code>
+を使わず、回転で変わらないトポロジ系ファイル（<code>faces</code>・<code>owner</code>
+など）はコピーで流用し、<strong>回転後の <code>points</code>
+だけを別ファイルとして新規書き出し</strong>する（<code>system/rotatePointsTo.py</code>）。新規作成なら
+drvfs でも確実に書けるため、6セクターすべてが確実に回転する。Linux
+ネイティブFS上ではこの回避策は不要で、上の <code>transformPoints</code>
+版でよい。</p>
+</blockquote>
 </section>
 <section class="slide level2">
 
@@ -3623,22 +3655,44 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb18-1"><a href=
 <p><code>mergeMeshes</code>
 は、0°の基準セクターへ5個の回転済みセクターを追加する。これにより、1,342,656セルの360°フルモデルが
 <code>constant/polyMesh</code>
-に作成される。結合後、一時セクターは削除してよい（<code>rm -rf sec1 sec2 sec3 sec4 sec5</code>）。</p>
+にできる。ただしこの時点ではまだ6個のブロックが接触して並んでいるだけで、<code>checkMesh</code>
+すると
+<code>Number of regions: 6</code>（互いに面でつながっていない6領域）になる。</p>
 </section>
 <section class="slide level2">
 
-<h4 id="フルモデルのメッシュを確認する">8.
-フルモデルのメッシュを確認する</h4>
+<h4 id="放射面を貼り合わせて1つの連続メッシュにする">8.
+放射面を貼り合わせて1つの連続メッシュにする</h4>
+<p>隣り合うセクターの <code>side_0deg</code> と <code>side_60deg</code>
+は幾何的にぴったり重なっている。<code>stitchMesh</code>
+で両パッチを貼り合わせて内部面に戻すと、6個の境目が全部つながって
+<code>Number of regions: 1</code> の一体メッシュになる。</p>
 <div class="sourceCode" id="cb19"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="ex">checkMesh</span></span></code></pre></div>
-<p>今回の実行結果は、1,342,656セルがすべて六面体で <code>Mesh OK</code>
-となった。</p>
-<p>以上の手順（4〜8）は <code>fullmodel_of13/Allrun</code>
-にまとめてあり、<code>./Allrun</code> で一括実行できる。</p>
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="ex">stitchMesh</span> <span class="at">-tol</span> 1e-3 <span class="st">&#39;((side_0deg side_60deg))&#39;</span></span></code></pre></div>
+<p><code>-tol</code>
+は一致点をマージする許容量（局所辺長に対する相対値）で、既定は
+<code>1e-4</code>。回転コピー時のわずかな数値誤差で接合線に微小なスリバー面ができ非直交エラーになることがあるため、ここでは少し緩めの
+<code>1e-3</code> を使う。実行すると
+<code>Source/target coverage = 1/1</code>（両側とも完全に貼り合わさった）となり、<code>side_0deg</code>
+/ <code>side_60deg</code>
+は境界から消えて内部面になる。結合後、一時セクターは削除してよい（<code>rm -rf sec1 sec2 sec3 sec4 sec5</code>）。</p>
 </section>
 <section class="slide level2">
 
-<h4 id="フルモデルを可視化する">9. フルモデルを可視化する</h4>
+<h4 id="フルモデルのメッシュを確認する">9.
+フルモデルのメッシュを確認する</h4>
+<div class="sourceCode" id="cb20"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="ex">checkMesh</span></span></code></pre></div>
+<p>今回の実行結果は、1,342,656セルがすべて六面体、<code>Number of regions: 1</code>、非直交
+Max 49°・スキュネス 0.79 で <code>Mesh OK</code>
+となった。セクター間がつながった、計算にも使える1つの連続メッシュである。</p>
+<p>以上の手順（4〜9）は <code>fullmodel_of13/Allrun</code>
+にまとめてあり、<code>./Allrun</code>
+で一括実行できる（作業はすべてこのフォルダ内で完結する）。</p>
+</section>
+<section class="slide level2">
+
+<h4 id="フルモデルを可視化する">10. フルモデルを可視化する</h4>
 <p><code>post.foam</code>
 をParaViewで開き、タンクを半透明にして羽根（赤）と仕切り板（緑）を表示する。曲がった羽根が全周に12枚並んでいることを確認する。</p>
 </section>
@@ -3663,10 +3717,13 @@ aria-hidden="true">フルモデル内部のヘキサメッシュと全周の羽�
 <ul>
 <li>上記の一連の手順は、<code>fullmodel_of13/Allrun</code>
 にまとめてある（<code>./Allrun</code> で再生成できる）。</li>
-<li>補足：<code>mergeMeshes</code>
-は6個のセクターを1つのケースに並べて置くだけで、<strong>隣り合うセクターどうしの接合面はまだつながっていない</strong>（メッシュとしては6個のブロックが接触して並んでいるだけの状態）。形状の確認や可視化だけならこのままでよい。もしこのフルモデルで実際に流体計算をするなら、接合面を
-<code>stitchMesh</code>
-で内部面に結合し、セクター間で流れが行き来できる<strong>1つの連続したメッシュ</strong>にする必要がある。</li>
+<li>この方法（セクターをOpenFOAM側で回転コピー＋stitch）は、変形済みセクターから全周モデルを組み立てる手軽な手段である。一方で、最初から整った全周メッシュが欲しいだけなら、次のようなやり方もある。
+<ul>
+<li><strong>SALOMEで最初から全周360°をメッシュする</strong>（タンク＋6枚の羽根を含む全体形状を1つの連続メッシュとして生成する）。接合面がそもそも存在しないので、最初から1つにつながっている。</li>
+<li><strong>1セクター（60°）の両側面を
+cyclic（周期）境界にして、回転周期性で計算する</strong>。フルモデルを作らずに1/6だけで解ける（撹拌計算では
+MRF/AMI とあわせてよく使われる定石）。</li>
+</ul></li>
 </ul>
 </section>
 <section class="slide level2">
@@ -3729,6 +3786,12 @@ aria-hidden="true">モデル構成（heatSink・heatSource・basis・box）</fig
 </thead>
 <tbody>
 <tr class="odd">
+<td><code>data/003_heatsink/sample/model</code></td>
+<td>FreeCADで作成したCADモデル <code>model.FCStd</code>
+と、SALOMEへ読み込むために出力したSTEPファイル <code>model.step</code>
+の保存場所</td>
+</tr>
+<tr class="even">
 <td><code>data/003_heatsink/run001_of13</code></td>
 <td>SALOMEから出力した <code>Mesh_1.unv</code> と、OpenFOAM 13で
 <code>foamMultiRun</code> を実行するケース一式（セットアップスクリプト
@@ -3736,6 +3799,19 @@ aria-hidden="true">モデル構成（heatSink・heatSource・basis・box）</fig
 </tr>
 </tbody>
 </table>
+<p>なお、CADモデルはFreeCADで作成しており、FreeCADの編集用ファイルを
+<code>model.FCStd</code>、SALOMEへ渡す形状データを
+<code>model.step</code>
+として保存している。この演習では、作成済みのCADモデルから出力したSTEPファイルをSALOMEへ読み込み、OpenFOAM用のマルチリージョンメッシュを作成するところまでを行う。</p>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/003_heatsink/FreeCADmodel.png"
+alt="FreeCADで作成したヒートシンクと流体領域のCADモデル" />
+<figcaption
+aria-hidden="true">FreeCADで作成したヒートシンクと流体領域のCADモデル</figcaption>
+</figure>
 <p>この演習のOpenFOAM計算は <strong>OpenFOAM
 13</strong>（www.openfoam.org 版）で行う。</p>
 </section>
@@ -4547,9 +4623,9 @@ aria-hidden="true">SALOMEからOpenFOAMへの連携フロー</figcaption>
 <h3 id="openfoam-13環境の読み込み">OpenFOAM 13環境の読み込み</h3>
 <p>この演習の計算はOpenFOAM 13で行う。まずOpenFOAM
 13の環境を読み込む。</p>
-<div class="sourceCode" id="cb20"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> /opt/openfoam13/etc/bashrc</span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> data/003_heatsink/run001_of13</span></code></pre></div>
+<div class="sourceCode" id="cb21"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> /opt/openfoam13/etc/bashrc</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> data/003_heatsink/run001_of13</span></code></pre></div>
 </section>
 <section class="slide level2">
 
@@ -4557,8 +4633,8 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb20-1"><a href=
 id="setup.shによるメッシュ変換とケース設定">setup.shによるメッシュ変換とケース設定</h3>
 <p>ケースフォルダには、UNVメッシュの変換からリージョン分割・境界条件設定までを一括実行する
 <code>setup.sh</code> を用意している。</p>
-<div class="sourceCode" id="cb21"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bash</span> setup.sh</span></code></pre></div>
+<div class="sourceCode" id="cb22"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bash</span> setup.sh</span></code></pre></div>
 <p><code>setup.sh</code> の中では、以下の処理を順に行っている。</p>
 </section>
 <section class="slide level2">
@@ -4614,8 +4690,8 @@ aria-hidden="true">OpenFOAM側でメッシュ全体を確認する</figcaption>
 
 <h3 id="foammultirunの実行">foamMultiRunの実行</h3>
 <p>セットアップが完了したら、熱流体・固体連成ソルバを実行する。</p>
-<div class="sourceCode" id="cb23"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="ex">foamMultiRun</span> <span class="op">&gt;</span> log.foamMultiRun.of13 <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span></code></pre></div>
+<div class="sourceCode" id="cb24"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="ex">foamMultiRun</span> <span class="op">&gt;</span> log.foamMultiRun.of13 <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span></code></pre></div>
 <ul>
 <li>OpenFOAM 13では <code>foamMultiRun</code> が
 <code>system/controlDict</code> の <code>regionSolvers</code>

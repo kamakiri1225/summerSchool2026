@@ -1,0 +1,30 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  13                                    |
+|   \\  /    A nd           | Website:  www.openfoam.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      topoSetDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+// 1/6セクター(θ=0〜60°)の両放射側面を faceSet として抜き出す。
+// defaultFaces（外周壁＋天面＋底面＋両放射面）に限定してから、法線で
+// θ=0°面（法線 (0 -1 0)）と θ=60°面（法線 (-sin60 cos60 0)）を選ぶ。
+
+actions
+(
+    { name side0Faces;  type faceSet; action new;    source patchToFace;  patch defaultFaces; }
+    { name side0Faces;  type faceSet; action subset; source normalToFace; normal (0 -1 0);           cos 0.01; }
+
+    { name side60Faces; type faceSet; action new;    source patchToFace;  patch defaultFaces; }
+    { name side60Faces; type faceSet; action subset; source normalToFace; normal (-0.8660254 0.5 0); cos 0.01; }
+);
+
+// ************************************************************************* //
