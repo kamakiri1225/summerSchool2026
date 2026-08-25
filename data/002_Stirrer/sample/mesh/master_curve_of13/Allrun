@@ -3,10 +3,16 @@ cd "${0%/*}" || exit                                # Run from this directory
 . ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions        # Tutorial run functions
 #------------------------------------------------------------------------------
 # 羽根を変形させつつ、回転領域(rotor)のメッシュを動かさないための手順。
-#   1. rotor1/rotor2 セルゾーンの境界(r=35)を faceZone 化 (topoSet)
-#   2. その面を一時的に固定壁 rotorPin に変換 (createBaffles)
-#   3. 羽根を変形。rotorPin は pointDisplacement の .* により変位0で固定
-#   4. 変形後、rotorPin を内部面に戻す (stitchMesh) = 元の一体ものメッシュへ
+#   1. defaultFacesからシャフト面(r=3 mm)をshaftパッチとして分離
+#   2. rotor1/rotor2 セルゾーンの境界(r=35)を faceZone 化 (topoSet)
+#   3. その面を一時的に固定壁 rotorPin に変換 (createBaffles)
+#   4. 羽根を変形。rotorPin は pointDisplacement の .* により変位0で固定
+#   5. 変形後、rotorPin を内部面に戻す (stitchMesh) = 元の一体ものメッシュへ
+
+if ! grep -q '^[[:space:]]*shaft$' constant/polyMesh/boundary 2>/dev/null; then
+    runApplication -o -s shaft topoSet -dict system/topoSetDict.shaft
+    runApplication -o -s shaft createPatch -overwrite -dict system/createPatchDict.shaft
+fi
 
 if ! grep -q rotorPin constant/polyMesh/boundary 2>/dev/null; then
     runApplication topoSet -dict system/topoSetDict.rotorpin
@@ -15,9 +21,11 @@ fi
 
 rm -rf 0
 cp -r 0.orig 0
-runApplication moveDynamicMesh
+foamListTimes -rm
+runApplication -o moveDynamicMesh
 
-runApplication stitchMesh -latestTime "((rotorPin_master rotorPin_slave))"
+runApplication -o stitchMesh -latestTime "((rotorPin_master rotorPin_slave))"
+runApplication -o -s latest checkMesh -latestTime
 
 touch post.foam
 #------------------------------------------------------------------------------

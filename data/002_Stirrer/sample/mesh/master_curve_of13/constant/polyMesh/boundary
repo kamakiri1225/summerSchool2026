@@ -14,117 +14,90 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-9
+12
 (
     defaultFaces
     {
         type            patch;
-        nFaces          28464;
-        startFace       654984;
+        nFaces          23952;
+        startFace       647352;
     }
     wall_wing_master
     {
         type            wall;
-        inGroups        List<word> 
-2
-(
-wall
-wall_wing
-)
-;
+        inGroups        2(wall wall_wing);
         nFaces          480;
-        startFace       683448;
+        startFace       671304;
     }
     wall_wing_slave
     {
         type            wall;
-        inGroups        List<word> 
-2
-(
-wall
-wall_wing
-)
-;
+        inGroups        2(wall wall_wing);
         nFaces          480;
-        startFace       683928;
+        startFace       671784;
     }
     wall_wing2_master
     {
         type            wall;
-        inGroups        List<word> 
-2
-(
-wall
-wall_wing2
-)
-;
+        inGroups        2(wall wall_wing2);
         nFaces          480;
-        startFace       684408;
+        startFace       672264;
     }
     wall_wing2_slave
     {
         type            wall;
-        inGroups        List<word> 
-2
-(
-wall
-wall_wing2
-)
-;
+        inGroups        2(wall wall_wing2);
         nFaces          480;
-        startFace       684888;
+        startFace       672744;
     }
     wall_circ_z015_master
     {
         type            wall;
-        inGroups        List<word> 
-2
-(
-wall
-wall_circ_z015
-)
-;
+        inGroups        2(wall wall_circ_z015);
         nFaces          576;
-        startFace       685368;
+        startFace       673224;
     }
     wall_circ_z015_slave
     {
         type            wall;
-        inGroups        List<word> 
-2
-(
-wall
-wall_circ_z015
-)
-;
+        inGroups        2(wall wall_circ_z015);
         nFaces          576;
-        startFace       685944;
+        startFace       673800;
     }
     wall_circ_z035_master
     {
         type            wall;
-        inGroups        List<word> 
-2
-(
-wall
-wall_circ_z035
-)
-;
+        inGroups        2(wall wall_circ_z035);
         nFaces          576;
-        startFace       686520;
+        startFace       674376;
     }
     wall_circ_z035_slave
     {
         type            wall;
-        inGroups        List<word> 
-2
-(
-wall
-wall_circ_z035
-)
-;
+        inGroups        2(wall wall_circ_z035);
         nFaces          576;
-        startFace       687096;
+        startFace       674952;
+    }
+    rotorPin_master
+    {
+        type            wall;
+        inGroups        2(wall rotorPin);
+        nFaces          7632;
+        startFace       675528;
+    }
+    rotorPin_slave
+    {
+        type            wall;
+        inGroups        2(wall rotorPin);
+        nFaces          7632;
+        startFace       683160;
+    }
+    shaft
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          4512;
+        startFace       690792;
     }
 )
 
