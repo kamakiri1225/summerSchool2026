@@ -246,6 +246,7 @@ SALOME で作成したメッシュを OpenFOAM 形式に変換して利用する
 | 001 Box | `data/001_box/run001_of13` | `Mesh_4.unv`、OpenFOAM 13の定常流体解析ケース（結果 `90/`） |
 | 002 撹拌機 | `data/002_Stirrer/sample/mesh/mesh_of13` | `Mesh_1.unv`、UNV変換・topoSet・createBafflesのケース |
 | 002 撹拌機 | `data/002_Stirrer/sample/mesh/master_curve_of13` | 羽根可動化テスト（moveDynamicMesh）のケース |
+| 002 撹拌機 | `data/002_Stirrer/sample/mesh/fullmodel_of13` | 全周（360°）フルモデル組み立てのケース |
 | 003 ヒートシンク | `data/003_heatsink/run001_of13` | `Mesh_1.unv`、OpenFOAM 13の熱流体・固体連成ケース |
 
 ---
@@ -727,11 +728,9 @@ SALOMEで直方体モデルを作成し、OpenFOAMで使える境界名つきメ
 
 ---
 
-## OpenFOAM側での計算
+## （余裕がある人向け）OpenFOAM側での計算
 
-SALOMEで作成したメッシュをOpenFOAMへ渡すには、UNV形式で書き出し、OpenFOAMのケースフォルダへ変換・配置する必要がある。
-
-SALOME で作成したメッシュを OpenFOAM 形式に変換して利用する。全体の流れは以下の通り。
+SALOMEで作成したメッシュをOpenFOAMへ渡すには、UNV形式で書き出し、OpenFOAMのケースフォルダへ変換・配置する必要がある。全体の流れは以下の通り。
 
 
 ---
@@ -819,6 +818,7 @@ checkMesh > log.checkMesh.of13 2>&1
 - `ideasUnvToFoam Mesh_4.unv` は、SALOMEから出力したUNVメッシュをOpenFOAMの `constant/polyMesh` 形式へ変換する。
 - `> log.ideasUnvToFoam.of13 2>&1` は、変換時の標準出力とエラー出力をログファイルへ保存する。
 - `transformPoints "scale=(0.001 0.001 0.001)"` は、座標をx, y, zすべて `1/1000` 倍する。SALOMEでmm単位の形状を作った場合、OpenFOAMで使うm単位へ変換するために使う。
+- なお、ESI版OpenFOAM（v2512など）ではオプション構文が異なり、`transformPoints -scale "(0.001 0.001 0.001)"` と書く。
 - `checkMesh` は、変換後のメッシュ品質、境界面、セル数、寸法などを確認する。
 - `log.checkMesh.of13` を確認し、`Mesh OK` が出ていれば、基本的なメッシュチェックは通っている。
 
@@ -941,16 +941,19 @@ touch post.foam
 
 ### この演習のゴール
 
-今回の演習のゴールは、下図のように、羽根形状を含む1/4セクター分の撹拌槽形状に対して、SALOMEでヘキサメッシュを作成することである。実際のOpenFOAM計算では、このセクターメッシュを回転コピー・結合して、全周の撹拌槽形状を組み立てる。
+今回の演習のゴールは、下図のように、羽根形状を含む1/6セクター（60°）分の撹拌槽形状に対して、SALOMEでヘキサメッシュを作成することである。
 
 
 ---
 
-![今回作成するヘキサメッシュのゴール（1/4セクター）](img/002_stirrer/page_140.svg)
+![今回作成するヘキサメッシュのゴール（1/6セクター）](img/002_stirrer/page_140.svg)
+
+さらに余裕がある人向けに、作成したメッシュをOpenFOAMに渡して、羽根を曲げる変形テストと、セクターメッシュを回転コピー・結合した全周（360°）フルモデルの組み立てまで行う（章の後半で解説）。
+
 
 ---
 
-![rotor境界を固定した場合の変形（外側は静止・rotorは円形維持）](img/002_stirrer/ani_deform_pinned.gif)
+![作成したメッシュで羽根を曲げる変形テスト（OpenFOAM）](img/002_stirrer/ani_deform_pinned.gif)
 
 ---
 
@@ -972,6 +975,7 @@ touch post.foam
 |----------|------|
 | `data/002_Stirrer/sample/mesh/mesh_of13` | SALOMEから出力した `Mesh_1.unv` と、UNV変換・topoSet・createBaffles を行うOpenFOAMケース（OpenFOAM 13） |
 | `data/002_Stirrer/sample/mesh/master_curve_of13` | 羽根の可動化テスト（moveDynamicMesh）用のOpenFOAMケース（OpenFOAM 13） |
+| `data/002_Stirrer/sample/mesh/fullmodel_of13` | 変形済みセクターを回転コピー・結合して全周（360°）フルモデルを組み立てるOpenFOAMケース（OpenFOAM 13） |
 
 ---
 
@@ -1648,7 +1652,7 @@ OpenFOAMへ渡す面や線を整理するため、Geometry側でグループを�
 ![サブメッシュ一覧を確認する](img/002_stirrer/page_150.svg)
 
 - `r1`〜`r6`、`theta1`、`z3` すべての線グループに対して、同様にサブメッシュ（`Number of Segments`）を設定する。各グループの分割数は以下の通り。
-    - `r1` / `r2` / `r3` / `r6`　の`Number of Segments`を `12`
+    - `r1` / `r2` / `r3` / `r6` の`Number of Segments`を `12`
     - `r4` / `r5` … `18`（羽根まわりを細かくするため他のr方向より多くする）
     - `theta1`（周方向） の`Number of Segments`を `12`
     - `z3`（軸方向） の`Number of Segments`を`32`
@@ -1729,6 +1733,10 @@ checkMesh > log.checkMesh.final 2>&1
 ```
 
 なお、同フォルダには上記一連の処理をまとめた `Allrun` スクリプトがあり、`./Allclean && ./Allrun` で最初から一括再実行できる。
+
+ESI版OpenFOAM（v2512など）で試す場合は、`mesh_of2512` フォルダに同じ処理のv2512用ケース一式がある（`transformPoints -scale "(0.001 0.001 0.001)"`、`createBafflesDict` の `patchPairs` 形式など、一部の構文が異なる）。
+
+> **注意（ESI版の `ideasUnvToFoam` の挙動差）**: ESI版の `ideasUnvToFoam` は、UNVに含まれる2Dシート要素（羽根・仕切り板のシェル面）を最初から**境界面として変換**する（Foundation版は内部面のまま残す）。このため、Foundation版と同じ「topoSetで内部面を拾って `createBaffles` でバッフル化する」手順では、**羽根の面が内部面として見つからず、バッフルが0面になる**。本講義のOpenFOAM側の手順は **OpenFOAM 13（Foundation版）を前提**とする。
 
 各コマンドの役割は以下の通り。
 
@@ -1949,6 +1957,8 @@ stitchMesh -latestTime "((rotorPin_master rotorPin_slave))"
 
 こうしてできた「壁のない・羽根が曲がった変形済みメッシュ」（`master_curve_of13` の最終時刻 `1/`）が、次のフルモデル組み立ての**基準セクター**になる。以上のpin→変形→壁戻しの一連の処理は `master_curve_of13/Allrun` にまとめてある。
 
+ESI版OpenFOAM（v2512など）には `master_curve_of2512` フォルダにv2512用ケースがある。構文がいくつか異なる（`topoSet` のfaceSet削除は `subtract`、`stitchMesh` は `stitchMesh -perfect rotorPin_master rotorPin_slave` の2引数形式、最終時刻への適用は `startFrom latestTime` への切り替えが必要）。ただし前述のESI版 `ideasUnvToFoam` の挙動差（羽根バッフルが作れない）があるため、**羽根の可動化テストはOpenFOAM 13で行うことを推奨**する。
+
 
 ---
 
@@ -2147,6 +2157,7 @@ checkMesh
 |----------|------|
 | `data/003_heatsink/sample/model` | FreeCADで作成したCADモデル `model.FCStd` と、SALOMEへ読み込むために出力したSTEPファイル `model.step` の保存場所 |
 | `data/003_heatsink/run001_of13` | SALOMEから出力した `Mesh_1.unv` と、OpenFOAM 13で `foamMultiRun` を実行するケース一式（セットアップスクリプト `setup.sh` を含む） |
+| `data/003_heatsink/run001_of2512` | 同じメッシュをESI版OpenFOAM（v2512）の `chtMultiRegionFoam` で計算するケース一式（`setup.sh`・計算結果を含む） |
 
 なお、CADモデルはFreeCADで作成しており、FreeCADの編集用ファイルを `model.FCStd`、SALOMEへ渡す形状データを `model.step` として保存している。この演習では、作成済みのCADモデルから出力したSTEPファイルをSALOMEへ読み込み、OpenFOAM用のマルチリージョンメッシュを作成するところまでを行う。
 
@@ -2606,7 +2617,7 @@ OpenFOAMでは境界条件は面の名前に対して設定するため、SALOME
 
 ---
 
-## OpenFOAM側での計算
+## （余裕がある人向け）OpenFOAM側での計算
 
 SALOME で作成したメッシュを OpenFOAM 形式に変換して利用する。全体の流れは以下の通り。
 

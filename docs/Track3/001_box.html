@@ -820,10 +820,9 @@ alt="局所細分化メッシュを計算する" />
 <li>確認: 壁面近傍を解きたい場合は、壁面側に境界層を入れる。</li>
 </ul>
 <hr />
-<h2 id="openfoam側での計算">OpenFOAM側での計算</h2>
-<p>SALOMEで作成したメッシュをOpenFOAMへ渡すには、UNV形式で書き出し、OpenFOAMのケースフォルダへ変換・配置する必要がある。</p>
-<p>SALOME で作成したメッシュを OpenFOAM
-形式に変換して利用する。全体の流れは以下の通り。</p>
+<h2
+id="余裕がある人向けopenfoam側での計算">（余裕がある人向け）OpenFOAM側での計算</h2>
+<p>SALOMEで作成したメッシュをOpenFOAMへ渡すには、UNV形式で書き出し、OpenFOAMのケースフォルダへ変換・配置する必要がある。全体の流れは以下の通り。</p>
 <figure>
 <img src="img/000_salome/salome_to_openfoam_flow.png"
 alt="SALOMEからOpenFOAMへの連携フロー" />
@@ -943,6 +942,8 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="
 <li><code>transformPoints "scale=(0.001 0.001 0.001)"</code>
 は、座標をx, y, zすべて <code>1/1000</code>
 倍する。SALOMEでmm単位の形状を作った場合、OpenFOAMで使うm単位へ変換するために使う。</li>
+<li>なお、ESI版OpenFOAM（v2512など）ではオプション構文が異なり、<code>transformPoints -scale "(0.001 0.001 0.001)"</code>
+と書く。</li>
 <li><code>checkMesh</code>
 は、変換後のメッシュ品質、境界面、セル数、寸法などを確認する。</li>
 <li><code>log.checkMesh.of13</code> を確認し、<code>Mesh OK</code>

@@ -10,62 +10,54 @@ FoamFile
     version     2.0;
     format      binary;
     arch        "LSB;label=32;scalar=64";
-    class       polyBoundaryMesh;
-    location    "constant/polyMesh";
-    object      boundary;
+    class       surfaceScalarField;
+    location    "1.1";
+    object      meshPhi;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-7
-(
+dimensions      [0 3 -1 0 0 0 0];
+
+internalField   uniform 0;
+
+boundaryField
+{
     defaultFaces
     {
-        type            patch;
-        nFaces          28464;
-        startFace       628152;
+        type            calculated;
+        value           uniform 0;
     }
     wall_circ_z015_master
     {
-        type            wall;
-        inGroups        2(wall wall_circ_z015);
-        nFaces          21888;
-        startFace       656616;
+        type            calculated;
+        value           uniform 0;
     }
     wall_circ_z015_slave
     {
-        type            wall;
-        inGroups        2(wall wall_circ_z015);
-        nFaces          21888;
-        startFace       678504;
+        type            calculated;
+        value           uniform 0;
     }
     wall_circ_z035_master
     {
-        type            wall;
-        inGroups        2(wall wall_circ_z035);
-        nFaces          576;
-        startFace       700392;
+        type            calculated;
+        value           uniform 0;
     }
     wall_circ_z035_slave
     {
-        type            wall;
-        inGroups        2(wall wall_circ_z035);
-        nFaces          576;
-        startFace       700968;
+        type            calculated;
+        value           uniform 0;
     }
     rotorPin_master
     {
-        type            wall;
-        inGroups        2(wall rotorPin);
-        nFaces          6480;
-        startFace       701544;
+        type            calculated;
+        value           nonuniform List<scalar> 0;
     }
     rotorPin_slave
     {
-        type            wall;
-        inGroups        2(wall rotorPin);
-        nFaces          6480;
-        startFace       708024;
+        type            calculated;
+        value           nonuniform List<scalar> 0;
     }
-)
+}
+
 
 // ************************************************************************* //

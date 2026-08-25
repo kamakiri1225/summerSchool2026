@@ -597,6 +597,11 @@ aria-hidden="true">SALOMEからOpenFOAMへの連携フロー</figcaption>
 <td>羽根可動化テスト（moveDynamicMesh）のケース</td>
 </tr>
 <tr class="even">
+<td>002 撹拌機</td>
+<td><code>data/002_Stirrer/sample/mesh/fullmodel_of13</code></td>
+<td>全周（360°）フルモデル組み立てのケース</td>
+</tr>
+<tr class="odd">
 <td>003 ヒートシンク</td>
 <td><code>data/003_heatsink/run001_of13</code></td>
 <td><code>Mesh_1.unv</code>、OpenFOAM 13の熱流体・固体連成ケース</td>
@@ -1463,11 +1468,9 @@ alt="境界層パラメータを指定する" />
 <li>確認: 壁面近傍を解きたい場合は、壁面側に境界層を入れる。</li>
 </ul>
 </section>
-<section id="openfoam側での計算" class="slide level2">
-<h2>OpenFOAM側での計算</h2>
-<p>SALOMEで作成したメッシュをOpenFOAMへ渡すには、UNV形式で書き出し、OpenFOAMのケースフォルダへ変換・配置する必要がある。</p>
-<p>SALOME で作成したメッシュを OpenFOAM
-形式に変換して利用する。全体の流れは以下の通り。</p>
+<section id="余裕がある人向けopenfoam側での計算" class="slide level2">
+<h2>（余裕がある人向け）OpenFOAM側での計算</h2>
+<p>SALOMEで作成したメッシュをOpenFOAMへ渡すには、UNV形式で書き出し、OpenFOAMのケースフォルダへ変換・配置する必要がある。全体の流れは以下の通り。</p>
 </section>
 <section class="slide level2">
 
@@ -1604,6 +1607,8 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="
 <li><code>transformPoints "scale=(0.001 0.001 0.001)"</code>
 は、座標をx, y, zすべて <code>1/1000</code>
 倍する。SALOMEでmm単位の形状を作った場合、OpenFOAMで使うm単位へ変換するために使う。</li>
+<li>なお、ESI版OpenFOAM（v2512など）ではオプション構文が異なり、<code>transformPoints -scale "(0.001 0.001 0.001)"</code>
+と書く。</li>
 <li><code>checkMesh</code>
 は、変換後のメッシュ品質、境界面、セル数、寸法などを確認する。</li>
 <li><code>log.checkMesh.of13</code> を確認し、<code>Mesh OK</code>
@@ -1823,24 +1828,25 @@ class="uri">https://techbookfest.org/product/5752199185432576</a></li>
 <section class="slide level2">
 
 <h3 id="この演習のゴール">この演習のゴール</h3>
-<p>今回の演習のゴールは、下図のように、羽根形状を含む1/4セクター分の撹拌槽形状に対して、SALOMEでヘキサメッシュを作成することである。実際のOpenFOAM計算では、このセクターメッシュを回転コピー・結合して、全周の撹拌槽形状を組み立てる。</p>
+<p>今回の演習のゴールは、下図のように、羽根形状を含む1/6セクター（60°）分の撹拌槽形状に対して、SALOMEでヘキサメッシュを作成することである。</p>
 </section>
 <section class="slide level2">
 
 <figure>
 <img data-src="img/002_stirrer/page_140.svg"
-alt="今回作成するヘキサメッシュのゴール（1/4セクター）" />
+alt="今回作成するヘキサメッシュのゴール（1/6セクター）" />
 <figcaption
-aria-hidden="true">今回作成するヘキサメッシュのゴール（1/4セクター）</figcaption>
+aria-hidden="true">今回作成するヘキサメッシュのゴール（1/6セクター）</figcaption>
 </figure>
+<p>さらに余裕がある人向けに、作成したメッシュをOpenFOAMに渡して、羽根を曲げる変形テストと、セクターメッシュを回転コピー・結合した全周（360°）フルモデルの組み立てまで行う（章の後半で解説）。</p>
 </section>
 <section class="slide level2">
 
 <figure>
 <img data-src="img/002_stirrer/ani_deform_pinned.gif"
-alt="rotor境界を固定した場合の変形（外側は静止・rotorは円形維持）" />
+alt="作成したメッシュで羽根を曲げる変形テスト（OpenFOAM）" />
 <figcaption
-aria-hidden="true">rotor境界を固定した場合の変形（外側は静止・rotorは円形維持）</figcaption>
+aria-hidden="true">作成したメッシュで羽根を曲げる変形テスト（OpenFOAM）</figcaption>
 </figure>
 </section>
 <section class="slide level2">
@@ -1887,6 +1893,11 @@ aria-hidden="true">フルモデル内部のヘキサメッシュと全周の羽�
 <tr class="even">
 <td><code>data/002_Stirrer/sample/mesh/master_curve_of13</code></td>
 <td>羽根の可動化テスト（moveDynamicMesh）用のOpenFOAMケース（OpenFOAM
+13）</td>
+</tr>
+<tr class="odd">
+<td><code>data/002_Stirrer/sample/mesh/fullmodel_of13</code></td>
+<td>変形済みセクターを回転コピー・結合して全周（360°）フルモデルを組み立てるOpenFOAMケース（OpenFOAM
 13）</td>
 </tr>
 </tbody>
@@ -3080,8 +3091,7 @@ alt="サブメッシュ一覧を確認する" />
 すべての線グループに対して、同様にサブメッシュ（<code>Number of Segments</code>）を設定する。各グループの分割数は以下の通り。
 <ul>
 <li><code>r1</code> / <code>r2</code> / <code>r3</code> /
-<code>r6</code>　の<code>Number of Segments</code>を
-<code>12</code></li>
+<code>r6</code> の<code>Number of Segments</code>を <code>12</code></li>
 <li><code>r4</code> / <code>r5</code> …
 <code>18</code>（羽根まわりを細かくするため他のr方向より多くする）</li>
 <li><code>theta1</code>（周方向） の<code>Number of Segments</code>を
@@ -3171,7 +3181,7 @@ alt="UNV形式でエクスポートする" />
 </ol></li>
 </ul>
 </section>
-<section id="余裕がある人向けopenfoam側での計算" class="slide level2">
+<section id="余裕がある人向けopenfoam側での計算-1" class="slide level2">
 <h2>（余裕がある人向け）OpenFOAM側での計算</h2>
 <p>SALOMEから出力した <code>Mesh_1.unv</code>
 は、そのままではOpenFOAMで使えない。UNV形式からOpenFOAM形式へ変換し、スケール変換（mm→m）を行った上で、羽根（wing）と仕切り板（circ）の位置に
@@ -3210,6 +3220,17 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="
 <p>なお、同フォルダには上記一連の処理をまとめた <code>Allrun</code>
 スクリプトがあり、<code>./Allclean &amp;&amp; ./Allrun</code>
 で最初から一括再実行できる。</p>
+<p>ESI版OpenFOAM（v2512など）で試す場合は、<code>mesh_of2512</code>
+フォルダに同じ処理のv2512用ケース一式がある（<code>transformPoints -scale "(0.001 0.001 0.001)"</code>、<code>createBafflesDict</code>
+の <code>patchPairs</code> 形式など、一部の構文が異なる）。</p>
+<blockquote>
+<p><strong>注意（ESI版の <code>ideasUnvToFoam</code>
+の挙動差）</strong>: ESI版の <code>ideasUnvToFoam</code>
+は、UNVに含まれる2Dシート要素（羽根・仕切り板のシェル面）を最初から<strong>境界面として変換</strong>する（Foundation版は内部面のまま残す）。このため、Foundation版と同じ「topoSetで内部面を拾って
+<code>createBaffles</code>
+でバッフル化する」手順では、<strong>羽根の面が内部面として見つからず、バッフルが0面になる</strong>。本講義のOpenFOAM側の手順は
+<strong>OpenFOAM 13（Foundation版）を前提</strong>とする。</p>
+</blockquote>
 <p>各コマンドの役割は以下の通り。</p>
 <ul>
 <li><code>ideasUnvToFoam Mesh_1.unv</code>:
@@ -3532,6 +3553,14 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href=
 の最終時刻
 <code>1/</code>）が、次のフルモデル組み立ての<strong>基準セクター</strong>になる。以上のpin→変形→壁戻しの一連の処理は
 <code>master_curve_of13/Allrun</code> にまとめてある。</p>
+<p>ESI版OpenFOAM（v2512など）には <code>master_curve_of2512</code>
+フォルダにv2512用ケースがある。構文がいくつか異なる（<code>topoSet</code>
+のfaceSet削除は <code>subtract</code>、<code>stitchMesh</code> は
+<code>stitchMesh -perfect rotorPin_master rotorPin_slave</code>
+の2引数形式、最終時刻への適用は <code>startFrom latestTime</code>
+への切り替えが必要）。ただし前述のESI版 <code>ideasUnvToFoam</code>
+の挙動差（羽根バッフルが作れない）があるため、<strong>羽根の可動化テストはOpenFOAM
+13で行うことを推奨</strong>する。</p>
 </section>
 <section class="slide level2">
 
@@ -3796,6 +3825,12 @@ aria-hidden="true">モデル構成（heatSink・heatSource・basis・box）</fig
 <td>SALOMEから出力した <code>Mesh_1.unv</code> と、OpenFOAM 13で
 <code>foamMultiRun</code> を実行するケース一式（セットアップスクリプト
 <code>setup.sh</code> を含む）</td>
+</tr>
+<tr class="odd">
+<td><code>data/003_heatsink/run001_of2512</code></td>
+<td>同じメッシュをESI版OpenFOAM（v2512）の
+<code>chtMultiRegionFoam</code>
+で計算するケース一式（<code>setup.sh</code>・計算結果を含む）</td>
 </tr>
 </tbody>
 </table>
@@ -4601,8 +4636,8 @@ aria-hidden="true">UNVファイルをエクスポートする</figcaption>
 <li>作成した面グループ名（YMin・YMax・ZMax・XMax・XMin・basis・heatSink・heatSource・basis_top）がそのままOpenFOAMのパッチ名になる。</li>
 </ul>
 </section>
-<section id="openfoam側での計算-1" class="slide level2">
-<h2>OpenFOAM側での計算</h2>
+<section id="余裕がある人向けopenfoam側での計算-2" class="slide level2">
+<h2>（余裕がある人向け）OpenFOAM側での計算</h2>
 <p>SALOME で作成したメッシュを OpenFOAM
 形式に変換して利用する。全体の流れは以下の通り。</p>
 </section>

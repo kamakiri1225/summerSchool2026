@@ -96,16 +96,6 @@ Heatsink: SALOMEでヒートシンクの熱流体・固体連成メッシュを�
 <p>ヒートシンクを題材に、流体領域（box）と固体領域（heatSink・heatSource・basis）を分けたマルチリージョン用メッシュを作成する。OpenFOAM
 13の <code>foamMultiRun</code>
 で流体ソルバと固体ソルバを連成し、熱流体・固体連成解析につなげる。</p>
-<p>CADモデルはFreeCADで作成しており、FreeCADの編集用ファイルを
-<code>model.FCStd</code>、SALOMEへ渡す形状データを
-<code>model.step</code>
-として保存している。この演習では、作成済みのCADモデルから出力したSTEPファイルをSALOMEへ読み込み、OpenFOAM用のマルチリージョンメッシュを作成するところまでを行う。</p>
-<figure>
-<img src="img/003_heatsink/FreeCADmodel.png"
-alt="FreeCADで作成したヒートシンクと流体領域のCADモデル" />
-<figcaption
-aria-hidden="true">FreeCADで作成したヒートシンクと流体領域のCADモデル</figcaption>
-</figure>
 <ul>
 <li>STEPファイルを読み込み、ソリッド単位に分解して名前を整理する</li>
 <li>Partitionで4つの領域（box・heatSink・heatSource・basis）を分割する</li>
@@ -155,8 +145,24 @@ aria-hidden="true">モデル構成（heatSink・heatSource・basis・box）</fig
 <code>foamMultiRun</code> を実行するケース一式（セットアップスクリプト
 <code>setup.sh</code> を含む）</td>
 </tr>
+<tr class="odd">
+<td><code>data/003_heatsink/run001_of2512</code></td>
+<td>同じメッシュをESI版OpenFOAM（v2512）の
+<code>chtMultiRegionFoam</code>
+で計算するケース一式（<code>setup.sh</code>・計算結果を含む）</td>
+</tr>
 </tbody>
 </table>
+<p>なお、CADモデルはFreeCADで作成しており、FreeCADの編集用ファイルを
+<code>model.FCStd</code>、SALOMEへ渡す形状データを
+<code>model.step</code>
+として保存している。この演習では、作成済みのCADモデルから出力したSTEPファイルをSALOMEへ読み込み、OpenFOAM用のマルチリージョンメッシュを作成するところまでを行う。</p>
+<figure>
+<img src="img/003_heatsink/FreeCADmodel.png"
+alt="FreeCADで作成したヒートシンクと流体領域のCADモデル" />
+<figcaption
+aria-hidden="true">FreeCADで作成したヒートシンクと流体領域のCADモデル</figcaption>
+</figure>
 <p>この演習のOpenFOAM計算は <strong>OpenFOAM
 13</strong>（www.openfoam.org 版）で行う。</p>
 <hr />
@@ -788,7 +794,8 @@ aria-hidden="true">UNVファイルをエクスポートする</figcaption>
 <li>作成した面グループ名（YMin・YMax・ZMax・XMax・XMin・basis・heatSink・heatSource・basis_top）がそのままOpenFOAMのパッチ名になる。</li>
 </ul>
 <hr />
-<h2 id="openfoam側での計算">OpenFOAM側での計算</h2>
+<h2
+id="余裕がある人向けopenfoam側での計算">（余裕がある人向け）OpenFOAM側での計算</h2>
 <p>SALOME で作成したメッシュを OpenFOAM
 形式に変換して利用する。全体の流れは以下の通り。</p>
 <figure>

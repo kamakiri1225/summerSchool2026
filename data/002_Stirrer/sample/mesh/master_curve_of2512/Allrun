@@ -2,13 +2,45 @@
 cd "${0%/*}" || exit
 . ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions
 #------------------------------------------------------------------------------
+# ESI版OpenFOAM(v2512)用: 羽根可動化テスト(rotor固定つき)
+#   1. rotor境界(r=35)を一時的に固定壁(rotorPin)化 (topoSet + createBaffles)
+#   2. 羽根を変形 (moveDynamicMesh, rotorPinは変位0で固定)
+#   3. stitchMesh で rotorPin を内部面へ戻す(壁を消して一体メッシュに戻す)
+# Foundation版(OpenFOAM 13)との構文差:
+#   - topoSet の faceSet 削除は action subtract (13では delete)
+#   - stitchMesh は「master slave」の2引数 + -perfect (13では "((A B))")
+#   - stitchMesh を最終時刻へ適用するため startFrom latestTime に切り替える
+#------------------------------------------------------------------------------
+
 # rotor境界(r=35)を固定壁(baffle)化 → 羽根変形をrotor内に閉じ込め外側を静止させる
+# topoSet は sets/ の同一ファイルを多段更新する。Windows側(/mnt/*, drvfs)では
+# この上書きが確率的に失敗する("Failed writing set")ため、検知したらリトライする。
 if ! grep -q rotorPin constant/polyMesh/boundary 2>/dev/null; then
-    runApplication topoSet -dict system/topoSetDict.rotorpin
+    i=1
+    while [ $i -le 5 ]; do
+        rm -rf constant/polyMesh/sets log.topoSet
+        topoSet -dict system/topoSetDict.rotorpin > log.topoSet 2>&1
+        if ! grep -q "Failed writing" log.topoSet; then
+            break
+        fi
+        echo "topoSet: write failure detected (drvfs) - retry $i"
+        i=$((i + 1))
+    done
+    grep -q "Failed writing" log.topoSet && { echo "topoSet failed repeatedly"; exit 1; }
     runApplication createBaffles -overwrite
 fi
+
 rm -rf 0
 cp -r 0.orig 0
 runApplication moveDynamicMesh
+
+# 変形後、rotorPin(壁)を内部面へ戻す。v2512のstitchMeshには -latestTime が
+# 無いため、controlDict を一時的に latestTime 起点へ切り替えて適用する。
+foamDictionary system/controlDict -entry startFrom -set latestTime > /dev/null
+runApplication stitchMesh -perfect rotorPin_master rotorPin_slave
+foamDictionary system/controlDict -entry startFrom -set startTime > /dev/null
+
+runApplication -s final checkMesh -latestTime
+
 touch post.foam
 #------------------------------------------------------------------------------

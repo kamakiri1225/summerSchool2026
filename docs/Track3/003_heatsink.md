@@ -28,6 +28,7 @@
 |----------|------|
 | `data/003_heatsink/sample/model` | FreeCADで作成したCADモデル `model.FCStd` と、SALOMEへ読み込むために出力したSTEPファイル `model.step` の保存場所 |
 | `data/003_heatsink/run001_of13` | SALOMEから出力した `Mesh_1.unv` と、OpenFOAM 13で `foamMultiRun` を実行するケース一式（セットアップスクリプト `setup.sh` を含む） |
+| `data/003_heatsink/run001_of2512` | 同じメッシュをESI版OpenFOAM（v2512）の `chtMultiRegionFoam` で計算するケース一式（`setup.sh`・計算結果を含む） |
 
 なお、CADモデルはFreeCADで作成しており、FreeCADの編集用ファイルを `model.FCStd`、SALOMEへ渡す形状データを `model.step` として保存している。この演習では、作成済みのCADモデルから出力したSTEPファイルをSALOMEへ読み込み、OpenFOAM用のマルチリージョンメッシュを作成するところまでを行う。
 
@@ -349,7 +350,7 @@ OpenFOAMでは境界条件は面の名前に対して設定するため、SALOME
 
 ---
 
-## OpenFOAM側での計算
+## （余裕がある人向け）OpenFOAM側での計算
 
 SALOME で作成したメッシュを OpenFOAM 形式に変換して利用する。全体の流れは以下の通り。
 

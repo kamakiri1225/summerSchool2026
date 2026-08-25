@@ -6,7 +6,7 @@ actions
     // rotorセルの全faces
     { name rotorFaces; type faceSet; action new; source cellToFace; set rotorCells; option all; }
     // 内部(両側rotor)を除く → 境界faceだけ残る
-    { name rotorFaces; type faceSet; action delete; source cellToFace; set rotorCells; option both; }
+    { name rotorFaces; type faceSet; action subtract; source cellToFace; set rotorCells; option both; }
     // faceZone化(rotor側をmaster)
     { name rotorBoundary; type faceZoneSet; action new; source setsToFaceZone; faceSet rotorFaces; cellSet rotorCells; }
 );

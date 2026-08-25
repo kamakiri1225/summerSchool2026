@@ -136,12 +136,17 @@ class="uri">https://techbookfest.org/product/5752199185432576</a></li>
 手組みではなく <strong>SALOME</strong>
 でジオメトリとメッシュを作成する方法を扱う。</p>
 <h3 id="この演習のゴール">この演習のゴール</h3>
-<p>今回の演習のゴールは、下図のように、羽根形状を含む1/4セクター分の撹拌槽形状に対して、SALOMEでヘキサメッシュを作成することである。実際のOpenFOAM計算では、このセクターメッシュを回転コピー・結合して、全周の撹拌槽形状を組み立てる。</p>
-<p><img src="img/002_stirrer/page_140.svg"
-alt="今回作成するヘキサメッシュのゴール（1/4セクター）" /> <img
-src="img/002_stirrer/ani_deform_pinned.gif"
-alt="rotor境界を固定した場合の変形（外側は静止・rotorは円形維持）" />
-<img src="img/002_stirrer/fullmodel_of13.png"
+<p>今回の演習のゴールは、下図のように、羽根形状を含む1/6セクター（60°）分の撹拌槽形状に対して、SALOMEでヘキサメッシュを作成することである。</p>
+<figure>
+<img src="img/002_stirrer/page_140.svg"
+alt="今回作成するヘキサメッシュのゴール（1/6セクター）" />
+<figcaption
+aria-hidden="true">今回作成するヘキサメッシュのゴール（1/6セクター）</figcaption>
+</figure>
+<p>さらに余裕がある人向けに、作成したメッシュをOpenFOAMに渡して、羽根を曲げる変形テストと、セクターメッシュを回転コピー・結合した全周（360°）フルモデルの組み立てまで行う（章の後半で解説）。</p>
+<p><img src="img/002_stirrer/ani_deform_pinned.gif"
+alt="作成したメッシュで羽根を曲げる変形テスト（OpenFOAM）" /> <img
+src="img/002_stirrer/fullmodel_of13.png"
 alt="回転コピー＋結合で作った全周（360°）フルモデル（半透明のタンク、赤: 羽根、緑: 仕切り板）" /></p>
 <figure>
 <img src="img/002_stirrer/フルモデル.png"
@@ -172,6 +177,11 @@ aria-hidden="true">フルモデル内部のヘキサメッシュと全周の羽�
 <tr class="even">
 <td><code>data/002_Stirrer/sample/mesh/master_curve_of13</code></td>
 <td>羽根の可動化テスト（moveDynamicMesh）用のOpenFOAMケース（OpenFOAM
+13）</td>
+</tr>
+<tr class="odd">
+<td><code>data/002_Stirrer/sample/mesh/fullmodel_of13</code></td>
+<td>変形済みセクターを回転コピー・結合して全周（360°）フルモデルを組み立てるOpenFOAMケース（OpenFOAM
 13）</td>
 </tr>
 </tbody>
@@ -1099,8 +1109,7 @@ alt="サブメッシュ一覧を確認する" />
 すべての線グループに対して、同様にサブメッシュ（<code>Number of Segments</code>）を設定する。各グループの分割数は以下の通り。
 <ul>
 <li><code>r1</code> / <code>r2</code> / <code>r3</code> /
-<code>r6</code>　の<code>Number of Segments</code>を
-<code>12</code></li>
+<code>r6</code> の<code>Number of Segments</code>を <code>12</code></li>
 <li><code>r4</code> / <code>r5</code> …
 <code>18</code>（羽根まわりを細かくするため他のr方向より多くする）</li>
 <li><code>theta1</code>（周方向） の<code>Number of Segments</code>を
@@ -1208,6 +1217,17 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="
 <p>なお、同フォルダには上記一連の処理をまとめた <code>Allrun</code>
 スクリプトがあり、<code>./Allclean &amp;&amp; ./Allrun</code>
 で最初から一括再実行できる。</p>
+<p>ESI版OpenFOAM（v2512など）で試す場合は、<code>mesh_of2512</code>
+フォルダに同じ処理のv2512用ケース一式がある（<code>transformPoints -scale "(0.001 0.001 0.001)"</code>、<code>createBafflesDict</code>
+の <code>patchPairs</code> 形式など、一部の構文が異なる）。</p>
+<blockquote>
+<p><strong>注意（ESI版の <code>ideasUnvToFoam</code>
+の挙動差）</strong>: ESI版の <code>ideasUnvToFoam</code>
+は、UNVに含まれる2Dシート要素（羽根・仕切り板のシェル面）を最初から<strong>境界面として変換</strong>する（Foundation版は内部面のまま残す）。このため、Foundation版と同じ「topoSetで内部面を拾って
+<code>createBaffles</code>
+でバッフル化する」手順では、<strong>羽根の面が内部面として見つからず、バッフルが0面になる</strong>。本講義のOpenFOAM側の手順は
+<strong>OpenFOAM 13（Foundation版）を前提</strong>とする。</p>
+</blockquote>
 <p>各コマンドの役割は以下の通り。</p>
 <ul>
 <li><code>ideasUnvToFoam Mesh_1.unv</code>:
@@ -1497,6 +1517,14 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="
 の最終時刻
 <code>1/</code>）が、次のフルモデル組み立ての<strong>基準セクター</strong>になる。以上のpin→変形→壁戻しの一連の処理は
 <code>master_curve_of13/Allrun</code> にまとめてある。</p>
+<p>ESI版OpenFOAM（v2512など）には <code>master_curve_of2512</code>
+フォルダにv2512用ケースがある。構文がいくつか異なる（<code>topoSet</code>
+のfaceSet削除は <code>subtract</code>、<code>stitchMesh</code> は
+<code>stitchMesh -perfect rotorPin_master rotorPin_slave</code>
+の2引数形式、最終時刻への適用は <code>startFrom latestTime</code>
+への切り替えが必要）。ただし前述のESI版 <code>ideasUnvToFoam</code>
+の挙動差（羽根バッフルが作れない）があるため、<strong>羽根の可動化テストはOpenFOAM
+13で行うことを推奨</strong>する。</p>
 <h3
 id="フルモデルの組み立て回転コピー結合">フルモデルの組み立て（回転コピー＋結合）</h3>
 <p>ここまでで作った変形済みの 1/6

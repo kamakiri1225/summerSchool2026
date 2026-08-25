@@ -2,7 +2,35 @@
 cd "${0%/*}" || exit                                # Run from this directory
 . ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions        # Tutorial run functions
 #------------------------------------------------------------------------------
+# ESI版OpenFOAM(v2512)用: UNV変換 → スケール変換 → topoSet → createBaffles
+# Foundation版(OpenFOAM 13)との構文差:
+#   - transformPoints は -scale オプション (13では "scale=(...)")
+#   - createBafflesDict は patchPairs 形式 (13では owner/neighbour 明示)
+#------------------------------------------------------------------------------
 
-runApplication blockMesh
+rm -f log.*
+runApplication ideasUnvToFoam Mesh_1.unv
+runApplication transformPoints -scale "(0.001 0.001 0.001)"
+runApplication -s initial checkMesh
+
+# topoSet は sets/ の同一ファイルを多段更新する。Windows側(/mnt/*, drvfs)では
+# この上書きが確率的に失敗し("Failed writing set")、ゾーンが正しく絞り込まれ
+# ないことがある。失敗を検知したら sets/ を消してリトライする。
+i=1
+while [ $i -le 5 ]; do
+    rm -rf constant/polyMesh/sets log.topoSet
+    topoSet > log.topoSet 2>&1
+    if ! grep -q "Failed writing" log.topoSet; then
+        break
+    fi
+    echo "topoSet: write failure detected (drvfs) - retry $i"
+    i=$((i + 1))
+done
+grep -q "Failed writing" log.topoSet && { echo "topoSet failed repeatedly"; exit 1; }
+
+runApplication createBaffles -overwrite
+runApplication -s final checkMesh
+
+touch post.foam
 
 #------------------------------------------------------------------------------

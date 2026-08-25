@@ -32,10 +32,13 @@
 
 ### この演習のゴール
 
-今回の演習のゴールは、下図のように、羽根形状を含む1/4セクター分の撹拌槽形状に対して、SALOMEでヘキサメッシュを作成することである。実際のOpenFOAM計算では、このセクターメッシュを回転コピー・結合して、全周の撹拌槽形状を組み立てる。
+今回の演習のゴールは、下図のように、羽根形状を含む1/6セクター（60°）分の撹拌槽形状に対して、SALOMEでヘキサメッシュを作成することである。
 
-![今回作成するヘキサメッシュのゴール（1/4セクター）](img/002_stirrer/page_140.svg)
-![rotor境界を固定した場合の変形（外側は静止・rotorは円形維持）](img/002_stirrer/ani_deform_pinned.gif)
+![今回作成するヘキサメッシュのゴール（1/6セクター）](img/002_stirrer/page_140.svg)
+
+さらに余裕がある人向けに、作成したメッシュをOpenFOAMに渡して、羽根を曲げる変形テストと、セクターメッシュを回転コピー・結合した全周（360°）フルモデルの組み立てまで行う（章の後半で解説）。
+
+![作成したメッシュで羽根を曲げる変形テスト（OpenFOAM）](img/002_stirrer/ani_deform_pinned.gif)
 ![回転コピー＋結合で作った全周（360°）フルモデル（半透明のタンク、赤: 羽根、緑: 仕切り板）](img/002_stirrer/fullmodel_of13.png)
 
 ![フルモデル内部のヘキサメッシュと全周の羽根](img/002_stirrer/フルモデル.png)
@@ -48,6 +51,7 @@
 |----------|------|
 | `data/002_Stirrer/sample/mesh/mesh_of13` | SALOMEから出力した `Mesh_1.unv` と、UNV変換・topoSet・createBaffles を行うOpenFOAMケース（OpenFOAM 13） |
 | `data/002_Stirrer/sample/mesh/master_curve_of13` | 羽根の可動化テスト（moveDynamicMesh）用のOpenFOAMケース（OpenFOAM 13） |
+| `data/002_Stirrer/sample/mesh/fullmodel_of13` | 変形済みセクターを回転コピー・結合して全周（360°）フルモデルを組み立てるOpenFOAMケース（OpenFOAM 13） |
 
 ---
 
@@ -481,7 +485,7 @@ OpenFOAMへ渡す面や線を整理するため、Geometry側でグループを�
 ![サブメッシュ一覧を確認する](img/002_stirrer/page_150.svg)
 
 - `r1`〜`r6`、`theta1`、`z3` すべての線グループに対して、同様にサブメッシュ（`Number of Segments`）を設定する。各グループの分割数は以下の通り。
-    - `r1` / `r2` / `r3` / `r6`　の`Number of Segments`を `12`
+    - `r1` / `r2` / `r3` / `r6` の`Number of Segments`を `12`
     - `r4` / `r5` … `18`（羽根まわりを細かくするため他のr方向より多くする）
     - `theta1`（周方向） の`Number of Segments`を `12`
     - `z3`（軸方向） の`Number of Segments`を`32`
@@ -541,6 +545,10 @@ checkMesh > log.checkMesh.final 2>&1
 ```
 
 なお、同フォルダには上記一連の処理をまとめた `Allrun` スクリプトがあり、`./Allclean && ./Allrun` で最初から一括再実行できる。
+
+ESI版OpenFOAM（v2512など）で試す場合は、`mesh_of2512` フォルダに同じ処理のv2512用ケース一式がある（`transformPoints -scale "(0.001 0.001 0.001)"`、`createBafflesDict` の `patchPairs` 形式など、一部の構文が異なる）。
+
+> **注意（ESI版の `ideasUnvToFoam` の挙動差）**: ESI版の `ideasUnvToFoam` は、UNVに含まれる2Dシート要素（羽根・仕切り板のシェル面）を最初から**境界面として変換**する（Foundation版は内部面のまま残す）。このため、Foundation版と同じ「topoSetで内部面を拾って `createBaffles` でバッフル化する」手順では、**羽根の面が内部面として見つからず、バッフルが0面になる**。本講義のOpenFOAM側の手順は **OpenFOAM 13（Foundation版）を前提**とする。
 
 各コマンドの役割は以下の通り。
 
@@ -727,6 +735,8 @@ stitchMesh -latestTime "((rotorPin_master rotorPin_slave))"
 ```
 
 こうしてできた「壁のない・羽根が曲がった変形済みメッシュ」（`master_curve_of13` の最終時刻 `1/`）が、次のフルモデル組み立ての**基準セクター**になる。以上のpin→変形→壁戻しの一連の処理は `master_curve_of13/Allrun` にまとめてある。
+
+ESI版OpenFOAM（v2512など）には `master_curve_of2512` フォルダにv2512用ケースがある。構文がいくつか異なる（`topoSet` のfaceSet削除は `subtract`、`stitchMesh` は `stitchMesh -perfect rotorPin_master rotorPin_slave` の2引数形式、最終時刻への適用は `startFrom latestTime` への切り替えが必要）。ただし前述のESI版 `ideasUnvToFoam` の挙動差（羽根バッフルが作れない）があるため、**羽根の可動化テストはOpenFOAM 13で行うことを推奨**する。
 
 ### フルモデルの組み立て（回転コピー＋結合）
 
