@@ -3,14 +3,32 @@ cd "${0%/*}" || exit
 . ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions
 #------------------------------------------------------------------------------
 # ESI版OpenFOAM(v2512)用: 羽根可動化テスト(rotor固定つき)
-#   1. rotor境界(r=35)を一時的に固定壁(rotorPin)化 (topoSet + createBaffles)
-#   2. 羽根を変形 (moveDynamicMesh, rotorPinは変位0で固定)
-#   3. stitchMesh で rotorPin を内部面へ戻す(壁を消して一体メッシュに戻す)
+#   1. 半径3 mmのシャフト面を defaultFaces から shaft パッチへ分離
+#   2. rotor境界(r=35)を一時的に固定壁(rotorPin)化 (topoSet + createBaffles)
+#   3. 羽根を変形 (moveDynamicMesh, rotorPinは変位0で固定)
+#   4. stitchMesh で rotorPin を内部面へ戻す(壁を消して一体メッシュに戻す)
 # Foundation版(OpenFOAM 13)との構文差:
 #   - topoSet の faceSet 削除は action subtract (13では delete)
 #   - stitchMesh は「master slave」の2引数 + -perfect (13では "((A B))")
 #   - stitchMesh を最終時刻へ適用するため startFrom latestTime に切り替える
 #------------------------------------------------------------------------------
+
+# 半径3 mmのシャフト面を defaultFaces から shaft パッチへ分離する
+# (v2512のcreatePatchはメッシュ移動処理でFPEを踏むことがあるためトラップ無効化)
+export FOAM_SIGFPE=false
+if ! grep -q '^[[:space:]]*shaft$' constant/polyMesh/boundary 2>/dev/null; then
+    i=1
+    while [ $i -le 5 ]; do
+        rm -rf constant/polyMesh/sets log.topoSet.shaft
+        topoSet -dict system/topoSetDict.shaft > log.topoSet.shaft 2>&1
+        if ! grep -q "Failed writing" log.topoSet.shaft; then
+            break
+        fi
+        echo "topoSet(shaft): write failure detected (drvfs) - retry $i"
+        i=$((i + 1))
+    done
+    runApplication -s shaft createPatch -overwrite -dict system/createPatchDict.shaft
+fi
 
 # rotor境界(r=35)を固定壁(baffle)化 → 羽根変形をrotor内に閉じ込め外側を静止させる
 # topoSet は sets/ の同一ファイルを多段更新する。Windows側(/mnt/*, drvfs)では

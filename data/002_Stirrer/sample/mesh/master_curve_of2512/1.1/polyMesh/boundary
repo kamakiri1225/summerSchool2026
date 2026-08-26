@@ -16,12 +16,12 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-11
+12
 (
     defaultFaces
     {
         type            patch;
-        nFaces          28464;
+        nFaces          23952;
         startFace       654984;
     }
     wall_wing_master
@@ -29,56 +29,63 @@ FoamFile
         type            wall;
         inGroups        2(wall wall_wing);
         nFaces          480;
-        startFace       683448;
+        startFace       678936;
     }
     wall_wing_slave
     {
         type            wall;
         inGroups        2(wall wall_wing);
         nFaces          480;
-        startFace       683928;
+        startFace       679416;
     }
     wall_wing2_master
     {
         type            wall;
         inGroups        2(wall wall_wing2);
         nFaces          480;
-        startFace       684408;
+        startFace       679896;
     }
     wall_wing2_slave
     {
         type            wall;
         inGroups        2(wall wall_wing2);
         nFaces          480;
-        startFace       684888;
+        startFace       680376;
     }
     wall_circ_z015_master
     {
         type            wall;
         inGroups        2(wall wall_circ_z015);
         nFaces          576;
-        startFace       685368;
+        startFace       680856;
     }
     wall_circ_z015_slave
     {
         type            wall;
         inGroups        2(wall wall_circ_z015);
         nFaces          576;
-        startFace       685944;
+        startFace       681432;
     }
     wall_circ_z035_master
     {
         type            wall;
         inGroups        2(wall wall_circ_z035);
         nFaces          576;
-        startFace       686520;
+        startFace       682008;
     }
     wall_circ_z035_slave
     {
         type            wall;
         inGroups        2(wall wall_circ_z035);
         nFaces          576;
-        startFace       687096;
+        startFace       682584;
+    }
+    shaft
+    {
+        type            wall;
+        inGroups        1(wall);
+        nFaces          4512;
+        startFace       683160;
     }
     rotorPin_master
     {

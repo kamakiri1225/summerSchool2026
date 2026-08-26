@@ -1,0 +1,42 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   A nd           | Version:  v2512                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      topoSetDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+// defaultFaces のうち半径3 mmの円筒面(シャフト表面)を faceSet として抜き出す。
+
+actions
+(
+    {
+        name    shaftFaces;
+        type    faceSet;
+        action  new;
+        source  patchToFace;
+        sourceInfo { patch defaultFaces; }
+    }
+    {
+        name    shaftFaces;
+        type    faceSet;
+        action  subset;
+        source  cylinderToFace;
+        sourceInfo
+        {
+            p1      (0 0 -0.000001);
+            p2      (0 0  0.110001);
+            radius  0.0031;
+        }
+    }
+);
+
+// ************************************************************************* //

@@ -67,6 +67,11 @@ boundaryField
         type            calculated;
         value           uniform 0;
     }
+    shaft
+    {
+        type            calculated;
+        value           uniform 0;
+    }
     rotorPin_master
     {
         type            calculated;
