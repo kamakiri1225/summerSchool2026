@@ -323,6 +323,26 @@ aria-hidden="true">Box_1とBox_2をFuse（結合）する</figcaption>
 </section>
 <section class="slide level2">
 
+<h3 id="メッシュとは">メッシュとは</h3>
+<p>メッシュとは、解析したい空間（計算領域）を小さなセル（要素）の集まりに分割したものである。CFDでは、このセル1つ1つについて流速や圧力などを計算するため、メッシュの細かさ・形・質が計算精度と計算時間を大きく左右する。メッシュ作成は解析の前処理の中で最も重要な工程といえる。</p>
+<p>セルの形には大きく分けて、規則正しく並ぶ<strong>構造格子</strong>（6面体＝ヘキサ）と、複雑な形状にも柔軟に対応できる<strong>非構造格子</strong>（4面体＝テトラ、プリズム、ピラミッド、ポリヘドラなど）がある。</p>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="img/000_salome/mesh_concept.png"
+alt="構造格子と非構造格子のセル形状" />
+<figcaption
+aria-hidden="true">構造格子と非構造格子のセル形状</figcaption>
+</figure>
+<ul>
+<li>参考: <a
+href="https://simscale.kke.co.jp/caepedia/what-is-preprocessing/what-is-a-mesh/">メッシュとは（SimScale
+CAEpedia）</a></li>
+</ul>
+</section>
+<section class="slide level2">
+
 <h3 id="メッシュの種類">メッシュの種類</h3>
 <table>
 <colgroup>
@@ -2884,6 +2904,23 @@ alt="不要な線グループを削除する" />
 </section>
 <section id="ヘキサメッシュ作成" class="slide level2">
 <h2>ヘキサメッシュ作成</h2>
+</section>
+<section class="slide level2">
+
+<h3 id="ヘキサメッシュの考え方">ヘキサメッシュの考え方</h3>
+<p>ヘキサメッシュはテトラメッシュのように「どんな形状にも自動で貼れる」ものではない。<code>Hexahedron (i,j,k)</code>
+アルゴリズムでヘキサメッシュを貼るには、<strong>形状があらかじめ「6面体ブロックの集まり」に分割されている</strong>必要がある。ここまでの手順で、回転・押し出しで作った形状を
+Partition
+で細かく分割してきたのは、まさにこの「ブロックの集まり」を作るためである。</p>
+<p>ブロック分割のポイントは次の2つ。</p>
+<ul>
+<li><strong>すべての領域を、面が6つの「ゆがんだ直方体」（ブロック）にしておく</strong>。円筒のような丸い形状も、断面を扇形のブロックに切り分ければ、各ブロックは6面体として扱える。</li>
+<li><strong>向かい合う辺の分割数をそろえる</strong>。ヘキサメッシュはブロックの中に格子を規則正しく詰めるので、隣り合うブロックどうしで接する辺の分割数が一致していないとメッシュがつながらない。このため、同じ方向の辺（半径方向
+<code>r</code>・周方向 <code>theta</code>・軸方向
+<code>z</code>）をそれぞれ線グループにまとめ、グループ単位で分割数を指定する（次節のサブメッシュ）。</li>
+</ul>
+<p>この「ブロックに分ける → 方向ごとに辺をグループ化する →
+グループごとに分割数を決める」という流れが、ヘキサメッシュ作成の基本の考え方である。</p>
 </section>
 <section class="slide level2">
 
