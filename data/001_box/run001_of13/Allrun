@@ -1,0 +1,28 @@
+#!/bin/sh
+cd "${0%/*}" || exit                                # Run from this directory
+. ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions        # Tutorial run functions
+#------------------------------------------------------------------------------
+# 001 Box (OpenFOAM 13): UNV変換 → mm→mスケール変換 → 境界タイプ修正
+#                        → checkMesh → foamRun(incompressibleFluid)
+# 資料(001_box.md「OpenFOAM側での計算」)の手順を一括実行するスクリプト。
+#------------------------------------------------------------------------------
+
+# 前回分を掃除(0/ と 0.orig 相当の初期場はそのまま使う)
+chmod -R u+w constant/polyMesh 2>/dev/null
+rm -rf constant/polyMesh log.* postProcessing
+find . -maxdepth 1 -name '[1-9]*' -type d -exec rm -rf {} + 2>/dev/null
+
+runApplication ideasUnvToFoam Mesh_4.unv
+runApplication transformPoints "scale=(0.001 0.001 0.001)"
+
+# UNV変換直後は全パッチが type patch なので、実際の境界タイプへ変更する
+# (topAndbottom は empty=2次元扱い、side は wall)
+foamDictionary constant/polyMesh/boundary -entry entry0/topAndbottom/type -set empty > /dev/null
+foamDictionary constant/polyMesh/boundary -entry entry0/side/type -set wall > /dev/null
+
+runApplication checkMesh
+
+runApplication foamRun
+
+touch post.foam
+#------------------------------------------------------------------------------

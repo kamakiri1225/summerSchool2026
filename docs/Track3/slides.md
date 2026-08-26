@@ -275,7 +275,7 @@ SALOMEで直方体モデルを作成し、OpenFOAMで使える境界名つきメ
 
 | フォルダ | 内容 |
 |----------|------|
-| `data/001_box/run001_of13` | SALOMEから出力した `Mesh_4.unv` と、OpenFOAM 13で流体解析を行うケース一式（`0`・`constant`・`system`、収束後の結果 `90/`） |
+| `data/001_box/run001_of13` | SALOMEから出力した `Mesh_4.unv` と、OpenFOAM 13で流体解析を行うケース一式（`0`・`constant`・`system`、収束後の結果 `90/`）。`./Allrun` で一括実行できる |
 | `data/001_box/run001_of2512` | 同じ解析をESI版OpenFOAM（v2512）の `simpleFoam` で行うケース一式（`./Allrun` で一括実行、収束後の結果 `80/`） |
 
 
