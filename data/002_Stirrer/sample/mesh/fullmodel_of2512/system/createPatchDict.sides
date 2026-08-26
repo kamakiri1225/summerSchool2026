@@ -1,0 +1,28 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   A nd           | Version:  v2512                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      createPatchDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+// topoSet で抜き出した両放射側面を side_0deg / side_60deg パッチにする。
+// 回転コピー後の stitchMesh で、この2パッチ同士を貼り合わせて内部面に戻す。
+
+pointSync false;
+
+patches
+(
+    { name side_0deg;  patchInfo { type patch; } constructFrom set; set side0Faces; }
+    { name side_60deg; patchInfo { type patch; } constructFrom set; set side60Faces; }
+);
+
+// ************************************************************************* //

@@ -1,0 +1,95 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   A nd           | Version:  v2512                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      topoSetDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+// 1/6セクター(θ=0〜60°)の両放射側面を faceSet として抜き出す。
+// ESI版では羽根(wall_wing系)がθ=0°面上の別パッチになっており、θ=60°面には
+// 羽根の「裏側」に相当する面が羽根footprint位置に含まれる。stitchで貼り
+// 合わせるのは羽根以外の部分なので、θ=60°側から羽根footprint(2枚×480面)を
+// 取り除き、両側を同じ8,544面に対称化する。
+// (回転箱はcell版しか無いため、footprintに接するセルを rotatedBoxToCell で
+//  拾い、cellToFace 経由で面を除く)
+
+actions
+(
+    {
+        name    side0Faces;
+        type    faceSet;
+        action  new;
+        source  patchToFace;
+        sourceInfo { patch defaultFaces; }
+    }
+    {
+        name    side0Faces;
+        type    faceSet;
+        action  subset;
+        source  normalToFace;
+        sourceInfo { normal (0 -1 0); cos 0.01; }
+    }
+
+    {
+        name    side60Faces;
+        type    faceSet;
+        action  new;
+        source  patchToFace;
+        sourceInfo { patch defaultFaces; }
+    }
+    {
+        name    side60Faces;
+        type    faceSet;
+        action  subset;
+        source  normalToFace;
+        sourceInfo { normal (-0.8660254 0.5 0); cos 0.01; }
+    }
+
+    // 羽根footprint(z=0.0125-0.0175)に接するセル
+    {
+        name    wingFootCells;
+        type    cellSet;
+        action  new;
+        source  rotatedBoxToCell;
+        origin  (0.0067316 0.0076466 0.01249);
+        i       (0.0075100 0.0130077 0);
+        j       (-0.0017321 0.0010000 0);
+        k       (0 0 0.00502);
+    }
+    // 羽根footprint(z=0.0325-0.0375)に接するセル
+    {
+        name    wingFootCells;
+        type    cellSet;
+        action  add;
+        source  rotatedBoxToCell;
+        origin  (0.0067316 0.0076466 0.03249);
+        i       (0.0075100 0.0130077 0);
+        j       (-0.0017321 0.0010000 0);
+        k       (0 0 0.00502);
+    }
+    {
+        name    wingFootFaces;
+        type    faceSet;
+        action  new;
+        source  cellToFace;
+        sourceInfo { set wingFootCells; option all; }
+    }
+    {
+        name    side60Faces;
+        type    faceSet;
+        action  subtract;
+        source  faceToFace;
+        sourceInfo { set wingFootFaces; }
+    }
+);
+
+// ************************************************************************* //

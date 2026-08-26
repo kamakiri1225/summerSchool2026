@@ -1,0 +1,100 @@
+#!/bin/sh
+cd "${0%/*}" || exit
+. ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions
+#------------------------------------------------------------------------------
+# ESI版OpenFOAM(v2512)用: 1/6セクターを60°ずつ回転コピーして6個結合し、
+# 放射側面を stitchMesh で貼り合わせて全周(360°)の連続メッシュにする。
+# 基準セクター = ../mesh_of2512 の出力(未変形・バッフル済み)。
+# 注意: ESI版では羽根がセクター境界面上のパッチ(wall_wing系)になるため、
+#       変形済みセクターは羽根根本で境界面が歪み、隣接セクターと幾何が
+#       合わなくなって stitch できない。そのためESI版のフルモデルは
+#       「未変形」セクターで組み立てる(変形込みは fullmodel_of13 を参照)。
+# Foundation版(fullmodel_of13)との差:
+#   - mergeMeshes は「mergeMeshes <master> <add>」の2ケース形式(逐次実行)
+#   - stitchMesh は「-perfect side_0deg side_60deg」の2引数形式
+# drvfs(/mnt/*)対策はFoundation版と同じ: 回転は transformPoints を使わず、
+# points を rotatePointsTo.py で新規書き出しする。topoSet はリトライする。
+#------------------------------------------------------------------------------
+SEC=../mesh_of2512/constant/polyMesh
+
+export FOAM_SIGFPE=false
+
+# 前回分を掃除(drvfsの読み取り専用対策で chmod してから削除)
+chmod -R u+w constant/polyMesh sec1 sec2 sec3 sec4 sec5 2>/dev/null
+rm -rf constant/polyMesh sec1 sec2 sec3 sec4 sec5 log.* 0.[0-9]*
+
+# 基準(0°)セクターを配置(setsは持ち込まない)。drvfsではcpが確率的に
+# 失敗することがあるため、コピー後に存在を検証してリトライする。
+mkdir -p constant/polyMesh
+for f in points faces owner neighbour boundary faceZones cellZones pointZones; do
+    [ -f "$SEC/$f" ] || continue
+    n=1
+    while [ $n -le 5 ]; do
+        chmod u+w "constant/polyMesh/$f" 2>/dev/null
+        rm -f "constant/polyMesh/$f" 2>/dev/null
+        cp "$SEC/$f" constant/polyMesh/ 2>/dev/null
+        [ -s "constant/polyMesh/$f" ] && break
+        echo "copy of $f failed (drvfs) - retry $n"
+        sleep 1
+        n=$((n + 1))
+    done
+    [ -s "constant/polyMesh/$f" ] || { echo "cannot copy $f"; exit 1; }
+done
+
+# 基準セクターの両放射側面を side_0deg / side_60deg パッチに切り出す
+i=1
+while [ $i -le 5 ]; do
+    rm -rf constant/polyMesh/sets log.topoSet
+    topoSet -dict system/topoSetDict.sides > log.topoSet 2>&1
+    grep -q "Failed writing" log.topoSet || break
+    echo "topoSet: write failure detected (drvfs) - retry $i"
+    i=$((i + 1))
+done
+runApplication createPatch -dict system/createPatchDict.sides -overwrite
+
+# θ=60°面の点をθ=0°面の点の+60°回転値へ厳密スナップする
+# (回転コピー後の界面点を計算機精度で一致させ stitchMesh -perfect を通すため)
+python3 system/snapSides.py constant/polyMesh/points constant/polyMesh/points.snap \
+    > log.snapSides 2>&1 || { cat log.snapSides; exit 1; }
+chmod u+w constant/polyMesh/points 2>/dev/null
+rm -f constant/polyMesh/points
+n=1
+while [ $n -le 5 ]; do
+    cp constant/polyMesh/points.snap constant/polyMesh/points 2>/dev/null
+    [ -s constant/polyMesh/points ] && break
+    echo "points snap copy failed (drvfs) - retry $n"; sleep 1
+    n=$((n + 1))
+done
+[ -s constant/polyMesh/points ] || { echo "cannot install snapped points"; exit 1; }
+rm -f constant/polyMesh/points.snap
+cat log.snapSides
+
+# 60/120/180/240/300°の回転コピーを sec1〜sec5 に作成
+# (トポロジ系ファイルは流用し、points だけ回転させて新規書き出し)
+for k in 1 2 3 4 5; do
+    ang=$((k * 60))
+    mkdir -p sec$k/constant/polyMesh sec$k/system
+    for f in faces owner neighbour boundary faceZones cellZones pointZones; do
+        [ -f constant/polyMesh/$f ] && cp constant/polyMesh/$f sec$k/constant/polyMesh/
+    done
+    cp system/controlDict sec$k/system/
+    python3 system/rotatePointsTo.py \
+        constant/polyMesh/points sec$k/constant/polyMesh/points "$ang"
+done
+
+# 6セクターを1つに結合(v2512のmergeMeshesは2ケースずつ逐次実行)
+for k in 1 2 3 4 5; do
+    mergeMeshes . sec$k -overwrite > log.mergeMeshes.sec$k 2>&1 || exit 1
+done
+
+# 隣り合うセクターの放射面(side_0deg と side_60deg)を貼り合わせ、内部面に戻す
+runApplication stitchMesh -perfect -overwrite side_0deg side_60deg
+
+runApplication checkMesh -constant
+
+# 一時セクターを掃除
+chmod -R u+w sec1 sec2 sec3 sec4 sec5 2>/dev/null
+rm -rf sec1 sec2 sec3 sec4 sec5
+
+touch post.foam
+#------------------------------------------------------------------------------

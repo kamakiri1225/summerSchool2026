@@ -1679,6 +1679,14 @@ aria-hidden="true">フルモデル内部のヘキサメッシュと全周の羽�
 <ul>
 <li>上記の一連の手順は、<code>fullmodel_of13/Allrun</code>
 にまとめてある（<code>./Allrun</code> で再生成できる）。</li>
+<li>ESI版OpenFOAM（v2512など）用には <code>fullmodel_of2512</code>
+フォルダがある（先に <code>mesh_of2512</code> を実行してから
+<code>./Allrun</code>）。v2512では <code>mergeMeshes</code>
+が2ケースずつの逐次実行、stitchは <code>stitchMesh -perfect</code>
+になるなど手順が異なる（詳細は同フォルダの <code>Allrun</code>
+を参照）。また、ESI版では羽根がセクター境界面上にあり変形すると隣接セクターと幾何が合わなくなるため、<strong>v2512のフルモデルは未変形セクターで組み立てる</strong>（<code>Number of regions: 1</code>・<code>Mesh OK</code>
+の連続メッシュになる）。曲がった羽根のフルモデルは
+<code>fullmodel_of13</code> を使う。</li>
 <li>この方法（セクターをOpenFOAM側で回転コピー＋stitch）は、変形済みセクターから全周モデルを組み立てる手軽な手段である。一方で、最初から整った全周メッシュが欲しいだけなら、次のようなやり方もある。
 <ul>
 <li><strong>SALOMEで最初から全周360°をメッシュする</strong>（タンク＋6枚の羽根を含む全体形状を1つの連続メッシュとして生成する）。接合面がそもそも存在しないので、最初から1つにつながっている。</li>
