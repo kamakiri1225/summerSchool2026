@@ -5,30 +5,35 @@ html {
 
 body {
   margin: 0 auto;
-  max-width: 1180px;
-  padding: 36px 48px 80px;
-  line-height: 1.75;
+  max-width: 1080px;
+  padding: 32px 44px 72px;
+  font-size: 14.5px;
+  line-height: 1.7;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans JP", "Hiragino Sans", Meiryo, sans-serif;
 }
 
 h1 {
+  font-size: 1.7rem;
   border-bottom: 3px solid #333;
   padding-bottom: 0.35rem;
 }
 
 h2 {
-  margin-top: 3rem;
+  font-size: 1.4rem;
+  margin-top: 2.6rem;
   border-bottom: 1px solid #bbb;
   padding-bottom: 0.25rem;
 }
 
 h3 {
-  margin-top: 2.4rem;
+  font-size: 1.18rem;
+  margin-top: 2.2rem;
   color: #1f3a5f;
 }
 
 h4 {
-  margin-top: 2rem;
+  font-size: 1.05rem;
+  margin-top: 1.8rem;
 }
 
 img {
