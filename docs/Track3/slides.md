@@ -132,7 +132,7 @@ Shaper / GEOM で作成したジオメトリからメッシュを生成するモ
 
 ---
 
-![構造格子と非構造格子のセル形状](img/000_salome/mesh_concept.png)
+![構造格子と非構造格子のセル形状](img/000_salome/mesh_concept.svg)
 
 
 ---
