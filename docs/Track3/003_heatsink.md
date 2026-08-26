@@ -413,6 +413,8 @@ foamMultiRun > log.foamMultiRun.of13 2>&1
 - v2512の参照ケースと同じ `maxCo 100` を使用する。OpenFOAM 13の固体ソルバは `maxDi` を直接読まないため、参照計算の `maxDi 100` に相当する `maxDeltaT 0.0217` 秒を設定している。
 - `system/controlDict` の設定により、時刻 `2` から `60` まで2秒間隔で結果を書き出す。
 - 流入条件は `U = (0 -0.5 0) m/s`（y方向へ0.5 m/s）、初期温度は `293.15 K` としている。発熱源の設定は `constant/heatSource/fvModels`、各リージョンの境界条件は `system/<region>/changeDictionaryDict` を参照する。
+- 補足: OpenFOAM 13の `foamMultiRun` は、初期の過渡でフィン近傍の境界層セルに負温度・速度スパイクが発生して発散する（v2512の `chtMultiRegionFoam` は同条件で安定）。このため `system/box/fvConstraints` に温度制限（`limitTemperature` 280〜400 K）と速度制限（`limitMag` 5 m/s）を設定して安定化している。
+- なお、`setup.sh` から計算実行までは `./Allrun` で一括実行できる（v2512側の `run001_of2512` も同様）。計算は数時間かかるが、途中で止めても `./Allrun` の再実行で続きから計算される。
 
 ### 計算結果の確認
 

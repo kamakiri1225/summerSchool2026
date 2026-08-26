@@ -244,6 +244,7 @@ SALOME で作成したメッシュを OpenFOAM 形式に変換して利用する
 | 演習 | データフォルダ | 内容 |
 |------|----------------|------|
 | 001 Box | `data/001_box/run001_of13` | `Mesh_4.unv`、OpenFOAM 13の定常流体解析ケース（結果 `90/`） |
+| 001 Box | `data/001_box/run001_of2512` | 同じ解析のESI版OpenFOAM（v2512）ケース（`simpleFoam`、結果 `80/`） |
 | 002 撹拌機 | `data/002_Stirrer/sample/mesh/mesh_of13` | `Mesh_1.unv`、UNV変換・topoSet・createBafflesのケース |
 | 002 撹拌機 | `data/002_Stirrer/sample/mesh/master_curve_of13` | 羽根可動化テスト（moveDynamicMesh）のケース |
 | 002 撹拌機 | `data/002_Stirrer/sample/mesh/fullmodel_of13` | 全周（360°）フルモデル組み立てのケース |
@@ -275,6 +276,7 @@ SALOMEで直方体モデルを作成し、OpenFOAMで使える境界名つきメ
 | フォルダ | 内容 |
 |----------|------|
 | `data/001_box/run001_of13` | SALOMEから出力した `Mesh_4.unv` と、OpenFOAM 13で流体解析を行うケース一式（`0`・`constant`・`system`、収束後の結果 `90/`） |
+| `data/001_box/run001_of2512` | 同じ解析をESI版OpenFOAM（v2512）の `simpleFoam` で行うケース一式（`./Allrun` で一括実行、収束後の結果 `80/`） |
 
 
 ---
@@ -2698,6 +2700,8 @@ foamMultiRun > log.foamMultiRun.of13 2>&1
 - v2512の参照ケースと同じ `maxCo 100` を使用する。OpenFOAM 13の固体ソルバは `maxDi` を直接読まないため、参照計算の `maxDi 100` に相当する `maxDeltaT 0.0217` 秒を設定している。
 - `system/controlDict` の設定により、時刻 `2` から `60` まで2秒間隔で結果を書き出す。
 - 流入条件は `U = (0 -0.5 0) m/s`（y方向へ0.5 m/s）、初期温度は `293.15 K` としている。発熱源の設定は `constant/heatSource/fvModels`、各リージョンの境界条件は `system/<region>/changeDictionaryDict` を参照する。
+- 補足: OpenFOAM 13の `foamMultiRun` は、初期の過渡でフィン近傍の境界層セルに負温度・速度スパイクが発生して発散する（v2512の `chtMultiRegionFoam` は同条件で安定）。このため `system/box/fvConstraints` に温度制限（`limitTemperature` 280〜400 K）と速度制限（`limitMag` 5 m/s）を設定して安定化している。
+- なお、`setup.sh` から計算実行までは `./Allrun` で一括実行できる（v2512側の `run001_of2512` も同様）。計算は数時間かかるが、途中で止めても `./Allrun` の再実行で続きから計算される。
 
 
 ---

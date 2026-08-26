@@ -587,21 +587,27 @@ aria-hidden="true">SALOMEからOpenFOAMへの連携フロー</figcaption>
 <code>90/</code>）</td>
 </tr>
 <tr class="even">
+<td>001 Box</td>
+<td><code>data/001_box/run001_of2512</code></td>
+<td>同じ解析のESI版OpenFOAM（v2512）ケース（<code>simpleFoam</code>、結果
+<code>80/</code>）</td>
+</tr>
+<tr class="odd">
 <td>002 撹拌機</td>
 <td><code>data/002_Stirrer/sample/mesh/mesh_of13</code></td>
 <td><code>Mesh_1.unv</code>、UNV変換・topoSet・createBafflesのケース</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>002 撹拌機</td>
 <td><code>data/002_Stirrer/sample/mesh/master_curve_of13</code></td>
 <td>羽根可動化テスト（moveDynamicMesh）のケース</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>002 撹拌機</td>
 <td><code>data/002_Stirrer/sample/mesh/fullmodel_of13</code></td>
 <td>全周（360°）フルモデル組み立てのケース</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>003 ヒートシンク</td>
 <td><code>data/003_heatsink/run001_of13</code></td>
 <td><code>Mesh_1.unv</code>、OpenFOAM 13の熱流体・固体連成ケース</td>
@@ -652,6 +658,12 @@ class="title-slide slide level1">
 <td>SALOMEから出力した <code>Mesh_4.unv</code> と、OpenFOAM
 13で流体解析を行うケース一式（<code>0</code>・<code>constant</code>・<code>system</code>、収束後の結果
 <code>90/</code>）</td>
+</tr>
+<tr class="even">
+<td><code>data/001_box/run001_of2512</code></td>
+<td>同じ解析をESI版OpenFOAM（v2512）の <code>simpleFoam</code>
+で行うケース一式（<code>./Allrun</code> で一括実行、収束後の結果
+<code>80/</code>）</td>
 </tr>
 </tbody>
 </table>
@@ -4753,6 +4765,17 @@ m/s）、初期温度は <code>293.15 K</code> としている。発熱源の設
 <code>constant/heatSource/fvModels</code>、各リージョンの境界条件は
 <code>system/&lt;region&gt;/changeDictionaryDict</code>
 を参照する。</li>
+<li>補足: OpenFOAM 13の <code>foamMultiRun</code>
+は、初期の過渡でフィン近傍の境界層セルに負温度・速度スパイクが発生して発散する（v2512の
+<code>chtMultiRegionFoam</code> は同条件で安定）。このため
+<code>system/box/fvConstraints</code>
+に温度制限（<code>limitTemperature</code> 280〜400
+K）と速度制限（<code>limitMag</code> 5
+m/s）を設定して安定化している。</li>
+<li>なお、<code>setup.sh</code> から計算実行までは <code>./Allrun</code>
+で一括実行できる（v2512側の <code>run001_of2512</code>
+も同様）。計算は数時間かかるが、途中で止めても <code>./Allrun</code>
+の再実行で続きから計算される。</li>
 </ul>
 </section>
 <section class="slide level2">

@@ -37,7 +37,7 @@ SALOMEには、プラットフォーム本体の **SALOME** と、構造解析�
 
 | 演習 | データフォルダ |
 |------|----------------|
-| 001 Box | `data/001_box/run001_of13` |
+| 001 Box | `data/001_box/run001_of13`（OpenFOAM 13）、`data/001_box/run001_of2512`（v2512） |
 | 002 撹拌機 | `data/002_Stirrer/sample/mesh/mesh_of13`（メッシュ変換・バッフル作成）、`data/002_Stirrer/sample/mesh/master_curve_of13`（羽根可動化テスト）、`data/002_Stirrer/sample/mesh/fullmodel_of13`（全周フルモデル組み立て） |
 | 003 ヒートシンク | `data/003_heatsink/run001_of13` |
 

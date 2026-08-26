@@ -885,6 +885,17 @@ m/s）、初期温度は <code>293.15 K</code> としている。発熱源の設
 <code>constant/heatSource/fvModels</code>、各リージョンの境界条件は
 <code>system/&lt;region&gt;/changeDictionaryDict</code>
 を参照する。</li>
+<li>補足: OpenFOAM 13の <code>foamMultiRun</code>
+は、初期の過渡でフィン近傍の境界層セルに負温度・速度スパイクが発生して発散する（v2512の
+<code>chtMultiRegionFoam</code> は同条件で安定）。このため
+<code>system/box/fvConstraints</code>
+に温度制限（<code>limitTemperature</code> 280〜400
+K）と速度制限（<code>limitMag</code> 5
+m/s）を設定して安定化している。</li>
+<li>なお、<code>setup.sh</code> から計算実行までは <code>./Allrun</code>
+で一括実行できる（v2512側の <code>run001_of2512</code>
+も同様）。計算は数時間かかるが、途中で止めても <code>./Allrun</code>
+の再実行で続きから計算される。</li>
 </ul>
 <h3 id="計算結果の確認">計算結果の確認</h3>
 <figure>

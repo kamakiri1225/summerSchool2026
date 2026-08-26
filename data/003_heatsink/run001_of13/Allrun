@@ -1,5 +1,23 @@
-#!/bin/bash
-set -euo pipefail
-cd "$(dirname "$0")"
-bash setup.sh
+#!/bin/sh
+cd "${0%/*}" || exit
+#------------------------------------------------------------------------------
+# 003 Heatsink (OpenFOAM 13): メッシュ変換〜ケース設定(setup.sh)〜計算まで一括実行
+#   - setup.sh: UNV変換 → スケール変換 → リージョン分割 → 境界条件設定
+#   - foamMultiRun: 流体(box)+固体(heatSink/heatSource/basis)の連成計算
+# 注意: 計算はフルで数時間かかる(endTime 60)。途中で止めても
+#       startFrom latestTime なので ./Allrun の再実行で続きから計算される。
+#------------------------------------------------------------------------------
+
+if [ -z "$WM_PROJECT_VERSION" ] || [ "$WM_PROJECT_VERSION" != "13" ]; then
+    echo "ERROR: OpenFOAM 13 environment is required."
+    echo "  source /opt/openfoam13/etc/bashrc"
+    exit 1
+fi
+
+# メッシュがまだ無ければセットアップを実行
+if [ ! -d constant/box/polyMesh ]; then
+    bash setup.sh
+fi
+
 foamMultiRun 2>&1 | tee log.foamMultiRun.of13
+#------------------------------------------------------------------------------

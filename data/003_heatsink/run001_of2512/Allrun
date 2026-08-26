@@ -1,0 +1,21 @@
+#!/bin/sh
+cd "${0%/*}" || exit
+#------------------------------------------------------------------------------
+# 003 Heatsink (ESI版 OpenFOAM v2512): setup.sh 〜 chtMultiRegionFoam を一括実行
+# 注意: 計算はフルで1時間程度かかる(endTime 60)。途中で止めても
+#       startFrom latestTime なので ./Allrun の再実行で続きから計算される。
+#------------------------------------------------------------------------------
+
+if [ -z "$WM_PROJECT_VERSION" ]; then
+    echo "ERROR: OpenFOAM (v2512) environment is required."
+    echo "  source /usr/lib/openfoam/openfoam2512/etc/bashrc"
+    exit 1
+fi
+
+# メッシュがまだ無ければセットアップを実行
+if [ ! -d constant/box/polyMesh ]; then
+    bash setup.sh
+fi
+
+chtMultiRegionFoam 2>&1 | tee log.chtMultiRegionFoam
+#------------------------------------------------------------------------------

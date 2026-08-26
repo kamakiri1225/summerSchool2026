@@ -1,0 +1,33 @@
+#!/bin/sh
+cd "${0%/*}" || exit                                # Run from this directory
+. ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions        # Tutorial run functions
+#------------------------------------------------------------------------------
+# ESI版OpenFOAM(v2512)用: 001 Box 演習
+#   UNV変換 → mm→mスケール変換 → 境界タイプ修正 → checkMesh → simpleFoam
+# Foundation版(OpenFOAM 13, run001_of13)との差:
+#   - transformPoints は -scale オプション (13では "scale=(...)")
+#   - ソルバは simpleFoam (13では foamRun + solver incompressibleFluid)
+#------------------------------------------------------------------------------
+
+# 前回分を掃除(drvfsの読み取り専用対策で chmod してから削除)
+chmod -R u+w constant/polyMesh 0 2>/dev/null
+rm -rf constant/polyMesh 0 log.* postProcessing
+find . -maxdepth 1 -name '[1-9]*' -type d -exec rm -rf {} + 2>/dev/null
+
+runApplication ideasUnvToFoam Mesh_4.unv
+runApplication transformPoints -scale "(0.001 0.001 0.001)"
+
+# UNV変換直後は全パッチが type patch なので、実際の境界タイプへ変更する
+# (topAndbottom は empty=2次元扱い、side は wall)
+foamDictionary constant/polyMesh/boundary -entry entry0/topAndbottom/type -set empty > /dev/null
+foamDictionary constant/polyMesh/boundary -entry entry0/side/type -set wall > /dev/null
+
+runApplication checkMesh
+
+rm -rf 0
+cp -r 0.orig 0
+
+runApplication simpleFoam
+
+touch post.foam
+#------------------------------------------------------------------------------
