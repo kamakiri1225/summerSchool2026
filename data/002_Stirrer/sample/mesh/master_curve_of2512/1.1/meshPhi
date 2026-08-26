@@ -27,6 +27,26 @@ boundaryField
         type            calculated;
         value           uniform 0;
     }
+    wall_wing_master
+    {
+        type            calculated;
+        value           uniform 0;
+    }
+    wall_wing_slave
+    {
+        type            calculated;
+        value           uniform 0;
+    }
+    wall_wing2_master
+    {
+        type            calculated;
+        value           uniform 0;
+    }
+    wall_wing2_slave
+    {
+        type            calculated;
+        value           uniform 0;
+    }
     wall_circ_z015_master
     {
         type            calculated;
@@ -43,16 +63,6 @@ boundaryField
         value           uniform 0;
     }
     wall_circ_z035_slave
-    {
-        type            calculated;
-        value           uniform 0;
-    }
-    wall_wing
-    {
-        type            calculated;
-        value           uniform 0;
-    }
-    wall_wing2
     {
         type            calculated;
         value           uniform 0;

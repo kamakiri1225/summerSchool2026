@@ -26,7 +26,7 @@ git clone https://github.com/kamakiri1225/summerSchool2026.git
 | `data/002_Stirrer/sample/mesh/fullmodel_of13` | OpenFOAM 13 | `./Allrun`（※先に `master_curve_of13` を実行しておく） |
 | `data/002_Stirrer/sample/mesh/mesh_of2512` | OpenFOAM v2512 | `./Allrun` |
 | `data/002_Stirrer/sample/mesh/master_curve_of2512` | OpenFOAM v2512 | `./Allrun` |
-| `data/002_Stirrer/sample/mesh/fullmodel_of2512` | OpenFOAM v2512 | `./Allrun`（※先に `mesh_of2512` を実行しておく。未変形セクターの全周結合） |
+| `data/002_Stirrer/sample/mesh/fullmodel_of2512` | OpenFOAM v2512 | `./Allrun`（※先に `mesh_of2512` → `master_curve_of2512` を実行しておく） |
 | `data/003_heatsink/run001_of13` | OpenFOAM 13 | `./Allrun`（setup.sh〜foamMultiRun。計算は数時間） |
 | `data/003_heatsink/run001_of2512` | OpenFOAM v2512 | `./Allrun`（setup.sh〜chtMultiRegionFoam。計算は1時間程度） |
 

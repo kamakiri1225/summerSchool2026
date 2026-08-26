@@ -50,11 +50,11 @@
 | フォルダ | 内容 |
 |----------|------|
 | `data/002_Stirrer/sample/mesh/mesh_of13` | SALOMEから出力した `Mesh_1.unv` と、UNV変換・topoSet・createBaffles を行うOpenFOAMケース（OpenFOAM 13） |
-| `data/002_Stirrer/sample/mesh/mesh_of2512` | 同上のESI版OpenFOAM（v2512）ケース（羽根はtopoSet＋createPatchでパッチ化） |
+| `data/002_Stirrer/sample/mesh/mesh_of2512` | 同上のESI版OpenFOAM（v2512）ケース |
 | `data/002_Stirrer/sample/mesh/master_curve_of13` | 羽根の可動化テスト（moveDynamicMesh）用のOpenFOAMケース（OpenFOAM 13） |
 | `data/002_Stirrer/sample/mesh/master_curve_of2512` | 同上のESI版OpenFOAM（v2512）ケース |
 | `data/002_Stirrer/sample/mesh/fullmodel_of13` | 変形済みセクターを回転コピー・結合して全周（360°）フルモデルを組み立てるOpenFOAMケース（OpenFOAM 13） |
-| `data/002_Stirrer/sample/mesh/fullmodel_of2512` | 同上のESI版OpenFOAM（v2512）ケース（未変形セクターで組み立て） |
+| `data/002_Stirrer/sample/mesh/fullmodel_of2512` | 同上のESI版OpenFOAM（v2512）ケース |
 
 ---
 
@@ -560,9 +560,7 @@ checkMesh > log.checkMesh.final 2>&1
 
 なお、同フォルダには上記一連の処理をまとめた `Allrun` スクリプトがあり、`./Allclean && ./Allrun` で最初から一括再実行できる。
 
-ESI版OpenFOAM（v2512など）で試す場合は、`mesh_of2512` フォルダに同じ処理のv2512用ケース一式がある（`transformPoints -scale "(0.001 0.001 0.001)"`、`createBafflesDict` の `patchPairs` 形式など、一部の構文が異なる）。
-
-> **注意（ESI版の `ideasUnvToFoam` の挙動差）**: ESI版の `ideasUnvToFoam` は、UNVに含まれる2Dシート要素（羽根・仕切り板のシェル面）を最初から**境界面として変換**する（Foundation版は内部面のまま残す）。このため、Foundation版と同じ「topoSetで内部面を拾って `createBaffles` でバッフル化する」手順では、**羽根の面が内部面として見つからず、バッフルが0面になる**。`mesh_of2512` の `Allrun` では、この差への対応として羽根の境界面を `topoSet`＋`createPatch` で `wall_wing` / `wall_wing2` パッチへ移すステップを追加している（仕切り板 circ 系は内部面なので `createBaffles` で変換できる）。本講義のOpenFOAM側の手順の解説は **OpenFOAM 13（Foundation版）を前提**とする。
+ESI版OpenFOAM（v2512など）で試す場合は、`mesh_of2512` フォルダに同じ処理のv2512用ケース一式がある。構文がいくつか異なる（`transformPoints -scale "(0.001 0.001 0.001)"`、`createBafflesDict` の `patchPairs` 形式）。また、羽根シート（θ=30°面）の選択に使っている `rotatedBoxToFace` がESI版には無いため、`topoSetDict.wing` では代わりに**羽根シートの両側のセルを `rotatedBoxToCell` で拾い、「両方のセル集合に属する面＝シート面」として挟み撃ちで選択**している（結果はFoundation版と同じ480面×2枚）。
 
 各コマンドの役割は以下の通り。
 
@@ -750,7 +748,7 @@ stitchMesh -latestTime "((rotorPin_master rotorPin_slave))"
 
 こうしてできた「壁のない・羽根が曲がった変形済みメッシュ」（`master_curve_of13` の最終時刻 `1/`）が、次のフルモデル組み立ての**基準セクター**になる。以上のpin→変形→壁戻しの一連の処理は `master_curve_of13/Allrun` にまとめてある。
 
-ESI版OpenFOAM（v2512など）には `master_curve_of2512` フォルダにv2512用ケースがある。構文がいくつか異なる（`topoSet` のfaceSet削除は `subtract`、`stitchMesh` は `stitchMesh -perfect rotorPin_master rotorPin_slave` の2引数形式、最終時刻への適用は `startFrom latestTime` への切り替えが必要）。`./Allrun` で羽根の変形（先端4 mm）・rotor固定・stitchまで動作する。ただし前述のESI版 `ideasUnvToFoam` の挙動差により羽根がセクター境界面の一部になるため、**変形後に羽根先端の縁で少数（32/223,776面）の高歪み面が発生**し `checkMesh` が警告を出す。きれいな品質が必要な場合は OpenFOAM 13（`master_curve_of13`）を使う。
+ESI版OpenFOAM（v2512など）には `master_curve_of2512` フォルダにv2512用ケースがある。構文がいくつか異なる（`topoSet` のfaceSet削除は `subtract`、`stitchMesh` は `stitchMesh -perfect rotorPin_master rotorPin_slave` の2引数形式、最終時刻への適用は `startFrom latestTime` への切り替えが必要）。`./Allrun` で羽根の変形（先端4 mm）・rotor固定・stitch（壁戻し）まで一括実行でき、Foundation版と同じく `Mesh OK` の一体メッシュになる。
 
 ### フルモデルの組み立て（回転コピー＋結合）
 
@@ -869,7 +867,7 @@ checkMesh
 ![フルモデル内部のヘキサメッシュと全周の羽根](img/002_stirrer/フルモデル.png)
 
 - 上記の一連の手順は、`fullmodel_of13/Allrun` にまとめてある（`./Allrun` で再生成できる）。
-- ESI版OpenFOAM（v2512など）用には `fullmodel_of2512` フォルダがある（先に `mesh_of2512` を実行してから `./Allrun`）。v2512では `mergeMeshes` が2ケースずつの逐次実行、stitchは `stitchMesh -perfect` になるなど手順が異なる（詳細は同フォルダの `Allrun` を参照）。また、ESI版では羽根がセクター境界面上にあり変形すると隣接セクターと幾何が合わなくなるため、**v2512のフルモデルは未変形セクターで組み立てる**（`Number of regions: 1`・`Mesh OK` の連続メッシュになる）。曲がった羽根のフルモデルは `fullmodel_of13` を使う。
+- ESI版OpenFOAM（v2512など）用には `fullmodel_of2512` フォルダがある（先に `mesh_of2512` → `master_curve_of2512` を実行してから `./Allrun`）。Foundation版と同じく**変形済みセクター**から全周を組み立てる。v2512では `mergeMeshes` が2ケースずつの逐次実行、stitchは `stitchMesh -perfect`（点の完全一致が必要なため、θ=60°面の点をθ=0°面の+60°回転値へ厳密スナップしてから回転コピーする）など手順が異なる（詳細は同フォルダの `Allrun` を参照）。結果はFoundation版と同じく `Number of regions: 1`・`Mesh OK` の連続メッシュになる。
 - この方法（セクターをOpenFOAM側で回転コピー＋stitch）は、変形済みセクターから全周モデルを組み立てる手軽な手段である。一方で、最初から整った全周メッシュが欲しいだけなら、次のようなやり方もある。
     - **SALOMEで最初から全周360°をメッシュする**（タンク＋6枚の羽根を含む全体形状を1つの連続メッシュとして生成する）。接合面がそもそも存在しないので、最初から1つにつながっている。
     - **1セクター（60°）の両側面を cyclic（周期）境界にして、回転周期性で計算する**。フルモデルを作らずに1/6だけで解ける（撹拌計算では MRF/AMI とあわせてよく使われる定石）。

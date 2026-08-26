@@ -3,18 +3,12 @@ cd "${0%/*}" || exit                                # Run from this directory
 . ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions        # Tutorial run functions
 #------------------------------------------------------------------------------
 # ESI版OpenFOAM(v2512)用: UNV変換 → スケール変換 → topoSet → createBaffles
-#                        → 羽根境界面のパッチ化(createPatch)
-# Foundation版(OpenFOAM 13)との差:
+# Foundation版(OpenFOAM 13)との構文差:
 #   - transformPoints は -scale オプション (13では "scale=(...)")
 #   - createBafflesDict は patchPairs 形式 (13では owner/neighbour 明示)
-#   - ESI版 ideasUnvToFoam は UNVの2Dシート要素(羽根)を境界面(defaultFaces)へ
-#     変換するため、createBaffles では羽根をバッフル化できない。代わりに
-#     topoSet+createPatch で defaultFaces から羽根面を wall_wing / wall_wing2
-#     パッチへ移す(仕切り板 circ 系は内部面なので createBaffles で変換できる)。
+#   - 羽根シート(θ=30deg面)の選択は rotatedBoxToFace が無いため、
+#     rotatedBoxToCell の挟み撃ちで行う (system/topoSetDict.wing 参照)
 #------------------------------------------------------------------------------
-
-# v2512のcreatePatchはメッシュ移動処理でFPEを踏むことがあるためトラップを無効化
-export FOAM_SIGFPE=false
 
 # 前回分を掃除(drvfsの読み取り専用対策で chmod してから削除)
 chmod -R u+w constant/polyMesh 2>/dev/null
@@ -40,20 +34,6 @@ done
 grep -q "Failed writing" log.topoSet && { echo "topoSet failed repeatedly"; exit 1; }
 
 runApplication createBaffles -overwrite
-
-# 羽根の境界面(defaultFaces内)を wall_wing / wall_wing2 パッチへ移す
-i=1
-while [ $i -le 5 ]; do
-    rm -f log.topoSet.wingpatch
-    topoSet -dict system/topoSetDict.wingpatch > log.topoSet.wingpatch 2>&1
-    if ! grep -q "Failed writing" log.topoSet.wingpatch; then
-        break
-    fi
-    echo "topoSet(wingpatch): write failure detected (drvfs) - retry $i"
-    i=$((i + 1))
-done
-runApplication createPatch -dict system/createPatchDict.wing -overwrite
-
 runApplication -s final checkMesh
 
 touch post.foam

@@ -16,55 +16,69 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-7
+9
 (
     defaultFaces
     {
         type            patch;
-        nFaces          27504;
-        startFace       655944;
+        nFaces          28464;
+        startFace       654984;
+    }
+    wall_wing_master
+    {
+        type            wall;
+        inGroups        2(wall wall_wing);
+        nFaces          480;
+        startFace       683448;
+    }
+    wall_wing_slave
+    {
+        type            wall;
+        inGroups        2(wall wall_wing);
+        nFaces          480;
+        startFace       683928;
+    }
+    wall_wing2_master
+    {
+        type            wall;
+        inGroups        2(wall wall_wing2);
+        nFaces          480;
+        startFace       684408;
+    }
+    wall_wing2_slave
+    {
+        type            wall;
+        inGroups        2(wall wall_wing2);
+        nFaces          480;
+        startFace       684888;
     }
     wall_circ_z015_master
     {
         type            wall;
         inGroups        2(wall wall_circ_z015);
         nFaces          576;
-        startFace       683448;
+        startFace       685368;
     }
     wall_circ_z015_slave
     {
         type            wall;
         inGroups        2(wall wall_circ_z015);
         nFaces          576;
-        startFace       684024;
+        startFace       685944;
     }
     wall_circ_z035_master
     {
         type            wall;
         inGroups        2(wall wall_circ_z035);
         nFaces          576;
-        startFace       684600;
+        startFace       686520;
     }
     wall_circ_z035_slave
     {
         type            wall;
         inGroups        2(wall wall_circ_z035);
         nFaces          576;
-        startFace       685176;
-    }
-    wall_wing
-    {
-        type            wall;
-        inGroups        1(wall);
-        nFaces          480;
-        startFace       685752;
-    }
-    wall_wing2
-    {
-        type            wall;
-        inGroups        1(wall);
-        nFaces          480;
-        startFace       686232;
+        startFace       687096;
     }
 )
 

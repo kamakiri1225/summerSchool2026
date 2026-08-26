@@ -2,20 +2,19 @@
 cd "${0%/*}" || exit
 . ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions
 #------------------------------------------------------------------------------
-# ESI版OpenFOAM(v2512)用: 1/6セクターを60°ずつ回転コピーして6個結合し、
+# ESI版OpenFOAM(v2512)用: 変形済み1/6セクターを60°ずつ回転コピーして6個結合し、
 # 放射側面を stitchMesh で貼り合わせて全周(360°)の連続メッシュにする。
-# 基準セクター = ../mesh_of2512 の出力(未変形・バッフル済み)。
-# 注意: ESI版では羽根がセクター境界面上のパッチ(wall_wing系)になるため、
-#       変形済みセクターは羽根根本で境界面が歪み、隣接セクターと幾何が
-#       合わなくなって stitch できない。そのためESI版のフルモデルは
-#       「未変形」セクターで組み立てる(変形込みは fullmodel_of13 を参照)。
+# 基準セクター = ../master_curve_of2512 の最終メッシュ(1.1/polyMesh、
+#                変形済み・rotorPin除去済み)。
 # Foundation版(fullmodel_of13)との差:
 #   - mergeMeshes は「mergeMeshes <master> <add>」の2ケース形式(逐次実行)
-#   - stitchMesh は「-perfect side_0deg side_60deg」の2引数形式
+#   - stitchMesh は「-perfect side_0deg side_60deg」の2引数形式。絶対許容が
+#     厳しい(~1e-7m)ため、θ=60°面の点をθ=0°面の+60°回転値へ厳密スナップ
+#     してから回転コピーする(system/snapSides.py)
 # drvfs(/mnt/*)対策はFoundation版と同じ: 回転は transformPoints を使わず、
 # points を rotatePointsTo.py で新規書き出しする。topoSet はリトライする。
 #------------------------------------------------------------------------------
-SEC=../mesh_of2512/constant/polyMesh
+SEC=../master_curve_of2512/1.1/polyMesh
 
 export FOAM_SIGFPE=false
 

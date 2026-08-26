@@ -1,33 +1,108 @@
-    // まずfaceSetを作成
+// 新しいMesh_1.unvはセクターが0〜60degで再出力されており、
+// 羽根(wing)パーティション面はセクターの二等分線(30deg)上にある。
+// ESI版には rotatedBoxToFace が無いため、羽根シートの両側のセルを
+// rotatedBoxToCell で拾い、「両方のセル集合に属する面 = シート面」として
+// 挟み撃ちで選択する(480面、Foundation版と同数になる)。
+
+    // 下の羽根(z=0.0125-0.0175): シートの裏側セル
+    {
+        name    wingInCells;
+        type    cellSet;
+        action  new;
+        source  rotatedBoxToCell;
+        origin  (0.0094016 0.0036960 0.01245);
+        i       (0.0130077 0.0075100 0);
+        j       (-0.0007500 0.0012990 0);
+        k       (0 0 0.0051);
+    }
+    // シートの表側セル
+    {
+        name    wingOutCells;
+        type    cellSet;
+        action  new;
+        source  rotatedBoxToCell;
+        origin  (0.0086516 0.0049950 0.01245);
+        i       (0.0130077 0.0075100 0);
+        j       (-0.0007500 0.0012990 0);
+        k       (0 0 0.0051);
+    }
+    // 両セル集合に挟まれる面 = 羽根シート面
     {
         name    wingFaceSet;
         type    faceSet;
         action  new;
-        source  boxToFace;
-        box     (9.999e-3 -1.0e-8 0.0125)(25.0001e-3 1.0e-8 0.0175);
+        source  cellToFace;
+        sourceInfo { set wingInCells; option all; }
     }
-    // それを元に羽根の形状のfaceZoneを作成
+    {
+        name    wingFaceSet;
+        type    faceSet;
+        action  subset;
+        source  cellToFace;
+        sourceInfo { set wingOutCells; option all; }
+    }
+    // 念のため、羽根の垂直面(法線が30deg面に垂直)だけを残す
+    {
+        name    wingFaceSet;
+        type    faceSet;
+        action  subset;
+        source  normalToFace;
+        sourceInfo { normal (-0.5 0.8660254 0); cos 0.2; }
+    }
     {
         name    wingFaceZone;
         type    faceZoneSet;
         action  new;
         source  setToFaceZone;
-        faceSet wingFaceSet;
+        sourceInfo { faceSet wingFaceSet; }
     }
 
-        // まずfaceSetを作成
+    // 上の羽根(z=0.0325-0.0375): 同様に挟み撃ちで選択
+    {
+        name    wingInCells2;
+        type    cellSet;
+        action  new;
+        source  rotatedBoxToCell;
+        origin  (0.0094016 0.0036960 0.03245);
+        i       (0.0130077 0.0075100 0);
+        j       (-0.0007500 0.0012990 0);
+        k       (0 0 0.0051);
+    }
+    {
+        name    wingOutCells2;
+        type    cellSet;
+        action  new;
+        source  rotatedBoxToCell;
+        origin  (0.0086516 0.0049950 0.03245);
+        i       (0.0130077 0.0075100 0);
+        j       (-0.0007500 0.0012990 0);
+        k       (0 0 0.0051);
+    }
     {
         name    wingFaceSet2;
         type    faceSet;
         action  new;
-        source  boxToFace;
-        box     (9.999e-3 -1.0e-8 0.0325)(25.0001e-3 1.0e-8 0.0375);
+        source  cellToFace;
+        sourceInfo { set wingInCells2; option all; }
     }
-    // それを元に羽根の形状のfaceZoneを作成
+    {
+        name    wingFaceSet2;
+        type    faceSet;
+        action  subset;
+        source  cellToFace;
+        sourceInfo { set wingOutCells2; option all; }
+    }
+    {
+        name    wingFaceSet2;
+        type    faceSet;
+        action  subset;
+        source  normalToFace;
+        sourceInfo { normal (-0.5 0.8660254 0); cos 0.2; }
+    }
     {
         name    wingFaceZone2;
         type    faceZoneSet;
         action  new;
         source  setToFaceZone;
-        faceSet wingFaceSet2;
+        sourceInfo { faceSet wingFaceSet2; }
     }
