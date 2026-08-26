@@ -201,7 +201,11 @@ SALOME で作成したメッシュを OpenFOAM 形式に変換して利用する
 |------|----------------|------|
 | 001 Box | `data/001_box/run001_of13` | `Mesh_4.unv`、OpenFOAM 13の定常流体解析ケース（結果 `90/`） |
 | 001 Box | `data/001_box/run001_of2512` | 同じ解析のESI版OpenFOAM（v2512）ケース（`simpleFoam`、結果 `80/`） |
-| 002 撹拌機 | `data/002_Stirrer/sample/mesh/mesh_of13` | `Mesh_1.unv`、UNV変換・topoSet・createBafflesのケース |
-| 002 撹拌機 | `data/002_Stirrer/sample/mesh/master_curve_of13` | 羽根可動化テスト（moveDynamicMesh）のケース |
-| 002 撹拌機 | `data/002_Stirrer/sample/mesh/fullmodel_of13` | 全周（360°）フルモデル組み立てのケース |
-| 003 ヒートシンク | `data/003_heatsink/run001_of13` | `Mesh_1.unv`、OpenFOAM 13の熱流体・固体連成ケース |
+| 002 撹拌機 | `data/002_Stirrer/sample/mesh/mesh_of13` | `Mesh_1.unv`、UNV変換・topoSet・createBafflesのケース（OpenFOAM 13） |
+| 002 撹拌機 | `data/002_Stirrer/sample/mesh/mesh_of2512` | 同上のESI版OpenFOAM（v2512）ケース |
+| 002 撹拌機 | `data/002_Stirrer/sample/mesh/master_curve_of13` | 羽根可動化テスト（moveDynamicMesh）のケース（OpenFOAM 13） |
+| 002 撹拌機 | `data/002_Stirrer/sample/mesh/master_curve_of2512` | 同上のESI版OpenFOAM（v2512）ケース |
+| 002 撹拌機 | `data/002_Stirrer/sample/mesh/fullmodel_of13` | 全周（360°）フルモデル組み立てのケース（OpenFOAM 13、変形済み羽根） |
+| 002 撹拌機 | `data/002_Stirrer/sample/mesh/fullmodel_of2512` | 同上のESI版OpenFOAM（v2512）ケース（未変形セクターで組み立て） |
+| 003 ヒートシンク | `data/003_heatsink/run001_of13` | `Mesh_1.unv`、OpenFOAM 13の熱流体・固体連成ケース（`foamMultiRun`） |
+| 003 ヒートシンク | `data/003_heatsink/run001_of2512` | 同上のESI版OpenFOAM（v2512）ケース（`chtMultiRegionFoam`） |

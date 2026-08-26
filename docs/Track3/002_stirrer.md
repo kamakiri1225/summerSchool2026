@@ -50,8 +50,11 @@
 | フォルダ | 内容 |
 |----------|------|
 | `data/002_Stirrer/sample/mesh/mesh_of13` | SALOMEから出力した `Mesh_1.unv` と、UNV変換・topoSet・createBaffles を行うOpenFOAMケース（OpenFOAM 13） |
+| `data/002_Stirrer/sample/mesh/mesh_of2512` | 同上のESI版OpenFOAM（v2512）ケース（羽根はtopoSet＋createPatchでパッチ化） |
 | `data/002_Stirrer/sample/mesh/master_curve_of13` | 羽根の可動化テスト（moveDynamicMesh）用のOpenFOAMケース（OpenFOAM 13） |
+| `data/002_Stirrer/sample/mesh/master_curve_of2512` | 同上のESI版OpenFOAM（v2512）ケース |
 | `data/002_Stirrer/sample/mesh/fullmodel_of13` | 変形済みセクターを回転コピー・結合して全周（360°）フルモデルを組み立てるOpenFOAMケース（OpenFOAM 13） |
+| `data/002_Stirrer/sample/mesh/fullmodel_of2512` | 同上のESI版OpenFOAM（v2512）ケース（未変形セクターで組み立て） |
 
 ---
 
