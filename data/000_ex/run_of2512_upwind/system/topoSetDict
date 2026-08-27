@@ -1,0 +1,120 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2512                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      topoSetDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+// ideasUnvToFoam 直後は外周がすべて defaultFaces にまとまっているので、
+// 位置(box)と向き(normal)で入口・出口・上下壁・前後面(empty)に切り分ける。
+// 入口は上下で温度が違うため、y=25 を境に inletTop / inletBottom に分ける。
+
+actions
+(
+    // --- 入口(上半分 x=0, y>25) : 30 degC ---
+    {
+        name    inTopFaces;
+        type    faceSet;
+        action  new;
+        source  patchToFace;
+        sourceInfo { patch defaultFaces; }
+    }
+    {
+        name    inTopFaces;
+        type    faceSet;
+        action  subset;
+        source  boxToFace;
+        sourceInfo { box (-1e-4 25 -1) (1e-4 51 11); }
+    }
+
+    // --- 入口(下半分 x=0, y<25) : 50 degC ---
+    {
+        name    inBotFaces;
+        type    faceSet;
+        action  new;
+        source  patchToFace;
+        sourceInfo { patch defaultFaces; }
+    }
+    {
+        name    inBotFaces;
+        type    faceSet;
+        action  subset;
+        source  boxToFace;
+        sourceInfo { box (-1e-4 -1 -1) (1e-4 25 11); }
+    }
+
+    // --- 出口(x=100) ---
+    {
+        name    outletFaces;
+        type    faceSet;
+        action  new;
+        source  patchToFace;
+        sourceInfo { patch defaultFaces; }
+    }
+    {
+        name    outletFaces;
+        type    faceSet;
+        action  subset;
+        source  boxToFace;
+        sourceInfo { box (99.9999 -1 -1) (100.0001 51 11); }
+    }
+
+    // --- 上壁(y=50) ---
+    {
+        name    topFaces;
+        type    faceSet;
+        action  new;
+        source  patchToFace;
+        sourceInfo { patch defaultFaces; }
+    }
+    {
+        name    topFaces;
+        type    faceSet;
+        action  subset;
+        source  boxToFace;
+        sourceInfo { box (-1 49.9999 -1) (101 50.0001 11); }
+    }
+
+    // --- 下壁(y=0) ---
+    {
+        name    botFaces;
+        type    faceSet;
+        action  new;
+        source  patchToFace;
+        sourceInfo { patch defaultFaces; }
+    }
+    {
+        name    botFaces;
+        type    faceSet;
+        action  subset;
+        source  boxToFace;
+        sourceInfo { box (-1 -1e-4 -1) (101 1e-4 11); }
+    }
+
+    // --- 前後面(z=0, z=10) : 2次元扱いなので empty ---
+    {
+        name    fbFaces;
+        type    faceSet;
+        action  new;
+        source  normalToFace;
+        sourceInfo { normal (0 0 1);  cos 0.1; }
+    }
+    {
+        name    fbFaces;
+        type    faceSet;
+        action  add;
+        source  normalToFace;
+        sourceInfo { normal (0 0 -1); cos 0.1; }
+    }
+);
+
+// ************************************************************************* //

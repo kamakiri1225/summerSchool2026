@@ -1,0 +1,20 @@
+#!/bin/sh
+cd "${0%/*}" || exit
+. ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions
+#------------------------------------------------------------------------------
+# 単純な移流(scalarTransportFoam, 拡散DT=0)で div(phi,T) のスキーム比較。
+# 上側入口 30 degC / 下側入口 50 degC を右へ流し、界面の数値拡散を見る。
+# スキームは system/fvSchemes の div(phi,T) で決まる(フォルダごとに異なる)。
+#------------------------------------------------------------------------------
+export FOAM_SIGFPE=false
+chmod -R u+w constant/polyMesh 2>/dev/null
+rm -rf constant/polyMesh log.*
+find . -maxdepth 1 -type d -regex './[1-9][0-9]*' -exec rm -rf {} + 2>/dev/null
+
+runApplication ideasUnvToFoam Mesh_1.unv
+runApplication topoSet
+runApplication createPatch -overwrite
+runApplication scalarTransportFoam
+
+touch post.foam
+#------------------------------------------------------------------------------

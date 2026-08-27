@@ -1,0 +1,9 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 | OpenFOAM: 13                                    |
+\*---------------------------------------------------------------------------*/
+FoamFile { version 2.0; format ascii; class dictionary; location "system"; object fvSolution; }
+solvers
+{
+    T { solver PBiCGStab; preconditioner DILU; tolerance 1e-9; relTol 0; }
+}
+PIMPLE { nNonOrthogonalCorrectors 0; }

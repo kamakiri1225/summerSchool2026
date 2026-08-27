@@ -1,0 +1,19 @@
+#!/bin/sh
+cd "${0%/*}" || exit
+. ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions
+#------------------------------------------------------------------------------
+# OpenFOAM 13: 移流(scalarTransport関数, 拡散D=0)で div(phi,T) のスキーム比較。
+# 流れは subSolverTime 0 で凍結した一様流(U=(1,0,0))。スキームは fvSchemes。
+#------------------------------------------------------------------------------
+export FOAM_SIGFPE=false
+chmod -R u+w constant/polyMesh 2>/dev/null
+rm -rf constant/polyMesh log.*
+find . -maxdepth 1 -type d -regex './[1-9][0-9]*' -exec rm -rf {} + 2>/dev/null
+
+runApplication ideasUnvToFoam Mesh_1.unv
+runApplication topoSet
+runApplication createPatch -overwrite
+runApplication foamRun
+
+touch post.foam
+#------------------------------------------------------------------------------

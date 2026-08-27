@@ -1,0 +1,16 @@
+#!/bin/sh
+cd "${0%/*}" || exit
+. ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions
+#------------------------------------------------------------------------------
+# 流れ(+x)に整列した blockMesh で移流(linearUpwind)を計算する。
+# 斜めメッシュ(UNV)版と比べ、メッシュが流れに沿うと界面がなまらないことを示す。
+#------------------------------------------------------------------------------
+export FOAM_SIGFPE=false
+rm -rf constant/polyMesh log.*
+find . -maxdepth 1 -type d -regex './[1-9][0-9]*' -exec rm -rf {} + 2>/dev/null
+
+runApplication blockMesh
+runApplication scalarTransportFoam
+
+touch post.foam
+#------------------------------------------------------------------------------

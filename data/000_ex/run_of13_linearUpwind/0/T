@@ -1,0 +1,17 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 | OpenFOAM: v2512                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile { version 2.0; format ascii; class volScalarField; object T; }
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+dimensions      [0 0 0 1 0 0 0];
+internalField   uniform 30;
+boundaryField
+{
+    inletTop    { type fixedValue; value uniform 30; }   // 上側入口 30 degC
+    inletBottom { type fixedValue; value uniform 50; }   // 下側入口 50 degC
+    outlet      { type zeroGradient; }
+    topWall     { type zeroGradient; }
+    bottomWall  { type zeroGradient; }
+    frontBack   { type empty; }
+}
+// ************************************************************************* //

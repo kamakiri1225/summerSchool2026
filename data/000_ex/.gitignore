@@ -1,0 +1,6 @@
+# 生成物は追跡しない（各ケース ./Allrun で再現）
+*/constant/polyMesh/
+*/[1-9]*/
+*/log.*
+*/*.foam
+*/processor*/

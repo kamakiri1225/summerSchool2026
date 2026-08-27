@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="440" viewBox="0 0 760 440">
+  <defs>
+    <marker id="aE" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto" markerUnits="userSpaceOnUse">
+      <polygon points="0,0 10,3.5 0,7" fill="#000"/>
+    </marker>
+    <marker id="aS" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto" markerUnits="userSpaceOnUse">
+      <polygon points="10,0 0,3.5 10,7" fill="#000"/>
+    </marker>
+  </defs>
+
+  <rect width="760" height="440" fill="#ffffff"/>
+
+  <!-- 寸法補助線 -->
+  <g stroke="#000" stroke-width="0.8" fill="none">
+    <line x1="168" y1="60" x2="94" y2="60"/>
+    <line x1="168" y1="190" x2="134" y2="190"/>
+    <line x1="168" y1="320" x2="94" y2="320"/>
+    <line x1="170" y1="322" x2="170" y2="408"/>
+    <line x1="326" y1="192" x2="326" y2="376"/>
+    <line x1="534" y1="192" x2="534" y2="376"/>
+    <line x1="690" y1="322" x2="690" y2="408"/>
+  </g>
+
+  <!-- 寸法線 -->
+  <g stroke="#000" stroke-width="1" fill="none">
+    <line x1="100" y1="60" x2="100" y2="320" marker-start="url(#aS)" marker-end="url(#aE)"/>
+    <line x1="140" y1="190" x2="140" y2="320" marker-start="url(#aS)" marker-end="url(#aE)"/>
+    <line x1="170" y1="370" x2="326" y2="370" marker-start="url(#aS)" marker-end="url(#aE)"/>
+    <line x1="534" y1="370" x2="690" y2="370" marker-start="url(#aS)" marker-end="url(#aE)"/>
+    <line x1="170" y1="402" x2="690" y2="402" marker-start="url(#aS)" marker-end="url(#aE)"/>
+  </g>
+
+  <!-- 図形 -->
+  <g stroke="#000" stroke-width="2.4" fill="none" stroke-linejoin="round">
+    <rect x="170" y="60" width="520" height="260"/>
+    <line x1="170" y1="190" x2="326" y2="190"/>
+    <line x1="534" y1="190" x2="690" y2="190"/>
+    <path d="M 326 190 L 430 60 L 534 190 L 430 320 Z"/>
+  </g>
+
+  <!-- 原点 -->
+  <g stroke="#000" stroke-width="1.2">
+    <line x1="162" y1="320" x2="178" y2="320"/>
+    <line x1="170" y1="312" x2="170" y2="328"/>
+  </g>
+
+  <!-- 寸法文字 -->
+  <g fill="#000" font-family="Arial, Helvetica, sans-serif" font-size="17" text-anchor="middle">
+    <text x="86" y="190" transform="rotate(-90 86 190)">50</text>
+    <text x="126" y="255" transform="rotate(-90 126 255)">25</text>
+    <text x="248" y="364">30</text>
+    <text x="612" y="364">30</text>
+    <text x="430" y="396">100</text>
+  </g>
+
+  <!-- 等長拘束記号 -->
+  <g fill="#000" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="bold" text-anchor="middle">
+    <text x="389" y="145">=</text>
+    <text x="471" y="145">=</text>
+    <text x="389" y="247">=</text>
+    <text x="471" y="247">=</text>
+  </g>
+</svg>

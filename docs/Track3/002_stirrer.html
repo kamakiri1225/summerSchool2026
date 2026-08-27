@@ -20,7 +20,6 @@
       margin: 0 0.8em 0.2em -1.6em;
       vertical-align: middle;
     }
-    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
     /* CSS for syntax highlighting */
     pre > code.sourceCode { white-space: pre; position: relative; }
     pre > code.sourceCode > span { line-height: 1.25; }
@@ -87,6 +86,10 @@
     code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
   </style>
   <link rel="stylesheet" href="pandoc.css" />
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+  type="text/javascript"></script>
 </head>
 <body>
 <h1 id="stirrer-salomeで撹拌機のヘキサメッシュを作る">002 Stirrer:
@@ -1717,12 +1720,21 @@ MRF/AMI とあわせてよく使われる定石）。</li>
 <p>すべての形状をヘキサメッシュだけで作成するのは、CADソフトからは難しい場面が多い。それでもヘキサメッシュをどうしても使いたい場面がある場合は、次のことを覚えておくとよい。</p>
 <h3 id="六面体ブロックの節点移動で作成できる形状">1.
 六面体ブロックの節点移動で作成できる形状</h3>
-<p>1つの六面体ブロックは、<strong>節点（頂点・辺・面）を動かすだけで、元の立方体と「位相的に同相（homeomorphic）」な形状であれば作成できる</strong>。「位相的に同相」という表現は正しく、位相幾何学では、切ったり貼ったりせずに連続的に変形して移り合える形どうしを「同相」という。立方体と球は同相なので、下図のように立方体の8つの頂点・6つの面を球面へ写すだけで、六面体1個で球を表現できる（メッシュのつながり方＝トポロジは立方体のまま）。逆に、ドーナツ（穴あき）のように立方体と同相でない形状は、1個の六面体ブロックでは作れない。</p>
+<p>1つの六面体ブロックは、<strong>節点（頂点・辺・面）を動かすだけで、元の立方体と「位相的に同相（homeomorphic）」な形状であれば作成できる</strong>。位相幾何学では、切ったり貼ったりせずに連続的に変形して移り合える形どうしを「同相」という。立方体と球は同相なので、下図のように立方体の8つの頂点・6つの面を球面へ写すだけで、六面体1個で球を表現できる（メッシュのつながり方＝トポロジは立方体のまま）。逆に、ドーナツ（穴あき）のように立方体と同相でない形状は、1個の六面体ブロックでは作れない。</p>
 <figure>
 <img src="img/002_stirrer/hexmesh_tips_node.png"
 alt="立方体の節点を動かして球にする（位相的に同相な形状は六面体ブロックで作れる）" />
 <figcaption
 aria-hidden="true">立方体の節点を動かして球にする（位相的に同相な形状は六面体ブロックで作れる）</figcaption>
+</figure>
+<p>これをさらに3次元的に考えると、<strong>立方体状のブロックを球面へフィットさせて、球体まわりのヘキサメッシュ</strong>を作成できる。さらに、その球面を
+<code>dynamicMesh</code>
+の節点移動で対象形状へフィットさせれば、たとえば<strong>バスケットボール（表面の溝つき）まわりのヘキサメッシュ</strong>まで作成できる（そんな機会はないかもしれないが、考え方の参考として）。</p>
+<figure>
+<img src="img/002_stirrer/hexmesh_tips_sphere3d.png"
+alt="球体まわりのヘキサメッシュを、dynamicMeshでバスケットボール形状にフィットさせる" />
+<figcaption
+aria-hidden="true">球体まわりのヘキサメッシュを、dynamicMeshでバスケットボール形状にフィットさせる</figcaption>
 </figure>
 <h3 id="次元スケッチを回転押し出しrevolve">2.
 2次元スケッチを回転押し出し（revolve）</h3>
@@ -1743,5 +1755,189 @@ alt="2次元スケッチを押し出して作る（円も分割すれば可能�
 aria-hidden="true">2次元スケッチを押し出して作る（円も分割すれば可能）</figcaption>
 </figure>
 <p>まとめると、<strong>「立方体と同相な形」「回転押し出しで作れる形」「押し出しで作れる形」に持ち込めるかどうか</strong>が、ヘキサメッシュを作れるかどうかの見極めどころになる。複雑な形状は、これらのブロックに分割（Partition）できる形へ落とし込んでいくのがコツである。</p>
+<hr />
+<h2
+id="離散化スキームの違い本当にヘキサメッシュが必要か">離散化スキームの違い（本当にヘキサメッシュが必要か）</h2>
+<p>ここまで「ヘキサメッシュをつくるコツ」を見てきたが、計算の精度を決めるのは<strong>メッシュの種類（ヘキサ／テトラ）だけではない</strong>。対流項をどの<strong>離散化スキーム</strong>で解くか、そして<strong>メッシュが流れに沿っているか</strong>も同じくらい効く。ここでは単純な移流問題でそれを確かめ、「本当にヘキサメッシュでないといけないか」を考える材料にする。</p>
+<p>題材は下図の形状（幅100 ×
+高さ50）。中央にダイヤ型のブロックを置き、左右のブロックと分割数をそろえてヘキサメッシュにしている。この中央部でメッシュが流れ方向に対して斜めになる。</p>
+<figure>
+<img src="img/000_ex/rect_diamond_black.svg"
+alt="題材の形状とブロック分割（中央のダイヤ型で流れに斜交した格子ができる）" />
+<figcaption
+aria-hidden="true">題材の形状とブロック分割（中央のダイヤ型で流れに斜交した格子ができる）</figcaption>
+</figure>
+<h3 id="単純な移流方程式">単純な移流方程式</h3>
+<p>移流方程式は、2次元では次の形をしている（<span
+class="math inline">\(\mathbf{u}=(u,v)\)</span> は流速）。</p>
+<p><span class="math display">\[
+\frac{\partial T}{\partial t} + u\,\frac{\partial T}{\partial x} +
+v\,\frac{\partial T}{\partial y} = 0
+\tag{1}
+\]</span></p>
+<p>このうち、<span class="math inline">\(\partial T/\partial t\)</span>
+は<strong>時間変化項</strong>、<span class="math inline">\(u\,\partial
+T/\partial x + v\,\partial T/\partial y\)</span>（流速 ×
+空間微分、ベクトルで書けば <span
+class="math inline">\(\mathbf{u}\cdot\nabla
+T\)</span>）が<strong>対流項（移流項）</strong>である。OpenFOAMではこの対流項が
+<code>div(phi,T)</code> にあたり、<code>system/fvSchemes</code> の
+<code>divSchemes</code>
+で離散化スキームを指定する。この節で「対流項の離散化スキームを変える」と言っているのは、<strong>この項をどう離散化するか</strong>を変える、という意味である。</p>
+<p>今回は流れが <span class="math inline">\(x\)</span> 方向のみ（<span
+class="math inline">\(\mathbf{u}=(u,\,0)\)</span>、すなわち <span
+class="math inline">\(v=0\)</span>）なので、式(1)は</p>
+<p><span class="math display">\[
+\frac{\partial T}{\partial t} + u\,\frac{\partial T}{\partial x} = 0
+\tag{2}
+\]</span></p>
+<p>に簡約される。厳密解は <span class="math inline">\(T(x,t) = T(x -
+ut,\,
+0)\)</span>、つまり<strong>分布の形を保ったまま伝搬する</strong>はず。しかし実際は<strong>対流項の離散化スキームで結果が大きく変わる</strong>。</p>
+<ul>
+<li>今回は<strong>粘性ゼロ（純移流）</strong>なので、スキームの違いが極端に表れる。実際のナビエ・ストークス方程式は粘性項（拡散）を持つため、これほど極端には出にくい。</li>
+<li>計算は2次元なので、後述の「斜めメッシュでのなまり」は <span
+class="math inline">\(x\)</span>・<span class="math inline">\(y\)</span>
+方向が絡む<strong>偽拡散</strong>であり、1次元の式だけでは見えない。</li>
+</ul>
+<figure>
+<img src="img/002_stirrer/hexmesh_tips_p23.png"
+alt="移流問題のセットアップ（上30℃・下50℃を右へ流す。形を保ったまま伝搬するはず…）" />
+<figcaption
+aria-hidden="true">移流問題のセットアップ（上30℃・下50℃を右へ流す。形を保ったまま伝搬するはず…）</figcaption>
+</figure>
+<p>今回は上図のような2次元領域で、<strong>上側入口を30℃・下側入口を50℃</strong>として右へ流す（拡散なしの純移流、<code>DT=0</code>）。理想的には上下の温度差（<code>y=25</code>の界面）がシャープなまま出口まで運ばれるはずである。</p>
+<h3 id="対流項の離散化スキームまとめ">対流項の離散化スキームまとめ</h3>
+<p>ここで対象にするのは、移流方程式の<strong>対流項</strong>（下式の
+<span class="math inline">\((2)\)</span>
+の部分）。この対流項をどう離散化するかで挙動が変わる。</p>
+<p><span class="math display">\[
+\underbrace{\frac{\partial T}{\partial t}}_{(1)}
+\;+\;
+\underbrace{u\,\frac{\partial T}{\partial x} + v\,\frac{\partial
+T}{\partial y}}_{(2)}
+\;=\; 0
+\]</span></p>
+<p>ここで <span class="math inline">\((1)\)</span>
+は<strong>時間変化項</strong>、<span class="math inline">\((2)\)</span>
+が<strong>対流項</strong>（＝
+<code>div(phi,T)</code>。以下で変えるのはこの項のスキーム）。</p>
+<p>ざっくり、<strong>「安定性」と「精度」はトレードオフ</strong>と覚えておくとよい。<strong>安定性を取ると数値拡散（解がなまる）が生じやすく、精度を取ると数値振動が起こりやすい</strong>。</p>
+<ul>
+<li><strong>1次精度：風上差分（upwind）</strong> …
+安定性重視。安定だが、<strong>数値拡散</strong>で解がなまる（界面がなまる）。</li>
+<li><strong>2次精度：中心差分（linear）・QUICK</strong> …
+精度重視。不連続をシャープに捉えるが、<strong>数値振動</strong>（オーバーシュート／アンダーシュート）が起こりやすい。</li>
+<li><strong>TVDスキーム：minmod、vanLeer、vanAlbada、superBee</strong>
+が有名。<strong>安定性と精度のいいとこ取り</strong>を狙い、不連続部で振動を抑えつつ解をシャープに捉える。</li>
+</ul>
+<h3 id="openfoamで比べてみる">OpenFOAMで比べてみる</h3>
+<p>同じ移流問題を、<code>system/fvSchemes</code> の
+<code>divSchemes</code> にある対流項スキーム <code>div(phi,T)</code>
+だけ変えて計算した結果が下図（青=30℃、赤=50℃）。左上から時計回りに、1次風上（upwind）・2次中心差分（linear）・TVD（vanLeer）・2次風上（linearUpwind）。</p>
+<pre><code>// system/fvSchemes
+divSchemes
+{
+    default      none;
+    div(phi,T)   Gauss upwind;   // ← ここを linear / linearUpwind grad(T) / vanLeer などに変える
+}</code></pre>
+<figure>
+<img src="img/002_stirrer/scheme_compare.png"
+alt="離散化スキームの比較（斜めメッシュ。左上: upwind / 右上: linear / 左下: linearUpwind / 右下: vanLeer）" />
+<figcaption aria-hidden="true">離散化スキームの比較（斜めメッシュ。左上:
+upwind / 右上: linear / 左下: linearUpwind / 右下:
+vanLeer）</figcaption>
+</figure>
+<ul>
+<li><strong>upwind（1次風上）</strong>:
+界面が大きくなまる。数値拡散が大きい（<code>T</code> は 30〜50
+に収まり振動はしない）。</li>
+<li><strong>linear（2次中心差分）</strong>:
+界面はシャープだが、30〜50を超える<strong>数値振動</strong>が出る（実測で
+<code>T</code> が約22〜58℃）。</li>
+<li><strong>linearUpwind（2次風上）</strong>:
+シャープで、振動はわずか（約28〜52℃）。</li>
+<li><strong>vanLeer（TVD）</strong>:
+シャープさを保ちつつ振動を抑える（約26〜54℃）。</li>
+</ul>
+<h3
+id="実はメッシュが流れに沿っているかも効く">実は「メッシュが流れに沿っているか」も効く</h3>
+<p><strong>見てほしい点</strong>:
+上の4枚とも、左半分（格子が流れに整列）では界面がシャープで、右半分（V字の斜め格子）でなまっている。</p>
+<p><strong>わかること</strong>:
+なまりの主因はスキームの数値拡散ではなく、<strong>格子が流れに斜交して生じる偽拡散（false
+diffusion）</strong>である。</p>
+<p><strong>確かめ</strong>: 同じ <code>linearUpwind</code>
+を、格子を流れに整列させた <code>blockMesh</code>
+で解くと、界面はシャープなまま出口まで届く（下図）。→
+精度は「スキーム」だけでなく「<strong>格子を流れに沿わせること</strong>」でも大きく変わる。</p>
+<figure>
+<img src="img/002_stirrer/scheme_mesh_align.png"
+alt="同じ linearUpwind：斜めメッシュ（左）と整列 blockMesh（右）" />
+<figcaption aria-hidden="true">同じ
+linearUpwind：斜めメッシュ（左）と整列 blockMesh（右）</figcaption>
+</figure>
+<h3 id="本当にヘキサメッシュが必要か">本当にヘキサメッシュが必要か</h3>
+<p>精度を決めるのは、メッシュの種類（ヘキサ／テトラ）だけではなく、</p>
+<ul>
+<li><strong>対流項の離散化スキーム</strong>（1次風上・2次・TVD）</li>
+<li><strong>メッシュが流れに沿っているか</strong>（斜交すると偽拡散が出る）</li>
+</ul>
+<p>も同じくらい効く。ヘキサメッシュ化に大きな手間をかける前に、「その形状で<strong>本当にヘキサが必要か</strong>」「<strong>流れに沿ったメッシュ</strong>にできるか」「<strong>スキーム</strong>で十分な精度が出せるか」をあわせて考えると、労力に見合った良いメッシュ・良い計算にたどり着きやすい。</p>
+<h3 id="使用データ">使用データ</h3>
+<p>移流スキーム比較のケースは <code>data/000_ex/</code>
+以下にある（それぞれ <code>./Allrun</code>
+で再現でき、<code>div(phi,T)</code> だけが異なる）。ESI版
+v2512（<code>run_of2512_*</code>）と Foundation版 OpenFOAM
+13（<code>run_of13_*</code>）の<strong>両方</strong>を用意している（対応するOpenFOAM環境を読み込んでから
+<code>./Allrun</code>）。</p>
+<table>
+<colgroup>
+<col style="width: 62%" />
+<col style="width: 37%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>フォルダ（<code>run_of2512_*</code> / <code>run_of13_*</code>）</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>..._upwind</code></td>
+<td>1次風上差分（<code>Gauss upwind</code>）／斜めメッシュ</td>
+</tr>
+<tr class="even">
+<td><code>..._linear</code></td>
+<td>2次中心差分（<code>Gauss linear</code>）／斜めメッシュ</td>
+</tr>
+<tr class="odd">
+<td><code>..._linearUpwind</code></td>
+<td>2次風上（<code>Gauss linearUpwind grad(T)</code>）／斜めメッシュ</td>
+</tr>
+<tr class="even">
+<td><code>..._vanLeer</code></td>
+<td>TVD（<code>Gauss vanLeer</code>）／斜めメッシュ</td>
+</tr>
+<tr class="odd">
+<td><code>..._blockMesh_linearUpwind</code></td>
+<td>2次風上（<code>linearUpwind</code>）／<strong>流れに整列した
+blockMesh</strong>（斜めメッシュとの比較用、セル数はほぼ同じ）</td>
+</tr>
+</tbody>
+</table>
+<h3 id="参考記事">参考記事</h3>
+<p>離散化スキームについては、以下の記事も参考になる。</p>
+<ul>
+<li><a
+href="https://takun-physics.net/15355/">【OpenFOAM】移流方程式で離散化スキームの勉強をする</a></li>
+<li><a
+href="https://takun-physics.net/15471/">【OpenFOAM】移流方程式で色々な離散化スキームをPythonで自動実行して試してみた</a></li>
+<li><a
+href="https://takun-physics.net/15492/">【OpenFOAM】移流方程式で色々な離散化スキーム（解の振る舞いと計算時間）</a></li>
+<li><a
+href="https://takun-physics.net/17853/">【OpenFOAM】領域ごとに対流項スキームを変えるzoneBlended
+schemeを試してみた</a></li>
+</ul>
 </body>
 </html>

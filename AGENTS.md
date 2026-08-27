@@ -15,22 +15,26 @@
 
 `docs/Track3/*.md` を編集したら、**必ず対応する `.html` とスライドを再生成してからコミットする**（`.md`だけ直して`.html`を放置しない）。
 
-各ページのHTML再生成（`docs/Track3/` 内で実行）:
+各ページのHTML再生成（`docs/Track3/` 内で実行）。数式（002の移流方程式など）を
+含むため `--mathjax=<CDN>` を付ける（付けないとpandocがローカルパス
+`/usr/share/javascript/mathjax/MathJax.js` を埋め込み、Pagesで数式が出ない）:
 
 ```bash
-pandoc 000_salome.md    -s -c pandoc.css --metadata pagetitle="000 SALOMEとは" -o 000_salome.html
-pandoc 001_box.md       -s -c pandoc.css --metadata pagetitle="001 Box: SALOMEでOpenFOAM用メッシュを作る" -o 001_box.html
-pandoc 002_stirrer.md   -s -c pandoc.css --metadata pagetitle="002 Stirrer: SALOMEで撹拌機のヘキサメッシュを作る" -o 002_stirrer.html
-pandoc 003_heatsink.md  -s -c pandoc.css --metadata pagetitle="003 Heatsink: SALOMEでヒートシンクの熱流体・固体連成メッシュを作る" -o 003_heatsink.html
-pandoc 004_salome_docker.md -s -c pandoc.css --metadata pagetitle="004 Mac向け: DockerでSALOME 9.15を使う" -o 004_salome_docker.html
-pandoc index.md         -s -c pandoc.css --metadata pagetitle="Track3: SALOMEを使ったOpenFOAMメッシュ作成" -o index.html
+MJ="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+pandoc 000_salome.md    -s -c pandoc.css --mathjax="$MJ" --metadata pagetitle="000 SALOMEとは" -o 000_salome.html
+pandoc 001_box.md       -s -c pandoc.css --mathjax="$MJ" --metadata pagetitle="001 Box: SALOMEでOpenFOAM用メッシュを作る" -o 001_box.html
+pandoc 002_stirrer.md   -s -c pandoc.css --mathjax="$MJ" --metadata pagetitle="002 Stirrer: SALOMEで撹拌機のヘキサメッシュを作る" -o 002_stirrer.html
+pandoc 003_heatsink.md  -s -c pandoc.css --mathjax="$MJ" --metadata pagetitle="003 Heatsink: SALOMEでヒートシンクの熱流体・固体連成メッシュを作る" -o 003_heatsink.html
+pandoc 004_salome_docker.md -s -c pandoc.css --mathjax="$MJ" --metadata pagetitle="004 Mac向け: DockerでSALOME 9.15を使う" -o 004_salome_docker.html
+pandoc index.md         -s -c pandoc.css --mathjax="$MJ" --metadata pagetitle="Track3: SALOMEを使ったOpenFOAMメッシュ作成" -o index.html
 ```
 
 スライド（`000〜003`を結合したreveal.js）の再生成:
 
 ```bash
+MJ="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
 python3 memo/build_slides.py   # 000〜003.md を結合して slides.md を生成
-pandoc slides.md -t revealjs -s --slide-level=2 -c slides.css \
+pandoc slides.md -t revealjs -s --slide-level=2 -c slides.css --mathjax="$MJ" \
   -V revealjs-url=reveal.js -V theme=white -V transition=slide \
   -V width=1280 -V height=800 -V margin=0.06 \
   -V slideNumber=true -V showSlideNumber=all \
