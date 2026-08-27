@@ -17,7 +17,10 @@
 
 各ページのHTML再生成（`docs/Track3/` 内で実行）。数式（002の移流方程式など）を
 含むため `--mathjax=<CDN>` を付ける（付けないとpandocがローカルパス
-`/usr/share/javascript/mathjax/MathJax.js` を埋め込み、Pagesで数式が出ない）:
+`/usr/share/javascript/mathjax/MathJax.js` を埋め込み、Pagesで数式が出ない）。
+**重要**: `--mathjax` を付けるとpandocが `https://polyfill.io/...` のスクリプトも
+自動挿入する。polyfill.io は乗っ取られてマルウェア配信元になった危険ドメインなので、
+ビルド後に必ず `sed -i '/polyfill\.io/d' *.html` で除去する（MathJax 3には不要）:
 
 ```bash
 MJ="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
@@ -27,6 +30,7 @@ pandoc 002_stirrer.md   -s -c pandoc.css --mathjax="$MJ" --metadata pagetitle="0
 pandoc 003_heatsink.md  -s -c pandoc.css --mathjax="$MJ" --metadata pagetitle="003 Heatsink: SALOMEでヒートシンクの熱流体・固体連成メッシュを作る" -o 003_heatsink.html
 pandoc 004_salome_docker.md -s -c pandoc.css --mathjax="$MJ" --metadata pagetitle="004 Mac向け: DockerでSALOME 9.15を使う" -o 004_salome_docker.html
 pandoc index.md         -s -c pandoc.css --mathjax="$MJ" --metadata pagetitle="Track3: SALOMEを使ったOpenFOAMメッシュ作成" -o index.html
+sed -i '/polyfill\.io/d' *.html   # 危険なpolyfill.ioスクリプトを除去
 ```
 
 スライド（`000〜003`を結合したreveal.js）の再生成:
@@ -39,6 +43,7 @@ pandoc slides.md -t revealjs -s --slide-level=2 -c slides.css --mathjax="$MJ" \
   -V width=1280 -V height=800 -V margin=0.06 \
   -V slideNumber=true -V showSlideNumber=all \
   -o slides.html --metadata title="Track3: SALOMEを使ったOpenFOAMメッシュ作成"
+sed -i '/polyfill\.io/d' slides.html   # 危険なpolyfill.ioスクリプトを除去
 ```
 
 コミット前チェック（リンク切れ検出）:
