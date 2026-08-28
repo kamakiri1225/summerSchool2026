@@ -3112,11 +3112,38 @@ foamMultiRun > log.foamMultiRun.of13 2>&1
 
 - OpenFOAM 13では `foamMultiRun` が `system/controlDict` の `regionSolvers` を読み込み、`box` を流体ソルバ、`heatSink`・`heatSource`・`basis` を固体ソルバとして連成計算する。
 - 流体側は乱流モデル（`kOmegaSST`）で速度・圧力・温度・乱流量を解き、固体側は温度を解く。
-- v2512の参照ケースと同じ `maxCo 100` を使用する。OpenFOAM 13の固体ソルバは `maxDi` を直接読まないため、参照計算の `maxDi 100` に相当する `maxDeltaT 0.0217` 秒を設定している。
+- v2512の参照ケースと同じ `maxCo 100` を使用する。なお `system/controlDict` には `maxDi 100` も書いてあるが、OpenFOAM 13の `solid` モジュールは `maxDi` を読まず、固体側の時間刻み上限は `maxDeltaT` だけで決まる。この記述はv2512ケースとの対応を残すためのもので、OpenFOAM 13では効果がない。
 - `system/controlDict` の設定により、時刻 `2` から `60` まで2秒間隔で結果を書き出す。
 - 流入条件は `U = (0 -0.5 0) m/s`（y方向へ0.5 m/s）、初期温度は `293.15 K` としている。発熱源の設定は `constant/heatSource/fvModels`、各リージョンの境界条件は `system/<region>/changeDictionaryDict` を参照する。
 - 補足: OpenFOAM 13の `foamMultiRun` は、初期の過渡でフィン近傍の境界層セルに負温度・速度スパイクが発生して発散する（v2512の `chtMultiRegionFoam` は同条件で安定）。このため `system/box/fvConstraints` に温度制限（`limitTemperature` 280〜400 K）と速度制限（`limitMag` 5 m/s）を設定して安定化している。
-- なお、`setup.sh` から計算実行までは `./Allrun` で一括実行できる（v2512側の `run001_of2512` も同様）。計算は数時間かかるが、途中で止めても `./Allrun` の再実行で続きから計算される。
+- なお、`setup.sh` から計算実行までは `./Allrun` で一括実行できる。計算は数時間かかるが、`startFrom latestTime` のため、途中で止めても `./Allrun` の再実行で続きから計算される。
+
+
+---
+
+### ESI版OpenFOAM（v2512）で計算する場合
+
+同じメッシュをESI版で計算するケースを `data/003_heatsink/run001_of2512` に用意している。実行方法はOpenFOAM 13側と同じく `./Allrun` だが、**ソルバも設定ファイルの置き場所も異なる**ので注意する。
+
+```bash
+cd data/003_heatsink/run001_of2512
+. /usr/lib/openfoam/openfoam2512/etc/bashrc
+./Allrun          # setup.sh → chtMultiRegionFoam
+```
+
+| 項目 | OpenFOAM 13（`run001_of13`） | OpenFOAM v2512（`run001_of2512`） |
+|------|------------------------------|-----------------------------------|
+| ソルバ | `foamMultiRun`（モジュール式） | `chtMultiRegionFoam` |
+| リージョンの指定 | `system/controlDict` の `regionSolvers`（`box fluid;` / `heatSink solid;` …） | `constant/regionProperties` の `regions (fluid (box) solid (heatSink heatSource basis))` |
+| 乱流モデル | `constant/box/momentumTransport`（`simulationType RAS;` + `model kOmegaSST;`） | `constant/box/turbulenceProperties`（`RASModel kOmegaSST;`） |
+| 発熱源 | `constant/heatSource/fvModels`。`type heatSource;` で `Q` を時刻テーブル指定 | `system/heatSource/fvOptions`。`type scalarSemiImplicitSource;` でエンタルピー `h` に投入 |
+| 固体の時間刻み | `maxDi` は読まれない（`maxDeltaT` のみ有効） | `maxDi 100` が有効 |
+| 書き出し制御 | `writeControl adjustableRunTime;` | `writeControl adjustable;` |
+| 安定化の追加設定 | `system/box/fvConstraints` が必要（下の補足を参照） | 不要（同条件で安定） |
+
+- 発熱条件はどちらも同じで、計算開始から10秒間だけ100 Wを投入し、その後は0にする。
+- 流入条件（`U = (0 -0.5 0) m/s`）・初期温度（`293.15 K`）・`maxCo 100`・`endTime 60`・2秒間隔の書き出しも両者で揃えてある。
+- `setup.sh` の流れ（`ideasUnvToFoam` → `transformPoints` → `splitMeshRegions` → `changeDictionary`）は共通である。
 
 
 ---

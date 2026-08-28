@@ -731,10 +731,13 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="
 を流体ソルバ、<code>heatSink</code>・<code>heatSource</code>・<code>basis</code>
 を固体ソルバとして連成計算する。</li>
 <li>流体側は乱流モデル（<code>kOmegaSST</code>）で速度・圧力・温度・乱流量を解き、固体側は温度を解く。</li>
-<li>v2512の参照ケースと同じ <code>maxCo 100</code> を使用する。OpenFOAM
-13の固体ソルバは <code>maxDi</code> を直接読まないため、参照計算の
-<code>maxDi 100</code> に相当する <code>maxDeltaT 0.0217</code>
-秒を設定している。</li>
+<li>v2512の参照ケースと同じ <code>maxCo 100</code> を使用する。なお
+<code>system/controlDict</code> には <code>maxDi 100</code>
+も書いてあるが、OpenFOAM 13の <code>solid</code> モジュールは
+<code>maxDi</code> を読まず、固体側の時間刻み上限は
+<code>maxDeltaT</code>
+だけで決まる。この記述はv2512ケースとの対応を残すためのもので、OpenFOAM
+13では効果がない。</li>
 <li><code>system/controlDict</code> の設定により、時刻 <code>2</code>
 から <code>60</code> まで2秒間隔で結果を書き出す。</li>
 <li>流入条件は <code>U = (0 -0.5 0) m/s</code>（y方向へ0.5
@@ -750,9 +753,85 @@ m/s）、初期温度は <code>293.15 K</code> としている。発熱源の設
 K）と速度制限（<code>limitMag</code> 5
 m/s）を設定して安定化している。</li>
 <li>なお、<code>setup.sh</code> から計算実行までは <code>./Allrun</code>
-で一括実行できる（v2512側の <code>run001_of2512</code>
-も同様）。計算は数時間かかるが、途中で止めても <code>./Allrun</code>
+で一括実行できる。計算は数時間かかるが、<code>startFrom latestTime</code>
+のため、途中で止めても <code>./Allrun</code>
 の再実行で続きから計算される。</li>
+</ul>
+<h3
+id="esi版openfoamv2512で計算する場合">ESI版OpenFOAM（v2512）で計算する場合</h3>
+<p>同じメッシュをESI版で計算するケースを
+<code>data/003_heatsink/run001_of2512</code>
+に用意している。実行方法はOpenFOAM 13側と同じく <code>./Allrun</code>
+だが、<strong>ソルバも設定ファイルの置き場所も異なる</strong>ので注意する。</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> data/003_heatsink/run001_of2512</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="bu">.</span> /usr/lib/openfoam/openfoam2512/etc/bashrc</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="ex">./Allrun</span>          <span class="co"># setup.sh → chtMultiRegionFoam</span></span></code></pre></div>
+<table>
+<colgroup>
+<col style="width: 8%" />
+<col style="width: 42%" />
+<col style="width: 49%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>項目</th>
+<th>OpenFOAM 13（<code>run001_of13</code>）</th>
+<th>OpenFOAM v2512（<code>run001_of2512</code>）</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>ソルバ</td>
+<td><code>foamMultiRun</code>（モジュール式）</td>
+<td><code>chtMultiRegionFoam</code></td>
+</tr>
+<tr class="even">
+<td>リージョンの指定</td>
+<td><code>system/controlDict</code> の
+<code>regionSolvers</code>（<code>box fluid;</code> /
+<code>heatSink solid;</code> …）</td>
+<td><code>constant/regionProperties</code> の
+<code>regions (fluid (box) solid (heatSink heatSource basis))</code></td>
+</tr>
+<tr class="odd">
+<td>乱流モデル</td>
+<td><code>constant/box/momentumTransport</code>（<code>simulationType RAS;</code>
++ <code>model kOmegaSST;</code>）</td>
+<td><code>constant/box/turbulenceProperties</code>（<code>RASModel kOmegaSST;</code>）</td>
+</tr>
+<tr class="even">
+<td>発熱源</td>
+<td><code>constant/heatSource/fvModels</code>。<code>type heatSource;</code>
+で <code>Q</code> を時刻テーブル指定</td>
+<td><code>system/heatSource/fvOptions</code>。<code>type scalarSemiImplicitSource;</code>
+でエンタルピー <code>h</code> に投入</td>
+</tr>
+<tr class="odd">
+<td>固体の時間刻み</td>
+<td><code>maxDi</code> は読まれない（<code>maxDeltaT</code>
+のみ有効）</td>
+<td><code>maxDi 100</code> が有効</td>
+</tr>
+<tr class="even">
+<td>書き出し制御</td>
+<td><code>writeControl adjustableRunTime;</code></td>
+<td><code>writeControl adjustable;</code></td>
+</tr>
+<tr class="odd">
+<td>安定化の追加設定</td>
+<td><code>system/box/fvConstraints</code> が必要（下の補足を参照）</td>
+<td>不要（同条件で安定）</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>発熱条件はどちらも同じで、計算開始から10秒間だけ100
+Wを投入し、その後は0にする。</li>
+<li>流入条件（<code>U = (0 -0.5 0) m/s</code>）・初期温度（<code>293.15 K</code>）・<code>maxCo 100</code>・<code>endTime 60</code>・2秒間隔の書き出しも両者で揃えてある。</li>
+<li><code>setup.sh</code> の流れ（<code>ideasUnvToFoam</code> →
+<code>transformPoints</code> → <code>splitMeshRegions</code> →
+<code>changeDictionary</code>）は共通である。</li>
 </ul>
 <h3 id="計算結果の確認">計算結果の確認</h3>
 <p><img src="img/003_heatsink/page_199.svg"
