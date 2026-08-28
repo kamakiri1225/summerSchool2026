@@ -20,7 +20,6 @@
       margin: 0 0.8em 0.2em -1.6em;
       vertical-align: middle;
     }
-    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
   <link rel="stylesheet" href="pandoc.css" />
 </head>
@@ -87,11 +86,8 @@ Desktop＋XQuartzで講義用Dockerイメージを動かす。</li>
 <hr />
 <h2 id="主なモジュール">主なモジュール</h2>
 <p>起動するとこのような画面が立ち上がる。</p>
-<figure>
-<img src="img/000_salome/page_018.svg"
-alt="SALOMEの主なモジュール一覧" />
-<figcaption aria-hidden="true">SALOMEの主なモジュール一覧</figcaption>
-</figure>
+<p><img src="img/000_salome/page_018.svg"
+alt="SALOMEの主なモジュール一覧" /></p>
 <p>SALOMEのツールバーには、上図のように数多くのモジュールが並んでいる。主なモジュールは以下の通り。ただし本講義で実際に使うのは次の3つだけである。</p>
 <ul>
 <li>ジオメトリ作成の <strong>Shaper</strong></li>
@@ -129,10 +125,8 @@ alt="SALOMEの主なモジュール一覧" />
 </tbody>
 </table>
 <p>SALOME起動後は、画面左上のプルダウンから使用するモジュールを切り替える。</p>
-<figure>
-<img src="img/000_salome/page_017.svg" alt="モジュールを切り替える" />
-<figcaption aria-hidden="true">モジュールを切り替える</figcaption>
-</figure>
+<p><img src="img/000_salome/page_017.svg"
+alt="モジュールを切り替える" /></p>
 <hr />
 <h2 id="shaper-モジュール">Shaper モジュール</h2>
 <p>パラメトリック CAD モジュール。従来の Geometry（GEOM）の後継。</p>
@@ -147,12 +141,8 @@ alt="SALOMEの主なモジュール一覧" />
 <li>アセンブリ（複数パーツの組み立て）</li>
 </ul>
 <p>例えば、2Dスケッチを描いて押し出すと、以下のように3D形状が作られる。</p>
-<figure>
-<img src="img/000_salome/page_019.svg"
-alt="スケッチから押し出しで3D化する" />
-<figcaption
-aria-hidden="true">スケッチから押し出しで3D化する</figcaption>
-</figure>
+<p><img src="img/000_salome/page_019.svg"
+alt="スケッチから押し出しで3D化する" /></p>
 <h3 id="geomgeometryモジュールとは">GEOM（Geometry）モジュールとは</h3>
 <p>GEOM は Shaper
 より前からある直接モデリング（ダイレクトモデリング）方式のジオメトリモジュールで、CAD
@@ -161,12 +151,8 @@ aria-hidden="true">スケッチから押し出しで3D化する</figcaption>
 スクリプトによる自動化に強く、SALOME では現在も広く使われている。</p>
 <p>例えば、2つの Box
 をブーリアン演算（Fuse）で結合すると、以下のように1つの形状にまとまる。</p>
-<figure>
-<img src="img/000_salome/page_020.svg"
-alt="Box_1とBox_2をFuse（結合）する" />
-<figcaption
-aria-hidden="true">Box_1とBox_2をFuse（結合）する</figcaption>
-</figure>
+<p><img src="img/000_salome/page_020.svg"
+alt="Box_1とBox_2をFuse（結合）する" /></p>
 <h3 id="geom-モジュールとの比較">GEOM モジュールとの比較</h3>
 <table>
 <colgroup>
@@ -211,12 +197,8 @@ aria-hidden="true">Box_1とBox_2をFuse（結合）する</figcaption>
 <h3 id="メッシュとは">メッシュとは</h3>
 <p>メッシュとは、解析したい空間（計算領域）を小さなセル（要素）の集まりに分割したものである。CFDでは、このセル1つ1つについて流速や圧力などを計算するため、メッシュの細かさ・形・質が計算精度と計算時間を大きく左右する。メッシュ作成は解析の前処理の中で最も重要な工程といえる。</p>
 <p>セルの形には大きく分けて、規則正しく並ぶ<strong>構造格子</strong>（6面体＝ヘキサ）と、複雑な形状にも柔軟に対応できる<strong>非構造格子</strong>（4面体＝テトラ、プリズム、ピラミッド、ポリヘドラなど）がある。</p>
-<figure>
-<img src="img/000_salome/mesh_concept.svg"
-alt="構造格子と非構造格子のセル形状" />
-<figcaption
-aria-hidden="true">構造格子と非構造格子のセル形状</figcaption>
-</figure>
+<p><img src="img/000_salome/mesh_concept.svg"
+alt="構造格子と非構造格子のセル形状" /></p>
 <h3 id="メッシュの種類">メッシュの種類</h3>
 <table>
 <colgroup>
@@ -304,12 +286,8 @@ aria-hidden="true">構造格子と非構造格子のセル形状</figcaption>
 をすべて指定すると、辺の分割数を優先しつつ、面・体積は指定したサイズ範囲でメッシュが生成される。具体的な操作手順は
 <a href="001_box.md">001_box.md</a>
 の「1D/2D/3Dを指定してメッシュを制御する」を参照。</p>
-<figure>
-<img src="img/001_box/page_029.svg"
-alt="断面表示で内部メッシュを確認する" />
-<figcaption
-aria-hidden="true">断面表示で内部メッシュを確認する</figcaption>
-</figure>
+<p><img src="img/001_box/page_029.svg"
+alt="断面表示で内部メッシュを確認する" /></p>
 <h3 id="主なアルゴリズム">主なアルゴリズム</h3>
 <table>
 <thead>
@@ -395,19 +373,11 @@ aria-hidden="true">断面表示で内部メッシュを確認する</figcaption>
 <li><strong>厚み</strong>: 最初の層の厚さ</li>
 <li><strong>伸長率</strong>: 層ごとの厚みの増加比率</li>
 </ul>
-<figure>
-<img src="img/001_box/page_045.svg"
-alt="Viscous Layersの設定項目（トータル厚み・レイヤー数・比率）" />
-<figcaption aria-hidden="true">Viscous
-Layersの設定項目（トータル厚み・レイヤー数・比率）</figcaption>
-</figure>
+<p><img src="img/001_box/page_045.svg"
+alt="Viscous Layersの設定項目（トータル厚み・レイヤー数・比率）" /></p>
 <p>実際にヒートシンクのフィン表面へ境界層を入れると、以下のようにテトラメッシュの壁面側だけに薄い層状のメッシュが積み重なる。</p>
-<figure>
-<img src="img/003_heatsink/page_190.svg"
-alt="フィン周りに生成された境界層メッシュ" />
-<figcaption
-aria-hidden="true">フィン周りに生成された境界層メッシュ</figcaption>
-</figure>
+<p><img src="img/003_heatsink/page_190.svg"
+alt="フィン周りに生成された境界層メッシュ" /></p>
 <h3 id="サブメッシュ">サブメッシュ</h3>
 <p>特定のフェイスやエッジだけ分割設定を変えたい場合に使用。
 部分的に細かくしたり、境界条件ごとに名前（グループ）をつけるのに使う。</p>
@@ -420,12 +390,8 @@ aria-hidden="true">フィン周りに生成された境界層メッシュ</figca
 <h2 id="openfoam-との連携">OpenFOAM との連携</h2>
 <p>SALOME で作成したメッシュを OpenFOAM
 形式に変換して利用する。全体の流れは以下の通り。</p>
-<figure>
-<img src="img/000_salome/salome_to_openfoam_flow.png"
-alt="SALOMEからOpenFOAMへの連携フロー" />
-<figcaption
-aria-hidden="true">SALOMEからOpenFOAMへの連携フロー</figcaption>
-</figure>
+<p><img src="img/000_salome/salome_to_openfoam_flow.png"
+alt="SALOMEからOpenFOAMへの連携フロー" /></p>
 <p>本講義では、メッシャーとしてSALOMEを使った場合のメッシュ作成の基礎およびテクニックを学ぶことを目的とし、最終的にOpenFOAMで計算できる形へ変換するところまでを扱う。</p>
 <p>ただし、OpenFOAMでの計算の解説は行わない。OpenFOAMの設定ファイルも同封しているため、興味があれば取り組んでほしい。</p>
 <p>各演習のデータ（SALOMEから出力したUNVメッシュ・OpenFOAMケース一式・計算結果）は、リポジトリの以下のフォルダにある。</p>

@@ -21,7 +21,6 @@ SALOMEでヒートシンクの熱流体・固体連成メッシュを作る</tit
       margin: 0 0.8em 0.2em -1.6em;
       vertical-align: middle;
     }
-    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
     /* CSS for syntax highlighting */
     pre > code.sourceCode { white-space: pre; position: relative; }
     pre > code.sourceCode > span { line-height: 1.25; }
@@ -113,12 +112,8 @@ mm）</li>
 <li><code>heatSource</code>: 発熱源となる底板の固体領域</li>
 <li><code>basis</code>: ヒートシンクを載せる土台の固体領域</li>
 </ul>
-<figure>
-<img src="img/003_heatsink/page_151.svg"
-alt="モデル構成（heatSink・heatSource・basis・box）" />
-<figcaption
-aria-hidden="true">モデル構成（heatSink・heatSource・basis・box）</figcaption>
-</figure>
+<p><img src="img/003_heatsink/page_151.svg"
+alt="モデル構成（heatSink・heatSource・basis・box）" /></p>
 <h3 id="使用データの場所">使用データの場所</h3>
 <p>この演習で使うファイル・計算結果は、リポジトリの以下のフォルダにある。</p>
 <table>
@@ -157,12 +152,8 @@ aria-hidden="true">モデル構成（heatSink・heatSource・basis・box）</fig
 <code>model.FCStd</code>、SALOMEへ渡す形状データを
 <code>model.step</code>
 として保存している。この演習では、作成済みのCADモデルから出力したSTEPファイルをSALOMEへ読み込み、OpenFOAM用のマルチリージョンメッシュを作成するところまでを行う。</p>
-<figure>
-<img src="img/003_heatsink/FreeCADmodel.png"
-alt="FreeCADで作成したヒートシンクと流体領域のCADモデル" />
-<figcaption
-aria-hidden="true">FreeCADで作成したヒートシンクと流体領域のCADモデル</figcaption>
-</figure>
+<p><img src="img/003_heatsink/FreeCADmodel.png"
+alt="FreeCADで作成したヒートシンクと流体領域のCADモデル" /></p>
 <p>この演習のOpenFOAM計算は <strong>OpenFOAM
 13</strong>（www.openfoam.org 版）で行う。</p>
 <hr />
@@ -170,10 +161,8 @@ aria-hidden="true">FreeCADで作成したヒートシンクと流体領域のCAD
 STEPファイルを読み込む</h2>
 <h3 id="geometryモジュールへ切り替える">1.
 Geometryモジュールへ切り替える</h3>
-<figure>
-<img src="img/003_heatsink/page_152.svg" alt="Geometryへ切り替える" />
-<figcaption aria-hidden="true">Geometryへ切り替える</figcaption>
-</figure>
+<p><img src="img/003_heatsink/page_152.svg"
+alt="Geometryへ切り替える" /></p>
 <ul>
 <li><ol type="1">
 <li><code>Geometry</code> に変更する。</li>
@@ -181,11 +170,8 @@ Geometryモジュールへ切り替える</h3>
 </ul>
 <h3 id="stepファイルをインポートする">2.
 STEPファイルをインポートする</h3>
-<figure>
-<img src="img/003_heatsink/page_153.svg"
-alt="STEPファイルをインポートする" />
-<figcaption aria-hidden="true">STEPファイルをインポートする</figcaption>
-</figure>
+<p><img src="img/003_heatsink/page_153.svg"
+alt="STEPファイルをインポートする" /></p>
 <ul>
 <li><ol start="2" type="1">
 <li><code>File</code> &gt; <code>Import</code> &gt; <code>STEP</code>
@@ -201,11 +187,8 @@ alt="STEPファイルをインポートする" />
 </ol></li>
 </ul>
 <h3 id="内部形状を確認する">3. 内部形状を確認する</h3>
-<figure>
-<img src="img/003_heatsink/page_154.svg"
-alt="透過表示で内部形状を確認する" />
-<figcaption aria-hidden="true">透過表示で内部形状を確認する</figcaption>
-</figure>
+<p><img src="img/003_heatsink/page_154.svg"
+alt="透過表示で内部形状を確認する" /></p>
 <ul>
 <li><ol start="5" type="1">
 <li>背景上で右クリックし <code>Transparency</code> をクリックする。</li>
@@ -220,11 +203,8 @@ alt="透過表示で内部形状を確認する" />
 ソリッドを分解して名前を付ける</h2>
 <h3 id="explodeでソリッド単位に分解する">1.
 Explodeでソリッド単位に分解する</h3>
-<figure>
-<img src="img/003_heatsink/page_155.svg"
-alt="Explodeでソリッドに分解する" />
-<figcaption aria-hidden="true">Explodeでソリッドに分解する</figcaption>
-</figure>
+<p><img src="img/003_heatsink/page_155.svg"
+alt="Explodeでソリッドに分解する" /></p>
 <ul>
 <li><ol start="7" type="1">
 <li><code>Explode（要素に分解）</code> をクリックする。</li>
@@ -235,10 +215,8 @@ alt="Explodeでソリッドに分解する" />
 </ol></li>
 </ul>
 <h3 id="つのソリッドをリネームする">2. 4つのソリッドをリネームする</h3>
-<figure>
-<img src="img/003_heatsink/page_156.svg" alt="ソリッドをリネームする" />
-<figcaption aria-hidden="true">ソリッドをリネームする</figcaption>
-</figure>
+<p><img src="img/003_heatsink/page_156.svg"
+alt="ソリッドをリネームする" /></p>
 <ul>
 <li><ol start="9" type="1">
 <li>分解された4つのソリッドを右クリック &gt; <code>Rename</code>
@@ -251,10 +229,8 @@ alt="Explodeでソリッドに分解する" />
 <h2 id="geometry-partitionで領域を分割する">Geometry:
 Partitionで領域を分割する</h2>
 <h3 id="partitionを実行する">1. Partitionを実行する</h3>
-<figure>
-<img src="img/003_heatsink/page_157.svg" alt="Partitionを実行する" />
-<figcaption aria-hidden="true">Partitionを実行する</figcaption>
-</figure>
+<p><img src="img/003_heatsink/page_157.svg"
+alt="Partitionを実行する" /></p>
 <ul>
 <li><ol start="10" type="1">
 <li><code>Partition（分割）</code> をクリックする。</li>
@@ -266,22 +242,16 @@ Partitionで領域を分割する</h2>
 <li><code>Apply and Close</code> をクリックする。</li>
 </ol></li>
 </ul>
-<figure>
-<img src="img/003_heatsink/page_158.svg"
-alt="Partition_1の生成を確認する" />
-<figcaption aria-hidden="true">Partition_1の生成を確認する</figcaption>
-</figure>
+<p><img src="img/003_heatsink/page_158.svg"
+alt="Partition_1の生成を確認する" /></p>
 <ul>
 <li><code>Partition_1</code>
 の下に、4つのソリッドが子要素として作られたことを確認する。これらの共有面が、後でOpenFOAM側の流体-固体連成境界になる。</li>
 </ul>
 <h3 id="partition結果を再度分解してリネームする">2.
 Partition結果を再度分解してリネームする</h3>
-<figure>
-<img src="img/003_heatsink/page_159.svg"
-alt="Partition_1を再度Explodeする" />
-<figcaption aria-hidden="true">Partition_1を再度Explodeする</figcaption>
-</figure>
+<p><img src="img/003_heatsink/page_159.svg"
+alt="Partition_1を再度Explodeする" /></p>
 <ul>
 <li><ol start="12" type="1">
 <li><code>Explode</code> をクリックする。Main Objectは
@@ -292,10 +262,7 @@ alt="Partition_1を再度Explodeする" />
 <li><code>Apply and Close</code> をクリックする。</li>
 </ol></li>
 </ul>
-<figure>
-<img src="img/003_heatsink/page_160.svg" alt="リネームする" />
-<figcaption aria-hidden="true">リネームする</figcaption>
-</figure>
+<p><img src="img/003_heatsink/page_160.svg" alt="リネームする" /></p>
 <ul>
 <li><ol start="14" type="1">
 <li>分解された4つのソリッドを右クリック &gt; <code>Rename</code>
@@ -304,10 +271,8 @@ alt="Partition_1を再度Explodeする" />
 </ol></li>
 </ul>
 <h3 id="保存する">3. 保存する</h3>
-<figure>
-<img src="img/003_heatsink/page_161.svg" alt="名前を付けて保存する" />
-<figcaption aria-hidden="true">名前を付けて保存する</figcaption>
-</figure>
+<p><img src="img/003_heatsink/page_161.svg"
+alt="名前を付けて保存する" /></p>
 <ul>
 <li><ol start="15" type="1">
 <li><code>File</code> &gt; <code>Save As...</code> をクリックする。</li>
@@ -323,10 +288,8 @@ box領域の境界面にグループを作る</h2>
 <p>OpenFOAMでは境界条件は面の名前に対して設定するため、SALOME側で面グループを作り、後でOpenFOAMのパッチ名として使う。ここではまずbox（流体領域）の8つの境界面グループを作る。</p>
 <h3 id="外壁面のグループを作るyminzmaxxmaxymaxxmin">1.
 外壁面のグループを作る（YMin・ZMax・XMax・YMax・XMin）</h3>
-<figure>
-<img src="img/003_heatsink/page_162.svg" alt="YMinグループを作成する" />
-<figcaption aria-hidden="true">YMinグループを作成する</figcaption>
-</figure>
+<p><img src="img/003_heatsink/page_162.svg"
+alt="YMinグループを作成する" /></p>
 <ul>
 <li><ol type="1">
 <li><code>Partition_1</code> を右クリック &gt; <code>Create Group</code>
@@ -341,45 +304,34 @@ box領域の境界面にグループを作る</h2>
 <li><code>Apply</code> をクリックする。</li>
 </ol></li>
 </ul>
-<figure>
-<img src="img/003_heatsink/page_163.svg" alt="ZMaxグループを作成する" />
-<figcaption aria-hidden="true">ZMaxグループを作成する</figcaption>
-</figure>
+<p><img src="img/003_heatsink/page_163.svg"
+alt="ZMaxグループを作成する" /></p>
 <ul>
 <li>(4)(5) 同様に <code>ZMax</code> の面を選択して <code>Add</code> →
 <code>Apply</code>。</li>
 </ul>
-<figure>
-<img src="img/003_heatsink/page_164.svg" alt="XMaxグループを作成する" />
-<figcaption aria-hidden="true">XMaxグループを作成する</figcaption>
-</figure>
+<p><img src="img/003_heatsink/page_164.svg"
+alt="XMaxグループを作成する" /></p>
 <ul>
 <li>(6)(7) 同様に <code>XMax</code> の面を選択して <code>Add</code> →
 <code>Apply</code>。</li>
 </ul>
-<figure>
-<img src="img/003_heatsink/page_165.svg" alt="YMaxグループを作成する" />
-<figcaption aria-hidden="true">YMaxグループを作成する</figcaption>
-</figure>
+<p><img src="img/003_heatsink/page_165.svg"
+alt="YMaxグループを作成する" /></p>
 <ul>
 <li>(8)(9) 同様に <code>YMax</code> の面を選択して <code>Add</code> →
 <code>Apply</code>。</li>
 </ul>
-<figure>
-<img src="img/003_heatsink/page_166.svg" alt="XMinグループを作成する" />
-<figcaption aria-hidden="true">XMinグループを作成する</figcaption>
-</figure>
+<p><img src="img/003_heatsink/page_166.svg"
+alt="XMinグループを作成する" /></p>
 <ul>
 <li>(10)(11) 同様に <code>XMin</code> の面を選択して <code>Add</code> →
 <code>Apply</code>。</li>
 </ul>
 <h3 id="basisとの接触面グループを作る">2.
 basisとの接触面グループを作る</h3>
-<figure>
-<img src="img/003_heatsink/page_167.svg"
-alt="basisグループを作成する" />
-<figcaption aria-hidden="true">basisグループを作成する</figcaption>
-</figure>
+<p><img src="img/003_heatsink/page_167.svg"
+alt="basisグループを作成する" /></p>
 <ul>
 <li><ol start="12" type="1">
 <li><code>basis</code> の側面5面を選択して <code>Add</code>
@@ -392,22 +344,16 @@ alt="basisグループを作成する" />
 </ul>
 <h3 id="heatsinkheatsourceとの接触面グループを作る">3.
 heatSink・heatSourceとの接触面グループを作る</h3>
-<figure>
-<img src="img/003_heatsink/page_168.svg"
-alt="box外側の面を非表示にする" />
-<figcaption aria-hidden="true">box外側の面を非表示にする</figcaption>
-</figure>
+<p><img src="img/003_heatsink/page_168.svg"
+alt="box外側の面を非表示にする" /></p>
 <ul>
 <li><ol start="14" type="1">
 <li>内部のheatSink・heatSourceの面を選択しやすくするため、box外側の面（上面・側面など）を選択して
 <code>Hide selected</code> で非表示にする。</li>
 </ol></li>
 </ul>
-<figure>
-<img src="img/003_heatsink/page_169.svg"
-alt="heatSinkグループを作成する" />
-<figcaption aria-hidden="true">heatSinkグループを作成する</figcaption>
-</figure>
+<p><img src="img/003_heatsink/page_169.svg"
+alt="heatSinkグループを作成する" /></p>
 <ul>
 <li><ol start="15" type="1">
 <li><code>RIGHT view</code>
@@ -418,11 +364,8 @@ alt="heatSinkグループを作成する" />
 <li><code>Apply</code> をクリックする。</li>
 </ol></li>
 </ul>
-<figure>
-<img src="img/003_heatsink/page_170.svg"
-alt="heatSourceグループを作成する" />
-<figcaption aria-hidden="true">heatSourceグループを作成する</figcaption>
-</figure>
+<p><img src="img/003_heatsink/page_170.svg"
+alt="heatSourceグループを作成する" /></p>
 <ul>
 <li><ol start="17" type="1">
 <li>同様にheatSourceの表面を選択して <code>Add</code>
@@ -433,11 +376,8 @@ alt="heatSourceグループを作成する" />
 </ol></li>
 </ul>
 <h3 id="basis側の上面グループを作る">4. basis側の上面グループを作る</h3>
-<figure>
-<img src="img/003_heatsink/page_171.svg"
-alt="basis_topグループを作成する" />
-<figcaption aria-hidden="true">basis_topグループを作成する</figcaption>
-</figure>
+<p><img src="img/003_heatsink/page_171.svg"
+alt="basis_topグループを作成する" /></p>
 <ul>
 <li><ol start="19" type="1">
 <li>今度はbasis自体の視点で、heatSourceと接する上面を選択して
@@ -450,12 +390,8 @@ alt="basis_topグループを作成する" />
 </ul>
 <h3 id="完成した境界グループを確認する">5.
 完成した境界グループを確認する</h3>
-<figure>
-<img src="img/003_heatsink/page_172.svg"
-alt="box配下の全境界グループを確認する" />
-<figcaption
-aria-hidden="true">box配下の全境界グループを確認する</figcaption>
-</figure>
+<p><img src="img/003_heatsink/page_172.svg"
+alt="box配下の全境界グループを確認する" /></p>
 <ul>
 <li><code>Partition_1</code> の <code>box</code>
 配下に、<code>YMin</code> / <code>ZMax</code> / <code>XMax</code> /
@@ -464,10 +400,8 @@ aria-hidden="true">box配下の全境界グループを確認する</figcaption>
 の8グループが揃ったことを確認する。</li>
 </ul>
 <h3 id="保存する-1">6. 保存する</h3>
-<figure>
-<img src="img/003_heatsink/page_173.svg" alt="名前を付けて保存する" />
-<figcaption aria-hidden="true">名前を付けて保存する</figcaption>
-</figure>
+<p><img src="img/003_heatsink/page_173.svg"
+alt="名前を付けて保存する" /></p>
 <ul>
 <li><ol start="21" type="1">
 <li><code>File</code> &gt; <code>Save As...</code> をクリックする。</li>
@@ -481,31 +415,24 @@ aria-hidden="true">box配下の全境界グループを確認する</figcaption>
 <h2 id="mesh-テトラメッシュを作成する">Mesh:
 テトラメッシュを作成する</h2>
 <h3 id="meshモジュールへ切り替える">1. Meshモジュールへ切り替える</h3>
-<figure>
-<img src="img/003_heatsink/page_174.svg" alt="Meshへ切り替える" />
-<figcaption aria-hidden="true">Meshへ切り替える</figcaption>
-</figure>
+<p><img src="img/003_heatsink/page_174.svg"
+alt="Meshへ切り替える" /></p>
 <ul>
 <li><ol type="1">
 <li><code>Mesh</code> に変更する。</li>
 </ol></li>
 </ul>
 <h3 id="メッシュを新規作成する">2. メッシュを新規作成する</h3>
-<figure>
-<img src="img/003_heatsink/page_175.svg" alt="Create Meshを開く" />
-<figcaption aria-hidden="true">Create Meshを開く</figcaption>
-</figure>
+<p><img src="img/003_heatsink/page_175.svg"
+alt="Create Meshを開く" /></p>
 <ul>
 <li><ol start="2" type="1">
 <li><code>Mesh</code> &gt; <code>Create Mesh</code>
 をクリックする。</li>
 </ol></li>
 </ul>
-<figure>
-<img src="img/003_heatsink/page_176.svg"
-alt="テトラメッシュの仮設定をする" />
-<figcaption aria-hidden="true">テトラメッシュの仮設定をする</figcaption>
-</figure>
+<p><img src="img/003_heatsink/page_176.svg"
+alt="テトラメッシュの仮設定をする" /></p>
 <ul>
 <li><ol start="3" type="1">
 <li>Geometryに <code>Partition_1</code>
@@ -523,10 +450,8 @@ alt="テトラメッシュの仮設定をする" />
 <li><code>Apply and Close</code> をクリックする。</li>
 </ol></li>
 </ul>
-<figure>
-<img src="img/003_heatsink/page_177.svg" alt="メッシュを計算する" />
-<figcaption aria-hidden="true">メッシュを計算する</figcaption>
-</figure>
+<p><img src="img/003_heatsink/page_177.svg"
+alt="メッシュを計算する" /></p>
 <ul>
 <li><ol start="7" type="1">
 <li><code>Mesh_1</code> を選択した状態で <code>Compute</code>
@@ -535,21 +460,14 @@ alt="テトラメッシュの仮設定をする" />
 <li>計算成功（Nodes 11864、Tetrahedrons 59943）を確認する。</li>
 </ul>
 <h3 id="断面で内部形状を確認する">3. 断面で内部形状を確認する</h3>
-<figure>
-<img src="img/003_heatsink/page_178.svg"
-alt="Clippingで断面を確認する" />
-<figcaption aria-hidden="true">Clippingで断面を確認する</figcaption>
-</figure>
+<p><img src="img/003_heatsink/page_178.svg"
+alt="Clippingで断面を確認する" /></p>
 <ul>
 <li>Clipping平面（Y-Z面）を使い、boxの中のheatSink形状とメッシュの様子を確認する。</li>
 </ul>
 <h3 id="メッシュサイズを調整する">4. メッシュサイズを調整する</h3>
-<figure>
-<img src="img/003_heatsink/page_179.svg"
-alt="NETGEN 3D Parametersを編集する" />
-<figcaption aria-hidden="true">NETGEN 3D
-Parametersを編集する</figcaption>
-</figure>
+<p><img src="img/003_heatsink/page_179.svg"
+alt="NETGEN 3D Parametersを編集する" /></p>
 <ul>
 <li><ol start="8" type="1">
 <li><code>Mesh_1</code> を選択した状態で <code>Edit Mesh</code>
@@ -565,20 +483,15 @@ Parametersを編集する</figcaption>
 Layers）を追加する</h2>
 <h3 id="heatsinkheatsourceの表面に境界層を追加する">1.
 heatSink・heatSourceの表面に境界層を追加する</h3>
-<figure>
-<img src="img/003_heatsink/page_180.svg"
-alt="Viscous Layersを追加する" />
-<figcaption aria-hidden="true">Viscous Layersを追加する</figcaption>
-</figure>
+<p><img src="img/003_heatsink/page_180.svg"
+alt="Viscous Layersを追加する" /></p>
 <ul>
 <li><ol start="10" type="1">
 <li>Add. Hypothesisで <code>Viscous Layers</code> を追加する。</li>
 </ol></li>
 </ul>
-<figure>
-<img src="img/003_heatsink/page_181.svg" alt="境界層の厚さを設定する" />
-<figcaption aria-hidden="true">境界層の厚さを設定する</figcaption>
-</figure>
+<p><img src="img/003_heatsink/page_181.svg"
+alt="境界層の厚さを設定する" /></p>
 <ul>
 <li>Total thicknessを <code>0.2</code>、Number of layersを
 <code>3</code>、Stretch factorを <code>1</code> にする。</li>
@@ -590,24 +503,16 @@ alt="Viscous Layersを追加する" />
 </ul>
 <h3 id="basis側の境界層との接続に注意する">2.
 basis側の境界層との接続に注意する</h3>
-<figure>
-<img src="img/003_heatsink/page_182.svg"
-alt="basisとの接続でメッシュが崩れる問題" />
-<figcaption
-aria-hidden="true">basisとの接続でメッシュが崩れる問題</figcaption>
-</figure>
+<p><img src="img/003_heatsink/page_182.svg"
+alt="basisとの接続でメッシュが崩れる問題" /></p>
 <ul>
 <li>heatSink・heatSourceだけに境界層を付けると、境界層の外側の輪郭がbasisの表面メッシュとぴったり重ならず、つなぎ目でメッシュ生成エラーになりやすい。</li>
 <li>これを避けるため、basis側にも対応する境界層（Viscous
 Layers）を追加し、輪郭を合わせる。</li>
 </ul>
 <h3 id="basis側にも境界層を追加する">3. basis側にも境界層を追加する</h3>
-<figure>
-<img src="img/003_heatsink/page_183.svg"
-alt="basis側にViscous Layers_2を追加する" />
-<figcaption aria-hidden="true">basis側にViscous
-Layers_2を追加する</figcaption>
-</figure>
+<p><img src="img/003_heatsink/page_183.svg"
+alt="basis側にViscous Layers_2を追加する" /></p>
 <ul>
 <li><ol start="12" type="1">
 <li>Viscous Layers_1に続けて、プラスボタンで新たに
@@ -619,25 +524,18 @@ Layers_2を追加する</figcaption>
 を選ぶ（heatSink・heatSourceの境界層と滑らかに接続させるため）。</li>
 </ul>
 <h3 id="再計算して確認する">4. 再計算して確認する</h3>
-<figure>
-<img src="img/003_heatsink/page_184.svg" alt="メッシュを再計算する" />
-<figcaption aria-hidden="true">メッシュを再計算する</figcaption>
-</figure>
+<p><img src="img/003_heatsink/page_184.svg"
+alt="メッシュを再計算する" /></p>
 <ul>
 <li><ol start="13" type="1">
 <li><code>Compute</code> をクリックする。計算成功（Nodes
 47701、Tetrahedrons 75244、Prisms 63612）を確認する。</li>
 </ol></li>
 </ul>
-<figure>
-<img src="img/003_heatsink/page_185.svg" alt="警告内容を確認する" />
-<figcaption aria-hidden="true">警告内容を確認する</figcaption>
-</figure>
-<figure>
-<img src="img/003_heatsink/page_186.svg"
-alt="フィン部分の境界層を確認する" />
-<figcaption aria-hidden="true">フィン部分の境界層を確認する</figcaption>
-</figure>
+<p><img src="img/003_heatsink/page_185.svg"
+alt="警告内容を確認する" /></p>
+<p><img src="img/003_heatsink/page_186.svg"
+alt="フィン部分の境界層を確認する" /></p>
 <ul>
 <li>計算は成功するが、フィン間隔が狭いため「Thickness of viscous layers
 not
@@ -646,11 +544,8 @@ reached（指定した境界層厚さに届いていない）」という警告�
 </ul>
 <h3 id="boxの外壁にも境界層を追加する">5.
 boxの外壁にも境界層を追加する</h3>
-<figure>
-<img src="img/003_heatsink/page_187.svg"
-alt="Viscous Layers_3を追加する" />
-<figcaption aria-hidden="true">Viscous Layers_3を追加する</figcaption>
-</figure>
+<p><img src="img/003_heatsink/page_187.svg"
+alt="Viscous Layers_3を追加する" /></p>
 <ul>
 <li><ol start="14" type="1">
 <li>新たに <code>Viscous Layers_3</code> を追加する。</li>
@@ -663,34 +558,24 @@ alt="Viscous Layers_3を追加する" />
 をクリックする。</li>
 </ol></li>
 </ul>
-<figure>
-<img src="img/003_heatsink/page_188.svg"
-alt="3つのViscous Layersを確認して確定する" />
-<figcaption aria-hidden="true">3つのViscous
-Layersを確認して確定する</figcaption>
-</figure>
+<p><img src="img/003_heatsink/page_188.svg"
+alt="3つのViscous Layersを確認して確定する" /></p>
 <ul>
 <li>Add. HypothesisにViscous
 Layers_1〜3がすべて追加されていることを確認し、<code>Apply and Close</code>
 をクリックする。</li>
 </ul>
 <h3 id="最終メッシュを計算する">6. 最終メッシュを計算する</h3>
-<figure>
-<img src="img/003_heatsink/page_189.svg" alt="メッシュを計算する" />
-<figcaption aria-hidden="true">メッシュを計算する</figcaption>
-</figure>
+<p><img src="img/003_heatsink/page_189.svg"
+alt="メッシュを計算する" /></p>
 <ul>
 <li><ol start="16" type="1">
 <li><code>Compute</code> をクリックする。計算成功（Nodes
 52304、Tetrahedrons 76661、Prisms 72804）、エラーなしを確認する。</li>
 </ol></li>
 </ul>
-<figure>
-<img src="img/003_heatsink/page_190.svg"
-alt="フィン周りの境界層を拡大確認する" />
-<figcaption
-aria-hidden="true">フィン周りの境界層を拡大確認する</figcaption>
-</figure>
+<p><img src="img/003_heatsink/page_190.svg"
+alt="フィン周りの境界層を拡大確認する" /></p>
 <ul>
 <li>フィン間の境界層とテトラメッシュの接続部分を拡大し、品質を確認する。</li>
 </ul>
@@ -698,20 +583,16 @@ aria-hidden="true">フィン周りの境界層を拡大確認する</figcaption>
 <h2 id="mesh-sub-meshで流体領域だけ細分化する">Mesh:
 Sub-meshで流体領域だけ細分化する</h2>
 <h3 id="box用のsub-meshを作成する">1. box用のSub-meshを作成する</h3>
-<figure>
-<img src="img/003_heatsink/page_191.svg" alt="Create Sub-meshを開く" />
-<figcaption aria-hidden="true">Create Sub-meshを開く</figcaption>
-</figure>
+<p><img src="img/003_heatsink/page_191.svg"
+alt="Create Sub-meshを開く" /></p>
 <ul>
 <li><ol start="17" type="1">
 <li><code>Mesh_1</code> を選択した状態で <code>Create Sub-mesh</code>
 をクリックする。</li>
 </ol></li>
 </ul>
-<figure>
-<img src="img/003_heatsink/page_192.svg" alt="Sub-meshの設定をする" />
-<figcaption aria-hidden="true">Sub-meshの設定をする</figcaption>
-</figure>
+<p><img src="img/003_heatsink/page_192.svg"
+alt="Sub-meshの設定をする" /></p>
 <ul>
 <li><ol start="18" type="1">
 <li>Geometryに <code>box</code> が選択されていることを確認する。</li>
@@ -728,19 +609,13 @@ Sub-meshで流体領域だけ細分化する</h2>
 </ol></li>
 </ul>
 <h3 id="sub-meshを計算する">2. Sub-meshを計算する</h3>
-<figure>
-<img src="img/003_heatsink/page_193.svg"
-alt="box部分のメッシュを拡大確認する" />
-<figcaption
-aria-hidden="true">box部分のメッシュを拡大確認する</figcaption>
-</figure>
+<p><img src="img/003_heatsink/page_193.svg"
+alt="box部分のメッシュを拡大確認する" /></p>
 <ul>
 <li>box領域内のフィン周りが、全体メッシュより細かくなっていることを確認する。</li>
 </ul>
-<figure>
-<img src="img/003_heatsink/page_194.svg" alt="Compute を実行する" />
-<figcaption aria-hidden="true">Compute を実行する</figcaption>
-</figure>
+<p><img src="img/003_heatsink/page_194.svg"
+alt="Compute を実行する" /></p>
 <ul>
 <li><ol start="26" type="1">
 <li><code>Mesh_1</code> を選択した状態で <code>Compute</code>
@@ -748,11 +623,8 @@ aria-hidden="true">box部分のメッシュを拡大確認する</figcaption>
 </ol></li>
 </ul>
 <h3 id="不要なグループを削除する">3. 不要なグループを削除する</h3>
-<figure>
-<img src="img/003_heatsink/page_195.svg"
-alt="不要なGroup_1を削除する" />
-<figcaption aria-hidden="true">不要なGroup_1を削除する</figcaption>
-</figure>
+<p><img src="img/003_heatsink/page_195.svg"
+alt="不要なGroup_1を削除する" /></p>
 <ul>
 <li><ol start="29" type="1">
 <li>グループ作成時に重複してできた
@@ -761,10 +633,8 @@ alt="不要なGroup_1を削除する" />
 </ol></li>
 </ul>
 <h3 id="保存する-2">4. 保存する</h3>
-<figure>
-<img src="img/003_heatsink/page_196.svg" alt="名前を付けて保存する" />
-<figcaption aria-hidden="true">名前を付けて保存する</figcaption>
-</figure>
+<p><img src="img/003_heatsink/page_196.svg"
+alt="名前を付けて保存する" /></p>
 <ul>
 <li><ol start="27" type="1">
 <li><code>File</code> &gt; <code>Save As...</code> をクリックする。</li>
@@ -776,12 +646,8 @@ alt="不要なGroup_1を削除する" />
 </ul>
 <hr />
 <h2 id="mesh-openfoam用にunv出力する">Mesh: OpenFOAM用にUNV出力する</h2>
-<figure>
-<img src="img/003_heatsink/page_197.svg"
-alt="UNVファイルをエクスポートする" />
-<figcaption
-aria-hidden="true">UNVファイルをエクスポートする</figcaption>
-</figure>
+<p><img src="img/003_heatsink/page_197.svg"
+alt="UNVファイルをエクスポートする" /></p>
 <ul>
 <li><ol start="29" type="1">
 <li><code>Mesh_1</code> を右クリック &gt; <code>Export</code> &gt;
@@ -798,12 +664,8 @@ aria-hidden="true">UNVファイルをエクスポートする</figcaption>
 id="余裕がある人向けopenfoam側での計算">（余裕がある人向け）OpenFOAM側での計算</h2>
 <p>SALOME で作成したメッシュを OpenFOAM
 形式に変換して利用する。全体の流れは以下の通り。</p>
-<figure>
-<img src="img/000_salome/salome_to_openfoam_flow.png"
-alt="SALOMEからOpenFOAMへの連携フロー" />
-<figcaption
-aria-hidden="true">SALOMEからOpenFOAMへの連携フロー</figcaption>
-</figure>
+<p><img src="img/000_salome/salome_to_openfoam_flow.png"
+alt="SALOMEからOpenFOAMへの連携フロー" /></p>
 <ul>
 <li>作業フォルダ: <code>data/003_heatsink/run001_of13</code></li>
 </ul>
@@ -820,12 +682,8 @@ id="setup.shによるメッシュ変換とケース設定">setup.shによるメ�
 <div class="sourceCode" id="cb2"><pre
 class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bash</span> setup.sh</span></code></pre></div>
 <p><code>setup.sh</code> の中では、以下の処理を順に行っている。</p>
-<figure>
-<img src="img/003_heatsink/openfoam13_setup_flow.svg"
-alt="OpenFOAM 13ケースセットアップの流れ" />
-<figcaption aria-hidden="true">OpenFOAM
-13ケースセットアップの流れ</figcaption>
-</figure>
+<p><img src="img/003_heatsink/openfoam13_setup_flow.svg"
+alt="OpenFOAM 13ケースセットアップの流れ" /></p>
 <pre class="text"><code>1. 前回実行分のクリーンアップ
 2. ideasUnvToFoam Mesh_1.unv     … UNVメッシュをOpenFOAM形式へ変換
 3. transformPoints &quot;scale=(0.001 0.001 0.001)&quot;  … mm単位からm単位へスケール変換
@@ -854,12 +712,8 @@ alt="OpenFOAM 13ケースセットアップの流れ" />
 <code>constant/&lt;region&gt;</code>、数値スキーム・行列ソルバ設定は
 <code>system/&lt;region&gt;</code> に用意している。</li>
 </ul>
-<figure>
-<img src="img/003_heatsink/page_198.svg"
-alt="OpenFOAM側でメッシュ全体を確認する" />
-<figcaption
-aria-hidden="true">OpenFOAM側でメッシュ全体を確認する</figcaption>
-</figure>
+<p><img src="img/003_heatsink/page_198.svg"
+alt="OpenFOAM側でメッシュ全体を確認する" /></p>
 <ul>
 <li>ParaView等で、box（流体）とheatSink・heatSource・basis（固体）を含むメッシュ全体像を確認する。</li>
 </ul>
@@ -898,22 +752,14 @@ m/s）を設定して安定化している。</li>
 の再実行で続きから計算される。</li>
 </ul>
 <h3 id="計算結果の確認">計算結果の確認</h3>
-<figure>
-<img src="img/003_heatsink/page_199.svg"
-alt="計算結果（速度分布・温度分布）" />
-<figcaption
-aria-hidden="true">計算結果（速度分布・温度分布）</figcaption>
-</figure>
+<p><img src="img/003_heatsink/page_199.svg"
+alt="計算結果（速度分布・温度分布）" /></p>
 <ul>
 <li>流体領域では速度ベクトル分布、固体領域では温度分布を確認する。</li>
 <li>ヒートシンク周りの流れが発熱部からの熱を受け取り、フィン表面から周囲へ熱を逃がしている様子を確認する。</li>
 </ul>
 <p>計算が進むにつれて、発熱源からフィン先端まで温度が上昇し、周囲の空気が対流で熱を運び去っていく過程をアニメーションで確認できる。</p>
-<figure>
-<img src="img/003_heatsink/ani_comp.gif"
-alt="計算過程のアニメーション（速度・温度分布の時間変化）" />
-<figcaption
-aria-hidden="true">計算過程のアニメーション（速度・温度分布の時間変化）</figcaption>
-</figure>
+<p><img src="img/003_heatsink/ani_comp.gif"
+alt="計算過程のアニメーション（速度・温度分布の時間変化）" /></p>
 </body>
 </html>

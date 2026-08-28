@@ -20,16 +20,19 @@
 `/usr/share/javascript/mathjax/MathJax.js` を埋め込み、Pagesで数式が出ない）。
 **重要**: `--mathjax` を付けるとpandocが `https://polyfill.io/...` のスクリプトも
 自動挿入する。polyfill.io は乗っ取られてマルウェア配信元になった危険ドメインなので、
-ビルド後に必ず `sed -i '/polyfill\.io/d' *.html` で除去する（MathJax 3には不要）:
+ビルド後に必ず `sed -i '/polyfill\.io/d' *.html` で除去する（MathJax 3には不要）。
+**キャプションは付けない方針**なので `-f markdown-implicit_figures` を必ず付ける
+（付けないとpandocが画像のalt文字列を `<figcaption>` として画像の下に出してしまう）:
 
 ```bash
 MJ="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
-pandoc 000_salome.md    -s -c pandoc.css --mathjax="$MJ" --metadata pagetitle="000 SALOMEとは" -o 000_salome.html
-pandoc 001_box.md       -s -c pandoc.css --mathjax="$MJ" --metadata pagetitle="001 Box: SALOMEでOpenFOAM用メッシュを作る" -o 001_box.html
-pandoc 002_stirrer.md   -s -c pandoc.css --mathjax="$MJ" --metadata pagetitle="002 Stirrer: SALOMEで撹拌機のヘキサメッシュを作る" -o 002_stirrer.html
-pandoc 003_heatsink.md  -s -c pandoc.css --mathjax="$MJ" --metadata pagetitle="003 Heatsink: SALOMEでヒートシンクの熱流体・固体連成メッシュを作る" -o 003_heatsink.html
-pandoc 004_salome_docker.md -s -c pandoc.css --mathjax="$MJ" --metadata pagetitle="004 Mac向け: DockerでSALOME 9.15を使う" -o 004_salome_docker.html
-pandoc index.md         -s -c pandoc.css --mathjax="$MJ" --metadata pagetitle="Track3: SALOMEを使ったOpenFOAMメッシュ作成" -o index.html
+F="markdown-implicit_figures"   # 画像キャプション(figcaption)を出さない
+pandoc 000_salome.md      -f "$F" -s -c pandoc.css --mathjax="$MJ" --metadata pagetitle="000 SALOMEとは" -o 000_salome.html
+pandoc 001_box.md         -f "$F" -s -c pandoc.css --mathjax="$MJ" --metadata pagetitle="001 Box: SALOMEでOpenFOAM用メッシュを作る" -o 001_box.html
+pandoc 002_stirrer.md     -f "$F" -s -c pandoc.css --mathjax="$MJ" --metadata pagetitle="002 Stirrer: SALOMEで撹拌機のヘキサメッシュを作る" -o 002_stirrer.html
+pandoc 003_heatsink.md    -f "$F" -s -c pandoc.css --mathjax="$MJ" --metadata pagetitle="003 Heatsink: SALOMEでヒートシンクの熱流体・固体連成メッシュを作る" -o 003_heatsink.html
+pandoc install_salome.md  -f "$F" -s -c pandoc.css --mathjax="$MJ" --metadata pagetitle="SALOME 9.15 のインストール（Windows / Mac）" -o install_salome.html
+pandoc index.md           -f "$F" -s -c pandoc.css --mathjax="$MJ" --metadata pagetitle="Track3: SALOMEを使ったOpenFOAMメッシュ作成" -o index.html
 sed -i '/polyfill\.io/d' *.html   # 危険なpolyfill.ioスクリプトを除去
 ```
 
@@ -37,8 +40,9 @@ sed -i '/polyfill\.io/d' *.html   # 危険なpolyfill.ioスクリプトを除去
 
 ```bash
 MJ="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+F="markdown-implicit_figures"
 python3 memo/build_slides.py   # 000〜003.md を結合して slides.md を生成
-pandoc slides.md -t revealjs -s --slide-level=2 -c slides.css --mathjax="$MJ" \
+pandoc slides.md -f "$F" -t revealjs -s --slide-level=2 -c slides.css --mathjax="$MJ" \
   -V revealjs-url=reveal.js -V theme=white -V transition=slide \
   -V width=1280 -V height=800 -V margin=0.06 \
   -V slideNumber=true -V showSlideNumber=all \
