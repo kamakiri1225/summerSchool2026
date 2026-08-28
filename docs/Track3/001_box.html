@@ -948,39 +948,153 @@ alt="OpenFOAM計算結果のParaView可視化" /></p>
 </ul>
 <hr />
 <h2 id="メッシュの品質について">メッシュの品質について</h2>
-<p><img src="img/001_box/track2_p133.svg"
-alt="計算前の確認事項: checkMeshでメッシュ数と品質を確認する" /></p>
-<p><code>checkMesh</code>
-の結果では、セル数だけでなく次の品質指標を確認する。</p>
-<ul>
-<li><code>Max aspect ratio</code>:
-セルの縦横比。大きすぎるセルは計算の収束を遅くする場合がある。</li>
-<li><code>Mesh non-orthogonality Max</code>:
-セル面とセル中心間の非直交性。70度を超える場合は数値設定による補正が必要になり、90度を超えるメッシュは使用しない。</li>
-<li><code>Max skewness</code>:
-セルの歪み。値が大きい場所では補間精度が低下しやすい。</li>
-<li><code>Mesh OK</code>:
-OpenFOAMの基本的な品質判定を通過したことを示す。ただし、解析内容に適した品質かどうかは各指標の値とParaView上の位置を併せて判断する。</li>
-</ul>
-<p>品質に問題がある面やセルは、<code>checkMesh</code>
-の面セット・セルセット出力をParaViewで表示し、問題箇所を確認する。</p>
+<p>メッシュが膨大すぎると計算時間がかかり、品質が悪いと数値拡散が起こる、収束性が悪い、計算が発散するといった問題が起きる。困ったことが起こらないように、計算前に
+<code>checkMesh</code> でメッシュ数と品質を確認する。</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">checkMesh</span></span></code></pre></div>
+<p><code>checkMesh</code> の結果では、セル数（<code>points</code>
+は節点の数、<code>faces</code>
+は面の数）だけでなく次の品質指標を確認する。</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>指標</th>
+<th>目安</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>Max aspect ratio</code>（アスペクト比）</td>
+<td>極端に大きくしない</td>
+<td>セルの縦横比。非常に微細な境界層で現れる。ソルバーの安定性にとって致命的ではないが、収束速度を著しく低下させる可能性がある</td>
+</tr>
+<tr class="even">
+<td><code>Mesh non-orthogonality Max</code>（非直交性）</td>
+<td>70未満が安全</td>
+<td>セル面とセル中心間の非直交性。70〜90は <code>fvSolution</code> の
+<code>nonOrthoCorrector</code> や <code>fvSchemes</code>
+の数値スキームで特別な処理を行う必要がある。90を超えるとシミュレーションに使用できない悪いメッシュ</td>
+</tr>
+<tr class="odd">
+<td><code>Max skewness</code>（歪度）</td>
+<td>小さいほどよい</td>
+<td>セルの歪み。値が大きいと結果の品質（正確さ）が損なわれる可能性があるが、適度な大きさであればシミュレーションに使用できる</td>
+</tr>
+<tr class="even">
+<td>Smoothness（隣接セルの変化）</td>
+<td>20%未満が理想</td>
+<td>隣り合うセルのメッシュ間隔の最大変化</td>
+</tr>
+<tr class="odd">
+<td><code>Mesh OK</code></td>
+<td>—</td>
+<td>OpenFOAMの基本的な品質判定を通過したことを示す。ただし、解析内容に適した品質かどうかは各指標の値とParaView上の位置を併せて判断する</td>
+</tr>
+</tbody>
+</table>
+<p>判定に使われるしきい値は、OpenFOAMのソースに定義されている。</p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">find</span> <span class="va">$FOAM_SRC</span> <span class="at">-name</span> <span class="st">&quot;primitiveMeshCheck&quot;</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">vi</span> <span class="va">$FOAM_ETC</span>/OpenFOAM/meshes/primitiveMesh/primitiveMeshCheck/primitiveMeshCheck.C</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>Foam<span class="op">::</span>scalar Foam<span class="op">::</span>primitiveMesh<span class="op">::</span><span class="va">closedThreshold_</span>  <span class="op">=</span> <span class="fl">1.0e-6</span><span class="op">;</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>Foam<span class="op">::</span>scalar Foam<span class="op">::</span>primitiveMesh<span class="op">::</span><span class="va">aspectThreshold_</span>  <span class="op">=</span> <span class="dv">1000</span><span class="op">;</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>Foam<span class="op">::</span>scalar Foam<span class="op">::</span>primitiveMesh<span class="op">::</span><span class="va">nonOrthThreshold_</span> <span class="op">=</span> <span class="dv">70</span><span class="op">;</span>    <span class="co">// deg</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>Foam<span class="op">::</span>scalar Foam<span class="op">::</span>primitiveMesh<span class="op">::</span><span class="va">skewThreshold_</span>    <span class="op">=</span> <span class="dv">4</span><span class="op">;</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>Foam<span class="op">::</span>scalar Foam<span class="op">::</span>primitiveMesh<span class="op">::</span><span class="va">planarCosAngle_</span>   <span class="op">=</span> <span class="fl">1.0e-6</span><span class="op">;</span></span></code></pre></div>
+<p>品質に問題がある面は、<code>checkMesh</code>
+が出力する面セットをVTKに変換してParaViewで確認する。品質に問題があれば、メッシュを作り直すかスキームでごまかす。</p>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">foamToVTK</span> <span class="at">-faceSet</span> skewFaces <span class="at">-time</span> 0</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="ex">foamToVTK</span> <span class="at">-faceSet</span> nonOrthoFaces <span class="at">-time</span> 0</span></code></pre></div>
 <hr />
 <h2 id="計算中の確認事項">計算中の確認事項</h2>
-<p>メッシュができて計算が始まったあとも、計算が異常を起こしていないかを確認する。理論式や実験データとの比較だけでなく、次の項目を見ておくとよい。</p>
-<p><img src="img/001_box/track2_p134.svg"
-alt="計算中の確認事項: 残差・連続式の誤差・y+・流量の整合性" /></p>
+<p>理論式や実験データとの比較も大事だが、計算が異常を起こしていないか確認するのも大事である。</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>項目</th>
+<th>説明</th>
+<th>補足</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>残差</td>
+<td><code>system/fvSolution</code> の <code>residualControl</code>
+は十分残差が落ちた時に自動停止させる設定。許容値が大きいと収束する前に計算を止めてしまう可能性があるため、収束状況をグラフに描いて確かめることが非常に重要</td>
+<td>定常解析の場合、不足緩和係数が大きいと強引に計算を進めるため、残差の振動が激しすぎる場合がある</td>
+</tr>
+<tr class="even">
+<td>連続式の誤差</td>
+<td>非圧縮のSIMPLE系の解法は、連続の式を満たすように圧力を解いている。連続式に誤差が溜まるということは、圧力の収束判定に問題があることを意味する</td>
+<td>発散する場合は、この値が大きすぎる場合がある。圧力に関する収束（緩和係数、時間刻み）やメッシュ品質を見直すと落ち着く場合がある</td>
+</tr>
+<tr class="odd">
+<td>y+</td>
+<td>高Re型の標準k-εの場合は <code>30 &lt; y+ &lt; 300</code>
+の対数則領域を推奨。k-ωSSTのようにy+の広い範囲で適用できるモデルもある（<code>1 &lt; y+ &lt; 300</code>
+程度）</td>
+<td><code>y+ &lt; 1</code>
+の場合は低Re型モデル。壁関数を使用せず壁面のレイヤーを10〜20層入れる</td>
+</tr>
+<tr class="even">
+<td>流量の整合性</td>
+<td>全ての境界面を流入量と流出量で固定値とすると、境界条件に強い制限がかかるので計算が成り立たなくなる。流出量は自然に決まるものとして計算する</td>
+<td>流入量と流出量がつり合っていることを確認すると、設定ミスに気づくことができる</td>
+</tr>
+</tbody>
+</table>
+<p>確認用のfunction objectは <code>system/controlDict</code> の
+<code>functions</code> に次のように書く。</p>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>residuals</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    type    solverInfo<span class="op">;</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    libs    <span class="op">(</span><span class="st">&quot;libutilityFunctionObjects.so&quot;</span><span class="op">);</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    fields  <span class="op">(</span><span class="st">&quot;.*&quot;</span><span class="op">);</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    writeResidualFields yes<span class="op">;</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>continuityError1</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>    type    continuityError<span class="op">;</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>    libs    <span class="op">(</span>fieldFunctionObjects<span class="op">);</span></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>    phi     phi<span class="op">;</span></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>yPlus</span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>    type    yPlus<span class="op">;</span></span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>    libs    <span class="op">(</span>fieldFunctionObjects<span class="op">);</span></span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>surfaceFieldValue1   <span class="co">// 任意の名前</span></span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>    type        surfaceFieldValue<span class="op">;</span></span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>    libs        <span class="op">(</span>fieldFunctionObjects<span class="op">);</span></span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>    fields      <span class="op">(</span>phi<span class="op">);</span></span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>    operation   sum<span class="op">;</span></span>
+<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a>    regionType  patch<span class="op">;</span></span>
+<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a>    name        <span class="op">&lt;</span>patch名<span class="op">&gt;;</span></span>
+<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <ul>
-<li>残差: <code>residuals</code>
-関数オブジェクトで収束状況をグラフに描いて確かめる。<code>residualControl</code>
-で自動停止させると、収束前に計算を止めてしまうことがある。</li>
-<li>連続式の誤差: <code>continuityError</code>
-が大きくなる場合は発散の兆候。圧力の収束（緩和係数、時間刻み）やメッシュ品質を見直す。</li>
-<li>y+: 乱流モデルに応じた適用範囲を確認する。標準k-εなら
-<code>30 &lt; y+ &lt; 300</code>、低Re型なら <code>y+ &lt; 1</code>
-で壁近傍に10〜20層入れる。</li>
-<li>流量の整合性: 流入量と流出量が釣り合っているかを
-<code>surfaceFieldValue</code>
-で確認すると、境界条件の設定ミスに気づける。</li>
+<li>補足: 残差は <code>#includeFunc residuals</code>
+と書いてもよい。<code>#includeFunc</code> は <code>system</code>
+内のファイルを探し、なければ <code>$FOAM_ETC</code> を探す。</li>
+<li>補足: <code>surfaceFieldValue</code> は一度書いた設定を
+<code>$surfaceFieldValue1</code> のように参照して使いまわせる。</li>
 </ul>
 </body>
 </html>

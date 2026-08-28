@@ -900,32 +900,94 @@ touch post.foam
 
 ## メッシュの品質について
 
-![計算前の確認事項: checkMeshでメッシュ数と品質を確認する](img/001_box/track2_p133.svg)
+メッシュが膨大すぎると計算時間がかかり、品質が悪いと数値拡散が起こる、収束性が悪い、計算が発散するといった問題が起きる。困ったことが起こらないように、計算前に `checkMesh` でメッシュ数と品質を確認する。
 
-`checkMesh` の結果では、セル数だけでなく次の品質指標を確認する。
+```bash
+checkMesh
+```
 
-- `Max aspect ratio`: セルの縦横比。大きすぎるセルは計算の収束を遅くする場合がある。
-- `Mesh non-orthogonality Max`: セル面とセル中心間の非直交性。70度を超える場合は数値設定による補正が必要になり、90度を超えるメッシュは使用しない。
-- `Max skewness`: セルの歪み。値が大きい場所では補間精度が低下しやすい。
-- `Mesh OK`: OpenFOAMの基本的な品質判定を通過したことを示す。ただし、解析内容に適した品質かどうかは各指標の値とParaView上の位置を併せて判断する。
+`checkMesh` の結果では、セル数（`points` は節点の数、`faces` は面の数）だけでなく次の品質指標を確認する。
 
-品質に問題がある面やセルは、`checkMesh` の面セット・セルセット出力をParaViewで表示し、問題箇所を確認する。
+| 指標 | 目安 | 内容 |
+|------|------|------|
+| `Max aspect ratio`（アスペクト比） | 極端に大きくしない | セルの縦横比。非常に微細な境界層で現れる。ソルバーの安定性にとって致命的ではないが、収束速度を著しく低下させる可能性がある |
+| `Mesh non-orthogonality Max`（非直交性） | 70未満が安全 | セル面とセル中心間の非直交性。70〜90は `fvSolution` の `nonOrthoCorrector` や `fvSchemes` の数値スキームで特別な処理を行う必要がある。90を超えるとシミュレーションに使用できない悪いメッシュ |
+| `Max skewness`（歪度） | 小さいほどよい | セルの歪み。値が大きいと結果の品質（正確さ）が損なわれる可能性があるが、適度な大きさであればシミュレーションに使用できる |
+| Smoothness（隣接セルの変化） | 20%未満が理想 | 隣り合うセルのメッシュ間隔の最大変化 |
+| `Mesh OK` | — | OpenFOAMの基本的な品質判定を通過したことを示す。ただし、解析内容に適した品質かどうかは各指標の値とParaView上の位置を併せて判断する |
+
+判定に使われるしきい値は、OpenFOAMのソースに定義されている。
+
+```bash
+find $FOAM_SRC -name "primitiveMeshCheck"
+vi $FOAM_ETC/OpenFOAM/meshes/primitiveMesh/primitiveMeshCheck/primitiveMeshCheck.C
+```
+
+```cpp
+Foam::scalar Foam::primitiveMesh::closedThreshold_  = 1.0e-6;
+Foam::scalar Foam::primitiveMesh::aspectThreshold_  = 1000;
+Foam::scalar Foam::primitiveMesh::nonOrthThreshold_ = 70;    // deg
+Foam::scalar Foam::primitiveMesh::skewThreshold_    = 4;
+Foam::scalar Foam::primitiveMesh::planarCosAngle_   = 1.0e-6;
+```
+
+品質に問題がある面は、`checkMesh` が出力する面セットをVTKに変換してParaViewで確認する。品質に問題があれば、メッシュを作り直すかスキームでごまかす。
+
+```bash
+foamToVTK -faceSet skewFaces -time 0
+foamToVTK -faceSet nonOrthoFaces -time 0
+```
 
 ---
 
 ## 計算中の確認事項
 
-メッシュができて計算が始まったあとも、計算が異常を起こしていないかを確認する。理論式や実験データとの比較だけでなく、次の項目を見ておくとよい。
+理論式や実験データとの比較も大事だが、計算が異常を起こしていないか確認するのも大事である。
 
+| 項目 | 説明 | 補足 |
+|------|------|------|
+| 残差 | `system/fvSolution` の `residualControl` は十分残差が落ちた時に自動停止させる設定。許容値が大きいと収束する前に計算を止めてしまう可能性があるため、収束状況をグラフに描いて確かめることが非常に重要 | 定常解析の場合、不足緩和係数が大きいと強引に計算を進めるため、残差の振動が激しすぎる場合がある |
+| 連続式の誤差 | 非圧縮のSIMPLE系の解法は、連続の式を満たすように圧力を解いている。連続式に誤差が溜まるということは、圧力の収束判定に問題があることを意味する | 発散する場合は、この値が大きすぎる場合がある。圧力に関する収束（緩和係数、時間刻み）やメッシュ品質を見直すと落ち着く場合がある |
+| y+ | 高Re型の標準k-εの場合は `30 < y+ < 300` の対数則領域を推奨。k-ωSSTのようにy+の広い範囲で適用できるモデルもある（`1 < y+ < 300` 程度） | `y+ < 1` の場合は低Re型モデル。壁関数を使用せず壁面のレイヤーを10〜20層入れる |
+| 流量の整合性 | 全ての境界面を流入量と流出量で固定値とすると、境界条件に強い制限がかかるので計算が成り立たなくなる。流出量は自然に決まるものとして計算する | 流入量と流出量がつり合っていることを確認すると、設定ミスに気づくことができる |
 
----
+確認用のfunction objectは `system/controlDict` の `functions` に次のように書く。
 
-![計算中の確認事項: 残差・連続式の誤差・y+・流量の整合性](img/001_box/track2_p134.svg)
+```cpp
+residuals
+{
+    type    solverInfo;
+    libs    ("libutilityFunctionObjects.so");
+    fields  (".*");
+    writeResidualFields yes;
+}
 
-- 残差: `residuals` 関数オブジェクトで収束状況をグラフに描いて確かめる。`residualControl` で自動停止させると、収束前に計算を止めてしまうことがある。
-- 連続式の誤差: `continuityError` が大きくなる場合は発散の兆候。圧力の収束（緩和係数、時間刻み）やメッシュ品質を見直す。
-- y+: 乱流モデルに応じた適用範囲を確認する。標準k-εなら `30 < y+ < 300`、低Re型なら `y+ < 1` で壁近傍に10〜20層入れる。
-- 流量の整合性: 流入量と流出量が釣り合っているかを `surfaceFieldValue` で確認すると、境界条件の設定ミスに気づける。
+continuityError1
+{
+    type    continuityError;
+    libs    (fieldFunctionObjects);
+    phi     phi;
+}
+
+yPlus
+{
+    type    yPlus;
+    libs    (fieldFunctionObjects);
+}
+
+surfaceFieldValue1   // 任意の名前
+{
+    type        surfaceFieldValue;
+    libs        (fieldFunctionObjects);
+    fields      (phi);
+    operation   sum;
+    regionType  patch;
+    name        <patch名>;
+}
+```
+
+- 補足: 残差は `#includeFunc residuals` と書いてもよい。`#includeFunc` は `system` 内のファイルを探し、なければ `$FOAM_ETC` を探す。
+- 補足: `surfaceFieldValue` は一度書いた設定を `$surfaceFieldValue1` のように参照して使いまわせる。
 
 ---
 
