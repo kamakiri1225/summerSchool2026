@@ -777,9 +777,9 @@ SALOMEで作成したメッシュをOpenFOAMへ渡すには、UNV形式で書き
 
 ![線グループは削除し、面グループをOpenFOAMの境界条件に使う](img/001_box/pdf_p078.svg)
 
+- (1) `Groups of Edges` の線グループは不要なので、右クリック > `Delete` で削除する。
 - 補足: `Groups of Faces` がOpenFOAMの境界面の名前になる。
 - 補足: 不要な線グループやCompoundグループをUNVに含めると、`ideasUnvToFoam`でエラーになることがある。
-- `Groups of Edges` の線グループは不要なので、右クリック > `Delete` で削除しておく。
 
 ---
 

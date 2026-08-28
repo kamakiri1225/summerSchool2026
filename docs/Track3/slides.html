@@ -1407,12 +1407,14 @@ UNVに含めるグループを整理する</h4>
 <p><img data-src="img/001_box/pdf_p078.svg"
 alt="線グループは削除し、面グループをOpenFOAMの境界条件に使う" /></p>
 <ul>
+<li><ol type="1">
+<li><code>Groups of Edges</code> の線グループは不要なので、右クリック
+&gt; <code>Delete</code> で削除する。</li>
+</ol></li>
 <li>補足: <code>Groups of Faces</code>
 がOpenFOAMの境界面の名前になる。</li>
 <li>補足:
 不要な線グループやCompoundグループをUNVに含めると、<code>ideasUnvToFoam</code>でエラーになることがある。</li>
-<li><code>Groups of Edges</code> の線グループは不要なので、右クリック
-&gt; <code>Delete</code> で削除しておく。</li>
 </ul>
 </section>
 <section class="slide level2">
