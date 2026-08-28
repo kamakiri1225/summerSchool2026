@@ -1379,6 +1379,11 @@ alt="SALOMEからOpenFOAMへの連携フロー" /></p>
 
 <h4 id="geometryからメッシュグループを作る">1.
 Geometryからメッシュグループを作る</h4>
+<p><strong>この章ではこの操作は不要です。</strong>
+メッシュを切ったあとにGeometryモジュールへ戻って面に名前を付けた場合、Geometryとメッシュに境界名が関連付けられていない。メッシュに境界名が反映されていない場合は、この操作を行うこと。</p>
+</section>
+<section class="slide level2">
+
 <p><img data-src="img/001_box/pdf_p072.svg"
 alt="Geometryからメッシュグループを作る" /></p>
 <ul>
@@ -1394,15 +1399,26 @@ alt="Geometryからメッシュグループを作る" /></p>
 <li><ol start="3" type="1">
 <li><code>Apply and Close</code> で確定する。</li>
 </ol></li>
-<li>補足: <code>Groups of Faces</code>
-がOpenFOAMの境界面の名前になる。</li>
-<li>補足:
-不要な線グループやCompoundグループをUNVに含めると、<code>ideasUnvToFoam</code>でエラーになることがある。</li>
 </ul>
 </section>
 <section class="slide level2">
 
-<h4 id="unv形式でエクスポートする">2. UNV形式でエクスポートする</h4>
+<h4 id="unvに含めるグループを整理する">2.
+UNVに含めるグループを整理する</h4>
+<p><img data-src="img/001_box/pdf_p078.svg"
+alt="線グループは削除し、面グループをOpenFOAMの境界条件に使う" /></p>
+<ul>
+<li>補足: <code>Groups of Faces</code>
+がOpenFOAMの境界面の名前になる。</li>
+<li>補足:
+不要な線グループやCompoundグループをUNVに含めると、<code>ideasUnvToFoam</code>でエラーになることがある。</li>
+<li><code>Groups of Edges</code> の線グループは不要なので、右クリック
+&gt; <code>Delete</code> で削除しておく。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h4 id="unv形式でエクスポートする">3. UNV形式でエクスポートする</h4>
 <p><img data-src="img/001_box/pdf_p073.svg"
 alt="UNV形式でエクスポートする" /></p>
 <ul>
