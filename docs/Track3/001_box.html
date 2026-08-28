@@ -136,9 +136,9 @@ SALOMEでOpenFOAM用メッシュを作る</h1>
 Geometryモジュールへ切り替える</h3>
 <figure>
 <img src="img/001_box/page_004.svg"
-alt="1. Geometryモジュールへ切り替える" />
-<figcaption aria-hidden="true">1.
-Geometryモジュールへ切り替える</figcaption>
+alt="モジュール選択のプルダウンをGeometryに切り替える" />
+<figcaption
+aria-hidden="true">モジュール選択のプルダウンをGeometryに切り替える</figcaption>
 </figure>
 <ul>
 <li><ol type="1">
@@ -148,8 +148,10 @@ Geometryモジュールへ切り替える</figcaption>
 <hr />
 <h3 id="box形状を作成する">2. Box形状を作成する</h3>
 <figure>
-<img src="img/001_box/page_005.svg" alt="2. Box形状を作成する" />
-<figcaption aria-hidden="true">2. Box形状を作成する</figcaption>
+<img src="img/001_box/page_005.svg"
+alt="Create a boxダイアログで100 x 60 x 10を入力する" />
+<figcaption aria-hidden="true">Create a boxダイアログで100 x 60 x
+10を入力する</figcaption>
 </figure>
 <ul>
 <li><ol start="2" type="1">
@@ -166,8 +168,10 @@ Geometryモジュールへ切り替える</figcaption>
 <hr />
 <h3 id="box作成結果を確認する">3. Box作成結果を確認する</h3>
 <figure>
-<img src="img/001_box/page_006.svg" alt="3. Box作成結果を確認する" />
-<figcaption aria-hidden="true">3. Box作成結果を確認する</figcaption>
+<img src="img/001_box/page_006.svg"
+alt="ビューに直方体が表示され、ツリーにBox_1が追加される" />
+<figcaption
+aria-hidden="true">ビューに直方体が表示され、ツリーにBox_1が追加される</figcaption>
 </figure>
 <ul>
 <li>確認: 作成した直方体がビュー上に表示されていることを確認する。</li>
@@ -176,8 +180,10 @@ Geometryモジュールへ切り替える</figcaption>
 <hr />
 <h3 id="辺方向を抽出する">4. 辺方向を抽出する</h3>
 <figure>
-<img src="img/001_box/page_007.svg" alt="4. 辺方向を抽出する" />
-<figcaption aria-hidden="true">4. 辺方向を抽出する</figcaption>
+<img src="img/001_box/page_007.svg"
+alt="Operations &gt; Blocks &gt; PropagateでBox_1の辺方向を抽出する" />
+<figcaption aria-hidden="true">Operations &gt; Blocks &gt;
+PropagateでBox_1の辺方向を抽出する</figcaption>
 </figure>
 <ul>
 <li><ol start="5" type="1">
@@ -196,9 +202,9 @@ Geometryモジュールへ切り替える</figcaption>
 Propagateで作られるCompoundを確認する</h3>
 <figure>
 <img src="img/001_box/page_008.svg"
-alt="5. Propagateで作られるCompoundを確認する" />
-<figcaption aria-hidden="true">5.
-Propagateで作られるCompoundを確認する</figcaption>
+alt="x・y・z 3方向ぶんのCompoundがツリーに追加される" />
+<figcaption aria-hidden="true">x・y・z
+3方向ぶんのCompoundがツリーに追加される</figcaption>
 </figure>
 <ul>
 <li>確認: <code>Compound_1</code>, <code>Compound_2</code>,
@@ -210,9 +216,9 @@ Propagateで作られるCompoundを確認する</figcaption>
 <h3 id="compoundを方向名に変更する">6. Compoundを方向名に変更する</h3>
 <figure>
 <img src="img/001_box/page_009.svg"
-alt="6. Compoundを方向名に変更する" />
-<figcaption aria-hidden="true">6.
-Compoundを方向名に変更する</figcaption>
+alt="Compound_1〜3をx・y・zへリネームする" />
+<figcaption
+aria-hidden="true">Compound_1〜3をx・y・zへリネームする</figcaption>
 </figure>
 <ul>
 <li><ol start="8" type="1">
@@ -227,8 +233,10 @@ Compoundを方向名に変更する</figcaption>
 <hr />
 <h3 id="線グループの考え方">7. 線グループの考え方</h3>
 <figure>
-<img src="img/001_box/page_010.svg" alt="7. 線グループの考え方" />
-<figcaption aria-hidden="true">7. 線グループの考え方</figcaption>
+<img src="img/001_box/page_010.svg"
+alt="線グループは方向ごとの分割数を指定するために使う" />
+<figcaption
+aria-hidden="true">線グループは方向ごとの分割数を指定するために使う</figcaption>
 </figure>
 <ul>
 <li>確認: 線グループは、方向ごとの分割数を指定するために使う。</li>
@@ -238,8 +246,10 @@ OpenFOAMの境界条件には通常使わないが、SALOME内のメッシュ制
 <hr />
 <h3 id="面グループを作成する準備">8. 面グループを作成する準備</h3>
 <figure>
-<img src="img/001_box/page_011.svg" alt="8. 面グループを作成する準備" />
-<figcaption aria-hidden="true">8. 面グループを作成する準備</figcaption>
+<img src="img/001_box/page_011.svg"
+alt="Box_1を選択してNew Entity &gt; Group &gt; Create Groupを開く" />
+<figcaption aria-hidden="true">Box_1を選択してNew Entity &gt; Group &gt;
+Create Groupを開く</figcaption>
 </figure>
 <ul>
 <li><ol start="10" type="1">
@@ -253,8 +263,9 @@ OpenFOAMの境界条件には通常使わないが、SALOME内のメッシュ制
 <h3 id="inlet面グループを作成する">9. inlet面グループを作成する</h3>
 <figure>
 <img src="img/001_box/page_012.svg"
-alt="9. inlet面グループを作成する" />
-<figcaption aria-hidden="true">9. inlet面グループを作成する</figcaption>
+alt="Create Groupで面を選び、名前をinletにしてAdd → Apply" />
+<figcaption aria-hidden="true">Create
+Groupで面を選び、名前をinletにしてAdd → Apply</figcaption>
 </figure>
 <ul>
 <li><ol start="11" type="1">
@@ -320,9 +331,9 @@ aria-hidden="true">outletグループを作成して確定する</figcaption>
 <h3 id="geometryファイルを保存する">12. Geometryファイルを保存する</h3>
 <figure>
 <img src="img/001_box/facegroup_p38.png"
-alt="12. Geometryファイルを保存する" />
-<figcaption aria-hidden="true">12.
-Geometryファイルを保存する</figcaption>
+alt="Save as … でSALOMEのプロジェクトファイルとして保存する" />
+<figcaption aria-hidden="true">Save as …
+でSALOMEのプロジェクトファイルとして保存する</figcaption>
 </figure>
 <ul>
 <li><ol start="17" type="1">
