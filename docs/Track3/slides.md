@@ -1183,9 +1183,9 @@ functions
 
 ---
 
-![Geometryへ変更する](img/002_stirrer/page_073.svg)
+![Shaperへ変更する](img/002_stirrer/pdf_p091.svg)
 
-- (1) `Geometry` に変更し、`Shaper` の画面へ切り替える。
+- (1) モジュールを `Shaper` に変更し、`Shaper` の画面へ切り替える。
 
 
 ---

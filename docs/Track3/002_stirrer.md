@@ -90,9 +90,9 @@
 
 ![X-Z平面に描く壁の断面（寸法つき）](img/002_stirrer/drawing_black_X-Z.svg)
 
-![Geometryへ変更する](img/002_stirrer/page_073.svg)
+![Shaperへ変更する](img/002_stirrer/pdf_p091.svg)
 
-- (1) `Geometry` に変更し、`Shaper` の画面へ切り替える。
+- (1) モジュールを `Shaper` に変更し、`Shaper` の画面へ切り替える。
 
 ![スケッチ平面を選択する](img/002_stirrer/page_074.svg)
 
