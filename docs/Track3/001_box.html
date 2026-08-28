@@ -948,8 +948,8 @@ alt="OpenFOAM計算結果のParaView可視化" /></p>
 </ul>
 <hr />
 <h2 id="メッシュの品質について">メッシュの品質について</h2>
-<p><img src="img/001_box/mesh_quality_check.svg"
-alt="メッシュ数と品質を確認" /></p>
+<p><img src="img/001_box/track2_p133.svg"
+alt="計算前の確認事項: checkMeshでメッシュ数と品質を確認する" /></p>
 <p><code>checkMesh</code>
 の結果では、セル数だけでなく次の品質指標を確認する。</p>
 <ul>
@@ -964,5 +964,23 @@ OpenFOAMの基本的な品質判定を通過したことを示す。ただし、
 </ul>
 <p>品質に問題がある面やセルは、<code>checkMesh</code>
 の面セット・セルセット出力をParaViewで表示し、問題箇所を確認する。</p>
+<hr />
+<h2 id="計算中の確認事項">計算中の確認事項</h2>
+<p>メッシュができて計算が始まったあとも、計算が異常を起こしていないかを確認する。理論式や実験データとの比較だけでなく、次の項目を見ておくとよい。</p>
+<p><img src="img/001_box/track2_p134.svg"
+alt="計算中の確認事項: 残差・連続式の誤差・y+・流量の整合性" /></p>
+<ul>
+<li>残差: <code>residuals</code>
+関数オブジェクトで収束状況をグラフに描いて確かめる。<code>residualControl</code>
+で自動停止させると、収束前に計算を止めてしまうことがある。</li>
+<li>連続式の誤差: <code>continuityError</code>
+が大きくなる場合は発散の兆候。圧力の収束（緩和係数、時間刻み）やメッシュ品質を見直す。</li>
+<li>y+: 乱流モデルに応じた適用範囲を確認する。標準k-εなら
+<code>30 &lt; y+ &lt; 300</code>、低Re型なら <code>y+ &lt; 1</code>
+で壁近傍に10〜20層入れる。</li>
+<li>流量の整合性: 流入量と流出量が釣り合っているかを
+<code>surfaceFieldValue</code>
+で確認すると、境界条件の設定ミスに気づける。</li>
+</ul>
 </body>
 </html>
