@@ -1758,9 +1758,11 @@ objectの名前と記法が一部異なる</strong>ので注意する。</p>
 <tbody>
 <tr class="odd">
 <td>残差</td>
-<td><code>residuals</code></td>
-<td><code>solverInfo</code>（v2512では <code>residuals</code>
-という名前は使えない）</td>
+<td><code>type residuals;</code></td>
+<td><code>type solverInfo;</code>（v2512には <code>residuals</code>
+という <strong>type</strong>
+が登録されていないため、<code>type residuals;</code> と書くと
+<code>Unknown function type</code> で停止する）</td>
 </tr>
 <tr class="even">
 <td>連続式の誤差</td>
@@ -1856,6 +1858,10 @@ class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb11-1"><a href="#
 <span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
 <span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <ul>
+<li>補足: 違うのは <code>type</code>
+に書く名前だけで、ブロック名は任意に付けてよい。v2512でも
+<code>residuals { type solverInfo; ... }</code> のようにブロック名を
+<code>residuals</code> にするのは問題ない。</li>
 <li>補足: <code>#includeFunc</code>
 を使うと短く書ける。<code>#includeFunc</code> は <code>system</code>
 内に同名のファイルを探し、なければ <code>$FOAM_ETC</code>
@@ -1863,6 +1869,12 @@ class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb11-1"><a href="#
 <code>#includeFunc residuals(fields=(p U))</code>、<code>#includeFunc yPlus</code>、v2512は
 <code>#includeFunc solverInfo</code>、<code>#includeFunc yPlus</code>
 となる。</li>
+<li>補足: <code>system</code> 内が先に探索されるため、v2512でも
+<code>system/residuals</code> というファイルに
+<code>type solverInfo;</code>
+の設定を書いておけば、<code>#includeFunc residuals</code>
+で読み込める。両バージョンで <code>controlDict</code>
+を共通にしたい場合に使える。</li>
 <li>補足: 一度書いた設定は <code>$inletFlowRate</code>
 のように参照して使いまわせるため、パッチごとに設定を書き直す必要はない。</li>
 </ul>

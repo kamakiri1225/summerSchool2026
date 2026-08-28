@@ -965,7 +965,7 @@ foamToVTK -faceSet nonOrthoFaces -time 0
 
 | 確認項目 | OpenFOAM 13 | OpenFOAM v2512 |
 |----------|-------------|----------------|
-| 残差 | `residuals` | `solverInfo`（v2512では `residuals` という名前は使えない） |
+| 残差 | `type residuals;` | `type solverInfo;`（v2512には `residuals` という **type** が登録されていないため、`type residuals;` と書くと `Unknown function type` で停止する） |
 | 連続式の誤差 | 専用のfunction objectはない。ログに出る `time step continuity errors` を見る | `continuityError` |
 | y+ | `yPlus`（同じ） | `yPlus`（同じ） |
 | 流量 | `surfaceFieldValue`。パッチは `patch <名前>;` で指定 | `surfaceFieldValue`。パッチは `regionType patch; name <名前>;` で指定 |
@@ -1045,7 +1045,9 @@ functions
 }
 ```
 
+- 補足: 違うのは `type` に書く名前だけで、ブロック名は任意に付けてよい。v2512でも `residuals { type solverInfo; ... }` のようにブロック名を `residuals` にするのは問題ない。
 - 補足: `#includeFunc` を使うと短く書ける。`#includeFunc` は `system` 内に同名のファイルを探し、なければ `$FOAM_ETC` 内を探す。OpenFOAM 13は `#includeFunc residuals(fields=(p U))`、`#includeFunc yPlus`、v2512は `#includeFunc solverInfo`、`#includeFunc yPlus` となる。
+- 補足: `system` 内が先に探索されるため、v2512でも `system/residuals` というファイルに `type solverInfo;` の設定を書いておけば、`#includeFunc residuals` で読み込める。両バージョンで `controlDict` を共通にしたい場合に使える。
 - 補足: 一度書いた設定は `$inletFlowRate` のように参照して使いまわせるため、パッチごとに設定を書き直す必要はない。
 
 ---
