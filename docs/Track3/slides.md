@@ -773,22 +773,21 @@ SALOMEで作成したメッシュをOpenFOAMへ渡すには、UNV形式で書き
 
 ---
 
-#### 2. UNVに含めるグループを整理する
+#### 2. UNV形式でエクスポートする
 
 ![線グループは削除し、面グループをOpenFOAMの境界条件に使う](img/001_box/pdf_p078.svg)
 
 - (1) `Groups of Edges` の線グループは不要なので、右クリック > `Delete` で削除する。
-- 補足: `Groups of Faces` がOpenFOAMの境界面の名前になる。
-- 補足: 不要な線グループやCompoundグループをUNVに含めると、`ideasUnvToFoam`でエラーになることがある。
+
 
 ---
-
-#### 3. UNV形式でエクスポートする
 
 ![UNV形式でエクスポートする](img/001_box/pdf_p073.svg)
 
 - (2) `Mesh_4` 上で右クリックし、`Export > UNV file` を選ぶ。
 - (3) ファイル名を `Mesh_4` として保存する。
+- 補足: `Groups of Faces` がOpenFOAMの境界面の名前になる。
+- 補足: 不要な線グループやCompoundグループをUNVに含めると、`ideasUnvToFoam`でエラーになることがある。
 
 ---
 

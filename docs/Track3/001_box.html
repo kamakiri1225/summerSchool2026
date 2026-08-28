@@ -748,8 +748,7 @@ alt="Geometryからメッシュグループを作る" /></p>
 </ol></li>
 </ul>
 <hr />
-<h4 id="unvに含めるグループを整理する">2.
-UNVに含めるグループを整理する</h4>
+<h4 id="unv形式でエクスポートする">2. UNV形式でエクスポートする</h4>
 <p><img src="img/001_box/pdf_p078.svg"
 alt="線グループは削除し、面グループをOpenFOAMの境界条件に使う" /></p>
 <ul>
@@ -757,13 +756,7 @@ alt="線グループは削除し、面グループをOpenFOAMの境界条件に�
 <li><code>Groups of Edges</code> の線グループは不要なので、右クリック
 &gt; <code>Delete</code> で削除する。</li>
 </ol></li>
-<li>補足: <code>Groups of Faces</code>
-がOpenFOAMの境界面の名前になる。</li>
-<li>補足:
-不要な線グループやCompoundグループをUNVに含めると、<code>ideasUnvToFoam</code>でエラーになることがある。</li>
 </ul>
-<hr />
-<h4 id="unv形式でエクスポートする">3. UNV形式でエクスポートする</h4>
 <p><img src="img/001_box/pdf_p073.svg"
 alt="UNV形式でエクスポートする" /></p>
 <ul>
@@ -774,6 +767,10 @@ alt="UNV形式でエクスポートする" /></p>
 <li><ol start="3" type="1">
 <li>ファイル名を <code>Mesh_4</code> として保存する。</li>
 </ol></li>
+<li>補足: <code>Groups of Faces</code>
+がOpenFOAMの境界面の名前になる。</li>
+<li>補足:
+不要な線グループやCompoundグループをUNVに含めると、<code>ideasUnvToFoam</code>でエラーになることがある。</li>
 </ul>
 <hr />
 <h3 id="openfoamを用いた流体解析">OpenFOAMを用いた流体解析</h3>
