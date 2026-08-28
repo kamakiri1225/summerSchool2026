@@ -1951,6 +1951,18 @@ alt="作成したメッシュで羽根を曲げる変形テスト（OpenFOAM）"
 
 <p><img data-src="img/002_stirrer/fullmodel_of13.png"
 alt="回転コピー＋結合で作った全周（360°）フルモデル（半透明のタンク、赤: 羽根、緑: 仕切り板）" /></p>
+<p>このモデルには、羽根まわりを囲む円柱状のセルゾーン
+<code>rotor1</code>・<code>rotor2</code>
+が定義してある。下図でピンクに薄く示した部分がそれで、MRFやスライディングメッシュで<strong>回転させる領域</strong>にあたる。</p>
+</section>
+<section class="slide level2">
+
+<p><img data-src="img/002_stirrer/fullmodel_of13_rotor.png"
+alt="ピンクの薄い円柱がセルゾーン rotor1・rotor2（回転領域）" /></p>
+<p>ここが、この演習でスケッチを細かく分割していく理由である。仕切り板（緑）・羽根（赤）・回転領域（ピンク）は、いずれもその境界にメッシュの面がぴったり合っていなければならない。すべてをヘキサメッシュで作るには、これらの境界を先に形状の分割線として引いておき、できあがるブロックがすべて四角形（押し出して六面体）になるようにスケッチを作る必要がある。断面スケッチで半径
+<code>1.5</code> / <code>3</code> / <code>10</code> / <code>15</code> /
+<code>25</code> / <code>35</code> / <code>40</code> mm
+と細かく円弧を入れていくのは、この分割線を用意するためである。</p>
 </section>
 <section class="slide level2">
 
