@@ -1739,44 +1739,132 @@ alt="計算中の確認事項: 残差・連続式の誤差・y+・流量の整�
 </tbody>
 </table>
 <p>確認用のfunction objectは <code>system/controlDict</code> の
-<code>functions</code> に次のように書く。</p>
+<code>functions</code> に書く。<strong>OpenFOAM
+13（openfoam.org系）とOpenFOAM v2512（ESI系）では、function
+objectの名前と記法が一部異なる</strong>ので注意する。</p>
+<table style="width:100%;">
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 33%" />
+<col style="width: 41%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>確認項目</th>
+<th>OpenFOAM 13</th>
+<th>OpenFOAM v2512</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>残差</td>
+<td><code>residuals</code></td>
+<td><code>solverInfo</code>（v2512では <code>residuals</code>
+という名前は使えない）</td>
+</tr>
+<tr class="even">
+<td>連続式の誤差</td>
+<td>専用のfunction objectはない。ログに出る
+<code>time step continuity errors</code> を見る</td>
+<td><code>continuityError</code></td>
+</tr>
+<tr class="odd">
+<td>y+</td>
+<td><code>yPlus</code>（同じ）</td>
+<td><code>yPlus</code>（同じ）</td>
+</tr>
+<tr class="even">
+<td>流量</td>
+<td><code>surfaceFieldValue</code>。パッチは
+<code>patch &lt;名前&gt;;</code> で指定</td>
+<td><code>surfaceFieldValue</code>。パッチは
+<code>regionType patch; name &lt;名前&gt;;</code> で指定</td>
+</tr>
+<tr class="odd">
+<td><code>libs</code> の書き方</td>
+<td><code>("libfieldFunctionObjects.so")</code></td>
+<td><code>(fieldFunctionObjects)</code> の短縮形が使える</td>
+</tr>
+</tbody>
+</table>
+<p>OpenFOAM 13の場合。</p>
 <div class="sourceCode" id="cb10"><pre
-class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>residuals</span>
+class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>functions</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    type    solverInfo<span class="op">;</span></span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    libs    <span class="op">(</span><span class="st">&quot;libutilityFunctionObjects.so&quot;</span><span class="op">);</span></span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    fields  <span class="op">(</span><span class="st">&quot;.*&quot;</span><span class="op">);</span></span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    writeResidualFields yes<span class="op">;</span></span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>continuityError1</span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>    type    continuityError<span class="op">;</span></span>
-<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>    libs    <span class="op">(</span>fieldFunctionObjects<span class="op">);</span></span>
-<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>    phi     phi<span class="op">;</span></span>
-<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>yPlus</span>
-<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
-<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>    type    yPlus<span class="op">;</span></span>
-<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>    libs    <span class="op">(</span>fieldFunctionObjects<span class="op">);</span></span>
-<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>surfaceFieldValue1   <span class="co">// 任意の名前</span></span>
-<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
-<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>    type        surfaceFieldValue<span class="op">;</span></span>
-<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>    libs        <span class="op">(</span>fieldFunctionObjects<span class="op">);</span></span>
-<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>    fields      <span class="op">(</span>phi<span class="op">);</span></span>
-<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>    operation   sum<span class="op">;</span></span>
-<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a>    regionType  patch<span class="op">;</span></span>
-<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a>    name        <span class="op">&lt;</span>patch名<span class="op">&gt;;</span></span>
-<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    residuals</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">{</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>        type            residuals<span class="op">;</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>        libs            <span class="op">(</span><span class="st">&quot;libutilityFunctionObjects.so&quot;</span><span class="op">);</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>        writeControl    timeStep<span class="op">;</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>        writeInterval   <span class="dv">1</span><span class="op">;</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>        fields          <span class="op">(</span>p U k epsilon<span class="op">);</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>    yPlus</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>    <span class="op">{</span></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>        type            yPlus<span class="op">;</span></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>        libs            <span class="op">(</span><span class="st">&quot;libfieldFunctionObjects.so&quot;</span><span class="op">);</span></span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>        executeControl  writeTime<span class="op">;</span></span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>        writeControl    writeTime<span class="op">;</span></span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>    inletFlowRate               <span class="co">// 任意の名前</span></span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>    <span class="op">{</span></span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>        type            surfaceFieldValue<span class="op">;</span></span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>        libs            <span class="op">(</span><span class="st">&quot;libfieldFunctionObjects.so&quot;</span><span class="op">);</span></span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>        patch           inlet<span class="op">;</span>  <span class="co">// パッチ名</span></span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>        fields          <span class="op">(</span>phi<span class="op">);</span></span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>        operation       sum<span class="op">;</span></span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>        writeFields     <span class="kw">false</span><span class="op">;</span></span>
+<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a>        writeControl    timeStep<span class="op">;</span></span>
+<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a>        writeInterval   <span class="dv">1</span><span class="op">;</span></span>
+<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>OpenFOAM v2512の場合。</p>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>functions</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    solverInfo</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">{</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>        type            solverInfo<span class="op">;</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>        libs            <span class="op">(</span>utilityFunctionObjects<span class="op">);</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>        fields          <span class="op">(</span><span class="st">&quot;.*&quot;</span><span class="op">);</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>        writeResidualFields yes<span class="op">;</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>    continuityError1</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>    <span class="op">{</span></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>        type            continuityError<span class="op">;</span></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>        libs            <span class="op">(</span>fieldFunctionObjects<span class="op">);</span></span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>        phi             phi<span class="op">;</span></span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>    yPlus</span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>    <span class="op">{</span></span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>        type            yPlus<span class="op">;</span></span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>        libs            <span class="op">(</span>fieldFunctionObjects<span class="op">);</span></span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>    inletFlowRate               <span class="co">// 任意の名前</span></span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>    <span class="op">{</span></span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a>        type            surfaceFieldValue<span class="op">;</span></span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a>        libs            <span class="op">(</span>fieldFunctionObjects<span class="op">);</span></span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>        regionType      patch<span class="op">;</span></span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a>        name            inlet<span class="op">;</span>  <span class="co">// パッチ名</span></span>
+<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a>        fields          <span class="op">(</span>phi<span class="op">);</span></span>
+<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a>        operation       sum<span class="op">;</span></span>
+<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <ul>
-<li>補足: 残差は <code>#includeFunc residuals</code>
-と書いてもよい。<code>#includeFunc</code> は <code>system</code>
-内のファイルを探し、なければ <code>$FOAM_ETC</code> を探す。</li>
-<li>補足: <code>surfaceFieldValue</code> は一度書いた設定を
-<code>$surfaceFieldValue1</code> のように参照して使いまわせる。</li>
+<li>補足: <code>#includeFunc</code>
+を使うと短く書ける。<code>#includeFunc</code> は <code>system</code>
+内に同名のファイルを探し、なければ <code>$FOAM_ETC</code>
+内を探す。OpenFOAM 13は
+<code>#includeFunc residuals(fields=(p U))</code>、<code>#includeFunc yPlus</code>、v2512は
+<code>#includeFunc solverInfo</code>、<code>#includeFunc yPlus</code>
+となる。</li>
+<li>補足: 一度書いた設定は <code>$inletFlowRate</code>
+のように参照して使いまわせるため、パッチごとに設定を書き直す必要はない。</li>
 </ul>
 </section>
 <section class="slide level2">
@@ -3017,17 +3105,17 @@ alt="SALOMEからOpenFOAMへの連携フロー" /></p>
 <section class="slide level2">
 
 <h3 id="メッシュ変換とバッフル作成">メッシュ変換とバッフル作成</h3>
-<div class="sourceCode" id="cb11"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> data/002_Stirrer/sample/mesh/mesh_of13</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="bu">.</span> /opt/openfoam13/etc/bashrc</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="ex">ideasUnvToFoam</span> Mesh_1.unv <span class="op">&gt;</span> log.ideasUnvToFoam <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="ex">transformPoints</span> <span class="st">&quot;scale=(0.001 0.001 0.001)&quot;</span> <span class="op">&gt;</span> log.transformPoints <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="ex">checkMesh</span> <span class="op">&gt;</span> log.checkMesh.initial <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="ex">topoSet</span> <span class="op">&gt;</span> log.topoSet <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span>
-<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="ex">createBaffles</span> <span class="at">-overwrite</span> <span class="op">&gt;</span> log.createBaffles <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span>
-<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a><span class="ex">checkMesh</span> <span class="op">&gt;</span> log.checkMesh.final <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> data/002_Stirrer/sample/mesh/mesh_of13</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="bu">.</span> /opt/openfoam13/etc/bashrc</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="ex">ideasUnvToFoam</span> Mesh_1.unv <span class="op">&gt;</span> log.ideasUnvToFoam <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="ex">transformPoints</span> <span class="st">&quot;scale=(0.001 0.001 0.001)&quot;</span> <span class="op">&gt;</span> log.transformPoints <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="ex">checkMesh</span> <span class="op">&gt;</span> log.checkMesh.initial <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="ex">topoSet</span> <span class="op">&gt;</span> log.topoSet <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a><span class="ex">createBaffles</span> <span class="at">-overwrite</span> <span class="op">&gt;</span> log.createBaffles <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a><span class="ex">checkMesh</span> <span class="op">&gt;</span> log.checkMesh.final <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span></code></pre></div>
 <p>なお、同フォルダには上記一連の処理をまとめた <code>Allrun</code>
 スクリプトがあり、<code>./Allclean &amp;&amp; ./Allrun</code>
 で最初から一括再実行できる。</p>
@@ -3126,15 +3214,15 @@ id="羽根の可動化テストmaster_curve_of13">羽根の可動化テスト（
 <code>data/002_Stirrer/sample/mesh/master_curve_of13</code>（<code>mesh_of13</code>
 で作成したバッフル済みメッシュを引き継ぐ）</li>
 </ul>
-<div class="sourceCode" id="cb12"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> data/002_Stirrer/sample/mesh/master_curve_of13</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="bu">.</span> /opt/openfoam13/etc/bashrc</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span> <span class="at">-rf</span> 0</span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="fu">cp</span> <span class="at">-r</span> 0.orig 0</span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="ex">moveDynamicMesh</span> <span class="op">&gt;</span> log.moveDynamicMesh <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="ex">checkMesh</span> <span class="at">-latestTime</span> <span class="op">&gt;</span> log.checkMesh <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> data/002_Stirrer/sample/mesh/master_curve_of13</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="bu">.</span> /opt/openfoam13/etc/bashrc</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span> <span class="at">-rf</span> 0</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="fu">cp</span> <span class="at">-r</span> 0.orig 0</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="ex">moveDynamicMesh</span> <span class="op">&gt;</span> log.moveDynamicMesh <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="ex">checkMesh</span> <span class="at">-latestTime</span> <span class="op">&gt;</span> log.checkMesh <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span></code></pre></div>
 <ul>
 <li><code>constant/dynamicMeshDict</code> で
 <code>displacementSBRStress</code> モーションソルバを指定する。</li>
@@ -3149,50 +3237,50 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb12-1"><a href=
 </ul>
 <p><code>0.orig/pointDisplacement</code>（実行時に <code>0/</code>
 へコピーされる）の中身は次の通り。各点の変位（<code>pointVectorField</code>）を定義するファイルである。</p>
-<div class="sourceCode" id="cb13"><pre
-class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>dimensions      <span class="op">[</span><span class="dv">0</span> <span class="dv">1</span> <span class="dv">0</span> <span class="dv">0</span> <span class="dv">0</span> <span class="dv">0</span> <span class="dv">0</span><span class="op">];</span>      <span class="co">// 変位なので単位は [m]</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>internalField   uniform <span class="op">(</span><span class="dv">0</span> <span class="dv">0</span> <span class="dv">0</span><span class="op">);</span>      <span class="co">// 内部の初期変位は0</span></span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>boundaryField</span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;.*&quot;</span>                              <span class="co">// 既定: すべての境界を変位0で固定</span></span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>    <span class="op">{</span></span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>        type            fixedValue<span class="op">;</span></span>
-<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>        value           uniform <span class="op">(</span><span class="dv">0</span> <span class="dv">0</span> <span class="dv">0</span><span class="op">);</span></span>
-<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;wall_wing.*&quot;</span>                     <span class="co">// 羽根パッチだけ上書き（コードで変位を計算）</span></span>
-<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>    <span class="op">{</span></span>
-<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>        type            codedFixedValue<span class="op">;</span></span>
-<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>        name            makecurve<span class="op">;</span></span>
-<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>        value           uniform <span class="op">(</span><span class="dv">0</span> <span class="dv">0</span> <span class="dv">0</span><span class="op">);</span></span>
-<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>        code</span>
-<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>        <span class="pp">#</span><span class="er">{</span></span>
-<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>            <span class="at">const</span> scalar<span class="op">&amp;</span> t <span class="op">=</span> <span class="kw">this</span><span class="op">-&gt;</span>db<span class="op">().</span>time<span class="op">().</span>value<span class="op">();</span>       <span class="co">// 現在時刻</span></span>
-<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>            <span class="at">const</span> vectorField<span class="op">&amp;</span> pos <span class="op">=</span> patch<span class="op">().</span>localPoints<span class="op">();</span>    <span class="co">// 羽根表面の点座標</span></span>
-<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a>            vectorField f<span class="op">(</span>pos<span class="op">.</span>size<span class="op">(),</span> vector<span class="op">(</span><span class="dv">0</span><span class="op">,</span><span class="dv">0</span><span class="op">,</span><span class="dv">0</span><span class="op">));</span></span>
-<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a>            forAll<span class="op">(</span>f<span class="op">,</span> i<span class="op">)</span></span>
-<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a>            <span class="op">{</span></span>
-<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a>                <span class="at">const</span> scalar x <span class="op">=</span> pos<span class="op">[</span>i<span class="op">][</span><span class="dv">0</span><span class="op">];</span>        <span class="co">// 各点のx座標(半径方向)</span></span>
-<span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a>                <span class="at">const</span> scalar height <span class="op">=</span> <span class="fl">4e-3</span><span class="op">;</span>        <span class="co">// 曲げの最大たわみ 4mm</span></span>
-<span id="cb13-29"><a href="#cb13-29" aria-hidden="true" tabindex="-1"></a>                <span class="at">const</span> scalar x0 <span class="op">=</span> <span class="fl">15.0e-3</span><span class="op">;</span>         <span class="co">// 曲げ始める半径 15mm</span></span>
-<span id="cb13-30"><a href="#cb13-30" aria-hidden="true" tabindex="-1"></a>                <span class="at">const</span> scalar x1 <span class="op">=</span> <span class="fl">25.0e-3</span><span class="op">;</span>         <span class="co">// 羽根先端の半径 25mm</span></span>
-<span id="cb13-31"><a href="#cb13-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-32"><a href="#cb13-32" aria-hidden="true" tabindex="-1"></a>                scalar y <span class="op">=</span> <span class="fl">0.0</span><span class="op">;</span></span>
-<span id="cb13-33"><a href="#cb13-33" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span><span class="op">(</span>x <span class="op">&gt;</span> x0<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb13-34"><a href="#cb13-34" aria-hidden="true" tabindex="-1"></a>                    <span class="co">// x0〜x1 を円弧状にたわませる（半径rの円の一部）</span></span>
-<span id="cb13-35"><a href="#cb13-35" aria-hidden="true" tabindex="-1"></a>                    <span class="at">const</span> scalar r <span class="op">=</span> <span class="op">(</span>pow<span class="op">((</span>x1 <span class="op">-</span> x0<span class="op">),</span> <span class="dv">2</span><span class="op">)</span> <span class="op">+</span> pow<span class="op">(</span>height<span class="op">,</span> <span class="dv">2</span><span class="op">))</span> <span class="op">/</span> <span class="fl">2.0</span> <span class="op">/</span> height<span class="op">;</span></span>
-<span id="cb13-36"><a href="#cb13-36" aria-hidden="true" tabindex="-1"></a>                    y <span class="op">=</span> r <span class="op">-</span> sqrt<span class="op">(</span>pow<span class="op">(</span>r<span class="op">,</span> <span class="dv">2</span><span class="op">)</span> <span class="op">-</span> pow<span class="op">((</span>x <span class="op">-</span> x0<span class="op">),</span> <span class="dv">2</span><span class="op">));</span></span>
-<span id="cb13-37"><a href="#cb13-37" aria-hidden="true" tabindex="-1"></a>                <span class="op">}</span></span>
-<span id="cb13-38"><a href="#cb13-38" aria-hidden="true" tabindex="-1"></a>                f<span class="op">[</span>i<span class="op">]</span> <span class="op">=</span> vector<span class="op">(</span><span class="fl">0.0</span><span class="op">,</span> y<span class="op">*</span>t<span class="op">,</span> <span class="fl">0.0</span><span class="op">);</span>      <span class="co">// y方向に y*t だけ変位（時刻に比例）</span></span>
-<span id="cb13-39"><a href="#cb13-39" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span></span>
-<span id="cb13-40"><a href="#cb13-40" aria-hidden="true" tabindex="-1"></a>            <span class="kw">operator</span><span class="op">==(</span>f<span class="op">);</span>                          <span class="co">// この変位を境界に課す</span></span>
-<span id="cb13-41"><a href="#cb13-41" aria-hidden="true" tabindex="-1"></a>        <span class="pp">#</span><span class="er">};</span></span>
-<span id="cb13-42"><a href="#cb13-42" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb13-43"><a href="#cb13-43" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre
+class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>dimensions      <span class="op">[</span><span class="dv">0</span> <span class="dv">1</span> <span class="dv">0</span> <span class="dv">0</span> <span class="dv">0</span> <span class="dv">0</span> <span class="dv">0</span><span class="op">];</span>      <span class="co">// 変位なので単位は [m]</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>internalField   uniform <span class="op">(</span><span class="dv">0</span> <span class="dv">0</span> <span class="dv">0</span><span class="op">);</span>      <span class="co">// 内部の初期変位は0</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>boundaryField</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;.*&quot;</span>                              <span class="co">// 既定: すべての境界を変位0で固定</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>    <span class="op">{</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>        type            fixedValue<span class="op">;</span></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>        value           uniform <span class="op">(</span><span class="dv">0</span> <span class="dv">0</span> <span class="dv">0</span><span class="op">);</span></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;wall_wing.*&quot;</span>                     <span class="co">// 羽根パッチだけ上書き（コードで変位を計算）</span></span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>    <span class="op">{</span></span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>        type            codedFixedValue<span class="op">;</span></span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>        name            makecurve<span class="op">;</span></span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>        value           uniform <span class="op">(</span><span class="dv">0</span> <span class="dv">0</span> <span class="dv">0</span><span class="op">);</span></span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>        code</span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>        <span class="pp">#</span><span class="er">{</span></span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a>            <span class="at">const</span> scalar<span class="op">&amp;</span> t <span class="op">=</span> <span class="kw">this</span><span class="op">-&gt;</span>db<span class="op">().</span>time<span class="op">().</span>value<span class="op">();</span>       <span class="co">// 現在時刻</span></span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a>            <span class="at">const</span> vectorField<span class="op">&amp;</span> pos <span class="op">=</span> patch<span class="op">().</span>localPoints<span class="op">();</span>    <span class="co">// 羽根表面の点座標</span></span>
+<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a>            vectorField f<span class="op">(</span>pos<span class="op">.</span>size<span class="op">(),</span> vector<span class="op">(</span><span class="dv">0</span><span class="op">,</span><span class="dv">0</span><span class="op">,</span><span class="dv">0</span><span class="op">));</span></span>
+<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a>            forAll<span class="op">(</span>f<span class="op">,</span> i<span class="op">)</span></span>
+<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a>            <span class="op">{</span></span>
+<span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a>                <span class="at">const</span> scalar x <span class="op">=</span> pos<span class="op">[</span>i<span class="op">][</span><span class="dv">0</span><span class="op">];</span>        <span class="co">// 各点のx座標(半径方向)</span></span>
+<span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a>                <span class="at">const</span> scalar height <span class="op">=</span> <span class="fl">4e-3</span><span class="op">;</span>        <span class="co">// 曲げの最大たわみ 4mm</span></span>
+<span id="cb14-29"><a href="#cb14-29" aria-hidden="true" tabindex="-1"></a>                <span class="at">const</span> scalar x0 <span class="op">=</span> <span class="fl">15.0e-3</span><span class="op">;</span>         <span class="co">// 曲げ始める半径 15mm</span></span>
+<span id="cb14-30"><a href="#cb14-30" aria-hidden="true" tabindex="-1"></a>                <span class="at">const</span> scalar x1 <span class="op">=</span> <span class="fl">25.0e-3</span><span class="op">;</span>         <span class="co">// 羽根先端の半径 25mm</span></span>
+<span id="cb14-31"><a href="#cb14-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-32"><a href="#cb14-32" aria-hidden="true" tabindex="-1"></a>                scalar y <span class="op">=</span> <span class="fl">0.0</span><span class="op">;</span></span>
+<span id="cb14-33"><a href="#cb14-33" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span><span class="op">(</span>x <span class="op">&gt;</span> x0<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb14-34"><a href="#cb14-34" aria-hidden="true" tabindex="-1"></a>                    <span class="co">// x0〜x1 を円弧状にたわませる（半径rの円の一部）</span></span>
+<span id="cb14-35"><a href="#cb14-35" aria-hidden="true" tabindex="-1"></a>                    <span class="at">const</span> scalar r <span class="op">=</span> <span class="op">(</span>pow<span class="op">((</span>x1 <span class="op">-</span> x0<span class="op">),</span> <span class="dv">2</span><span class="op">)</span> <span class="op">+</span> pow<span class="op">(</span>height<span class="op">,</span> <span class="dv">2</span><span class="op">))</span> <span class="op">/</span> <span class="fl">2.0</span> <span class="op">/</span> height<span class="op">;</span></span>
+<span id="cb14-36"><a href="#cb14-36" aria-hidden="true" tabindex="-1"></a>                    y <span class="op">=</span> r <span class="op">-</span> sqrt<span class="op">(</span>pow<span class="op">(</span>r<span class="op">,</span> <span class="dv">2</span><span class="op">)</span> <span class="op">-</span> pow<span class="op">((</span>x <span class="op">-</span> x0<span class="op">),</span> <span class="dv">2</span><span class="op">));</span></span>
+<span id="cb14-37"><a href="#cb14-37" aria-hidden="true" tabindex="-1"></a>                <span class="op">}</span></span>
+<span id="cb14-38"><a href="#cb14-38" aria-hidden="true" tabindex="-1"></a>                f<span class="op">[</span>i<span class="op">]</span> <span class="op">=</span> vector<span class="op">(</span><span class="fl">0.0</span><span class="op">,</span> y<span class="op">*</span>t<span class="op">,</span> <span class="fl">0.0</span><span class="op">);</span>      <span class="co">// y方向に y*t だけ変位（時刻に比例）</span></span>
+<span id="cb14-39"><a href="#cb14-39" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span></span>
+<span id="cb14-40"><a href="#cb14-40" aria-hidden="true" tabindex="-1"></a>            <span class="kw">operator</span><span class="op">==(</span>f<span class="op">);</span>                          <span class="co">// この変位を境界に課す</span></span>
+<span id="cb14-41"><a href="#cb14-41" aria-hidden="true" tabindex="-1"></a>        <span class="pp">#</span><span class="er">};</span></span>
+<span id="cb14-42"><a href="#cb14-42" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb14-43"><a href="#cb14-43" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <p>ポイントは以下の通り。</p>
 <ul>
 <li><strong><code>".*"</code> → <code>fixedValue (0 0 0)</code></strong>
@@ -3262,21 +3350,21 @@ r=35
 </ol>
 <p>実際のコマンドは次の通り（<code>master_curve_of13</code> の
 <code>Allrun</code> に記載）。</p>
-<div class="sourceCode" id="cb14"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. 半径3 mmのシャフト面をdefaultFacesからshaftへ分離</span></span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="ex">topoSet</span> <span class="at">-dict</span> system/topoSetDict.shaft</span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="ex">createPatch</span> <span class="at">-dict</span> system/createPatchDict.shaft</span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="co"># 2-3. rotor境界(r=35)を一時的に固定壁(rotorPin)化</span></span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="ex">topoSet</span> <span class="at">-dict</span> system/topoSetDict.rotorpin</span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="ex">createBaffles</span> <span class="at">-overwrite</span></span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. 羽根を変形(rotorPinは変位0で固定)</span></span>
-<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span> <span class="at">-rf</span> 0 <span class="kw">&amp;&amp;</span> <span class="fu">cp</span> <span class="at">-r</span> 0.orig 0</span>
-<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a><span class="ex">moveDynamicMesh</span></span>
-<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a><span class="co"># 5. 固定壁を内部面へ戻す(壁を消し、元の一体ものメッシュに戻す)</span></span>
-<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a><span class="ex">stitchMesh</span> <span class="at">-latestTime</span> <span class="st">&quot;((rotorPin_master rotorPin_slave))&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. 半径3 mmのシャフト面をdefaultFacesからshaftへ分離</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="ex">topoSet</span> <span class="at">-dict</span> system/topoSetDict.shaft</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="ex">createPatch</span> <span class="at">-dict</span> system/createPatchDict.shaft</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="co"># 2-3. rotor境界(r=35)を一時的に固定壁(rotorPin)化</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="ex">topoSet</span> <span class="at">-dict</span> system/topoSetDict.rotorpin</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="ex">createBaffles</span> <span class="at">-overwrite</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. 羽根を変形(rotorPinは変位0で固定)</span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span> <span class="at">-rf</span> 0 <span class="kw">&amp;&amp;</span> <span class="fu">cp</span> <span class="at">-r</span> 0.orig 0</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a><span class="ex">moveDynamicMesh</span></span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a><span class="co"># 5. 固定壁を内部面へ戻す(壁を消し、元の一体ものメッシュに戻す)</span></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a><span class="ex">stitchMesh</span> <span class="at">-latestTime</span> <span class="st">&quot;((rotorPin_master rotorPin_slave))&quot;</span></span></code></pre></div>
 <p><code>system/topoSetDict.shaft</code> は <code>defaultFaces</code>
 のうち半径3
 mmの円筒面を選択し、<code>system/createPatchDict.shaft</code>
@@ -3323,8 +3411,8 @@ alt="rotor境界を固定した場合の変形（外側は静止・rotorは円�
 <code>rotorPin</code>（固定用の壁）が入ったままの状態である。変形が終わったら、前述の手順4のとおり
 <strong><code>stitchMesh</code> で <code>rotorPin</code>
 の壁を内部面に戻し、壁のない一体もの（変形済み）のメッシュにする</strong>。</p>
-<div class="sourceCode" id="cb15"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="ex">stitchMesh</span> <span class="at">-latestTime</span> <span class="st">&quot;((rotorPin_master rotorPin_slave))&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="ex">stitchMesh</span> <span class="at">-latestTime</span> <span class="st">&quot;((rotorPin_master rotorPin_slave))&quot;</span></span></code></pre></div>
 <p>こうしてできた「壁のない・羽根が曲がった変形済みメッシュ」（<code>master_curve_of13</code>
 の最終時刻
 <code>1/</code>）が、次のフルモデル組み立ての<strong>基準セクター</strong>になる。以上のpin→変形→壁戻しの一連の処理は
@@ -3353,8 +3441,8 @@ id="フルモデルの組み立て回転コピー結合">フルモデルの組�
 <section class="slide level2">
 
 <h4 id="openfoam-13の環境を読み込む">1. OpenFOAM 13の環境を読み込む</h4>
-<div class="sourceCode" id="cb16"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="bu">.</span> /opt/openfoam13/etc/bashrc</span></code></pre></div>
+<div class="sourceCode" id="cb17"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="bu">.</span> /opt/openfoam13/etc/bashrc</span></code></pre></div>
 </section>
 <section class="slide level2">
 
@@ -3363,14 +3451,14 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb16-1"><a href=
 <p>先に <code>master_curve_of13</code> を実行する。この処理で、半径3
 mmの面を <code>shaft</code>
 に変更し、rotor境界を固定した状態で羽根を曲げ、最後にrotor境界を内部面へ戻す。</p>
-<div class="sourceCode" id="cb17"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> data/002_Stirrer/sample/mesh/master_curve_of13</span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./Allrun</span></span></code></pre></div>
+<div class="sourceCode" id="cb18"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> data/002_Stirrer/sample/mesh/master_curve_of13</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./Allrun</span></span></code></pre></div>
 <p>計算後は <code>1/polyMesh/boundary</code> に <code>shaft</code>
 があることと、メッシュ品質を確認する。</p>
-<div class="sourceCode" id="cb18"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="at">-A6</span> <span class="st">&#39;^[[:space:]]*shaft$&#39;</span> 1/polyMesh/boundary</span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="ex">checkMesh</span> <span class="at">-latestTime</span></span></code></pre></div>
+<div class="sourceCode" id="cb19"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="at">-A6</span> <span class="st">&#39;^[[:space:]]*shaft$&#39;</span> 1/polyMesh/boundary</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="ex">checkMesh</span> <span class="at">-latestTime</span></span></code></pre></div>
 <p>今回の実行結果は、223,776セルがすべて六面体、<code>shaft</code>
 は4,512面で、<code>Mesh OK</code> となった。</p>
 </section>
@@ -3378,10 +3466,10 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb18-1"><a href=
 
 <h4 id="フルモデル用フォルダへ移動する">3.
 フルモデル用フォルダへ移動する</h4>
-<div class="sourceCode" id="cb19"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ../fullmodel_of13</span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="va">SEC</span><span class="op">=</span>../master_curve_of13/1/polyMesh</span></code></pre></div>
+<div class="sourceCode" id="cb20"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ../fullmodel_of13</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="va">SEC</span><span class="op">=</span>../master_curve_of13/1/polyMesh</span></code></pre></div>
 <p><code>SEC</code> は、手順2で作成した変形済み1/6セクターの
 <code>polyMesh</code> を指す。</p>
 </section>
@@ -3389,9 +3477,9 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb19-1"><a href=
 
 <h4 id="基準となる0セクターを配置する">4.
 基準となる0°セクターを配置する</h4>
-<div class="sourceCode" id="cb20"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span> <span class="at">-rf</span> constant/polyMesh</span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cp</span> <span class="at">-r</span> <span class="st">&quot;</span><span class="va">$SEC</span><span class="st">&quot;</span> constant/polyMesh</span></code></pre></div>
+<div class="sourceCode" id="cb21"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span> <span class="at">-rf</span> constant/polyMesh</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cp</span> <span class="at">-r</span> <span class="st">&quot;</span><span class="va">$SEC</span><span class="st">&quot;</span> constant/polyMesh</span></code></pre></div>
 <p>この時点では、フルモデル用ケースに0°の1/6セクターだけが入っている。</p>
 </section>
 <section class="slide level2">
@@ -3409,9 +3497,9 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb20-1"><a href=
 <code>topoSet</code>＋<code>createPatch</code> で専用パッチ
 <code>side_0deg</code> / <code>side_60deg</code>
 として切り出しておく。</p>
-<div class="sourceCode" id="cb21"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="ex">topoSet</span>     <span class="at">-dict</span> system/topoSetDict.sides</span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="ex">createPatch</span> <span class="at">-dict</span> system/createPatchDict.sides <span class="at">-overwrite</span></span></code></pre></div>
+<div class="sourceCode" id="cb22"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="ex">topoSet</span>     <span class="at">-dict</span> system/topoSetDict.sides</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="ex">createPatch</span> <span class="at">-dict</span> system/createPatchDict.sides <span class="at">-overwrite</span></span></code></pre></div>
 <p><code>topoSetDict.sides</code> は、<code>defaultFaces</code>
 に限定してから面の法線でθ=0°面（法線
 <code>(0 -1 0)</code>）とθ=60°面（法線
@@ -3427,14 +3515,14 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb21-1"><a href=
 に作り、それぞれ60°ずつ回す。通常は側面パッチ付きの
 <code>constant/polyMesh</code> をコピーして <code>transformPoints</code>
 で回せばよい。</p>
-<div class="sourceCode" id="cb22"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> k <span class="kw">in</span> 1 2 3 4 5<span class="kw">;</span> <span class="cf">do</span></span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>    <span class="va">ang</span><span class="op">=</span><span class="va">$((k</span> <span class="op">*</span> <span class="dv">60</span><span class="va">))</span></span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mkdir</span> <span class="at">-p</span> sec<span class="va">$k</span>/constant sec<span class="va">$k</span>/system</span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cp</span> <span class="at">-r</span> constant/polyMesh sec<span class="va">$k</span>/constant/polyMesh</span>
-<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cp</span> system/controlDict sec<span class="va">$k</span>/system/</span>
-<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>    <span class="ex">transformPoints</span> <span class="at">-case</span> sec<span class="va">$k</span> <span class="st">&quot;Rz=</span><span class="va">$ang</span><span class="st">&quot;</span></span>
-<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span></code></pre></div>
+<div class="sourceCode" id="cb23"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> k <span class="kw">in</span> 1 2 3 4 5<span class="kw">;</span> <span class="cf">do</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>    <span class="va">ang</span><span class="op">=</span><span class="va">$((k</span> <span class="op">*</span> <span class="dv">60</span><span class="va">))</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mkdir</span> <span class="at">-p</span> sec<span class="va">$k</span>/constant sec<span class="va">$k</span>/system</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cp</span> <span class="at">-r</span> constant/polyMesh sec<span class="va">$k</span>/constant/polyMesh</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">cp</span> system/controlDict sec<span class="va">$k</span>/system/</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>    <span class="ex">transformPoints</span> <span class="at">-case</span> sec<span class="va">$k</span> <span class="st">&quot;Rz=</span><span class="va">$ang</span><span class="st">&quot;</span></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span></code></pre></div>
 <p>基準セクターを含め、0°・60°・120°・180°・240°・300°の6セクターがそろう。</p>
 <blockquote>
 <p><strong>補足（Windows/WSL の <code>/mnt/f</code> = drvfs
@@ -3455,8 +3543,8 @@ drvfs でも確実に書けるため、6セクターすべてが確実に回転�
 <section class="slide level2">
 
 <h4 id="セクターを結合する">7. 6セクターを結合する</h4>
-<div class="sourceCode" id="cb23"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="ex">mergeMeshes</span> <span class="at">-addCases</span> <span class="st">&#39;(&quot;sec1&quot; &quot;sec2&quot; &quot;sec3&quot; &quot;sec4&quot; &quot;sec5&quot;)&#39;</span></span></code></pre></div>
+<div class="sourceCode" id="cb24"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="ex">mergeMeshes</span> <span class="at">-addCases</span> <span class="st">&#39;(&quot;sec1&quot; &quot;sec2&quot; &quot;sec3&quot; &quot;sec4&quot; &quot;sec5&quot;)&#39;</span></span></code></pre></div>
 <p><code>mergeMeshes</code>
 は、0°の基準セクターへ5個の回転済みセクターを追加する。これにより、1,342,656セルの360°フルモデルが
 <code>constant/polyMesh</code>
@@ -3472,8 +3560,8 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb23-1"><a href=
 は幾何的にぴったり重なっている。<code>stitchMesh</code>
 で両パッチを貼り合わせて内部面に戻すと、6個の境目が全部つながって
 <code>Number of regions: 1</code> の一体メッシュになる。</p>
-<div class="sourceCode" id="cb24"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="ex">stitchMesh</span> <span class="at">-tol</span> 1e-3 <span class="st">&#39;((side_0deg side_60deg))&#39;</span></span></code></pre></div>
+<div class="sourceCode" id="cb25"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="ex">stitchMesh</span> <span class="at">-tol</span> 1e-3 <span class="st">&#39;((side_0deg side_60deg))&#39;</span></span></code></pre></div>
 <p><code>-tol</code>
 は一致点をマージする許容量（局所辺長に対する相対値）で、既定は
 <code>1e-4</code>。回転コピー時のわずかな数値誤差で接合線に微小なスリバー面ができ非直交エラーになることがあるため、ここでは少し緩めの
@@ -3486,8 +3574,8 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb24-1"><a href=
 
 <h4 id="フルモデルのメッシュを確認する">9.
 フルモデルのメッシュを確認する</h4>
-<div class="sourceCode" id="cb25"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="ex">checkMesh</span></span></code></pre></div>
+<div class="sourceCode" id="cb26"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="ex">checkMesh</span></span></code></pre></div>
 <p>今回の実行結果は、1,342,656セルがすべて六面体、<code>Number of regions: 1</code>、非直交
 Max 49°・スキュネス 0.79 で <code>Mesh OK</code>
 となった。セクター間がつながった、計算にも使える1つの連続メッシュである。</p>
@@ -4526,9 +4614,9 @@ alt="SALOMEからOpenFOAMへの連携フロー" /></p>
 <h3 id="openfoam-13環境の読み込み">OpenFOAM 13環境の読み込み</h3>
 <p>この演習の計算はOpenFOAM 13で行う。まずOpenFOAM
 13の環境を読み込む。</p>
-<div class="sourceCode" id="cb27"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> /opt/openfoam13/etc/bashrc</span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> data/003_heatsink/run001_of13</span></code></pre></div>
+<div class="sourceCode" id="cb28"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> /opt/openfoam13/etc/bashrc</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> data/003_heatsink/run001_of13</span></code></pre></div>
 </section>
 <section class="slide level2">
 
@@ -4536,8 +4624,8 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb27-1"><a href=
 id="setup.shによるメッシュ変換とケース設定">setup.shによるメッシュ変換とケース設定</h3>
 <p>ケースフォルダには、UNVメッシュの変換からリージョン分割・境界条件設定までを一括実行する
 <code>setup.sh</code> を用意している。</p>
-<div class="sourceCode" id="cb28"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bash</span> setup.sh</span></code></pre></div>
+<div class="sourceCode" id="cb29"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bash</span> setup.sh</span></code></pre></div>
 <p><code>setup.sh</code> の中では、以下の処理を順に行っている。</p>
 </section>
 <section class="slide level2">
@@ -4585,8 +4673,8 @@ alt="OpenFOAM側でメッシュ全体を確認する" /></p>
 
 <h3 id="foammultirunの実行">foamMultiRunの実行</h3>
 <p>セットアップが完了したら、熱流体・固体連成ソルバを実行する。</p>
-<div class="sourceCode" id="cb30"><pre
-class="sourceCode bash"><code class="sourceCode bash"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="ex">foamMultiRun</span> <span class="op">&gt;</span> log.foamMultiRun.of13 <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span></code></pre></div>
+<div class="sourceCode" id="cb31"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="ex">foamMultiRun</span> <span class="op">&gt;</span> log.foamMultiRun.of13 <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span></code></pre></div>
 <ul>
 <li>OpenFOAM 13では <code>foamMultiRun</code> が
 <code>system/controlDict</code> の <code>regionSolvers</code>

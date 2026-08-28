@@ -961,43 +961,92 @@ foamToVTK -faceSet nonOrthoFaces -time 0
 | y+ | 高Re型の標準k-εの場合は `30 < y+ < 300` の対数則領域を推奨。k-ωSSTのようにy+の広い範囲で適用できるモデルもある（`1 < y+ < 300` 程度） | `y+ < 1` の場合は低Re型モデル。壁関数を使用せず壁面のレイヤーを10〜20層入れる |
 | 流量の整合性 | 全ての境界面を流入量と流出量で固定値とすると、境界条件に強い制限がかかるので計算が成り立たなくなる。流出量は自然に決まるものとして計算する | 流入量と流出量がつり合っていることを確認すると、設定ミスに気づくことができる |
 
-確認用のfunction objectは `system/controlDict` の `functions` に次のように書く。
+確認用のfunction objectは `system/controlDict` の `functions` に書く。**OpenFOAM 13（openfoam.org系）とOpenFOAM v2512（ESI系）では、function objectの名前と記法が一部異なる**ので注意する。
+
+| 確認項目 | OpenFOAM 13 | OpenFOAM v2512 |
+|----------|-------------|----------------|
+| 残差 | `residuals` | `solverInfo`（v2512では `residuals` という名前は使えない） |
+| 連続式の誤差 | 専用のfunction objectはない。ログに出る `time step continuity errors` を見る | `continuityError` |
+| y+ | `yPlus`（同じ） | `yPlus`（同じ） |
+| 流量 | `surfaceFieldValue`。パッチは `patch <名前>;` で指定 | `surfaceFieldValue`。パッチは `regionType patch; name <名前>;` で指定 |
+| `libs` の書き方 | `("libfieldFunctionObjects.so")` | `(fieldFunctionObjects)` の短縮形が使える |
+
+OpenFOAM 13の場合。
 
 ```cpp
-residuals
+functions
 {
-    type    solverInfo;
-    libs    ("libutilityFunctionObjects.so");
-    fields  (".*");
-    writeResidualFields yes;
-}
+    residuals
+    {
+        type            residuals;
+        libs            ("libutilityFunctionObjects.so");
+        writeControl    timeStep;
+        writeInterval   1;
+        fields          (p U k epsilon);
+    }
 
-continuityError1
-{
-    type    continuityError;
-    libs    (fieldFunctionObjects);
-    phi     phi;
-}
+    yPlus
+    {
+        type            yPlus;
+        libs            ("libfieldFunctionObjects.so");
+        executeControl  writeTime;
+        writeControl    writeTime;
+    }
 
-yPlus
-{
-    type    yPlus;
-    libs    (fieldFunctionObjects);
-}
-
-surfaceFieldValue1   // 任意の名前
-{
-    type        surfaceFieldValue;
-    libs        (fieldFunctionObjects);
-    fields      (phi);
-    operation   sum;
-    regionType  patch;
-    name        <patch名>;
+    inletFlowRate               // 任意の名前
+    {
+        type            surfaceFieldValue;
+        libs            ("libfieldFunctionObjects.so");
+        patch           inlet;  // パッチ名
+        fields          (phi);
+        operation       sum;
+        writeFields     false;
+        writeControl    timeStep;
+        writeInterval   1;
+    }
 }
 ```
 
-- 補足: 残差は `#includeFunc residuals` と書いてもよい。`#includeFunc` は `system` 内のファイルを探し、なければ `$FOAM_ETC` を探す。
-- 補足: `surfaceFieldValue` は一度書いた設定を `$surfaceFieldValue1` のように参照して使いまわせる。
+OpenFOAM v2512の場合。
+
+```cpp
+functions
+{
+    solverInfo
+    {
+        type            solverInfo;
+        libs            (utilityFunctionObjects);
+        fields          (".*");
+        writeResidualFields yes;
+    }
+
+    continuityError1
+    {
+        type            continuityError;
+        libs            (fieldFunctionObjects);
+        phi             phi;
+    }
+
+    yPlus
+    {
+        type            yPlus;
+        libs            (fieldFunctionObjects);
+    }
+
+    inletFlowRate               // 任意の名前
+    {
+        type            surfaceFieldValue;
+        libs            (fieldFunctionObjects);
+        regionType      patch;
+        name            inlet;  // パッチ名
+        fields          (phi);
+        operation       sum;
+    }
+}
+```
+
+- 補足: `#includeFunc` を使うと短く書ける。`#includeFunc` は `system` 内に同名のファイルを探し、なければ `$FOAM_ETC` 内を探す。OpenFOAM 13は `#includeFunc residuals(fields=(p U))`、`#includeFunc yPlus`、v2512は `#includeFunc solverInfo`、`#includeFunc yPlus` となる。
+- 補足: 一度書いた設定は `$inletFlowRate` のように参照して使いまわせるため、パッチごとに設定を書き直す必要はない。
 
 ---
 
