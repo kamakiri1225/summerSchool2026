@@ -67,6 +67,17 @@
 - ① **X-Z平面**にスケッチした断面を、**Z軸まわりに回転**させて、撹拌槽の壁（円筒状の外周）を作る。
 - ② **X-Y平面**にスケッチした断面を、**Z軸方向に押し出し**て、槽の底や羽根まわりのブロックを作る。
 
+<div style="display:flex; flex-wrap:wrap; gap:1.5em; align-items:flex-end; justify-content:center; margin:1.2em 0;">
+  <figure style="flex:1 1 240px; max-width:340px; margin:0; text-align:center;">
+    <img src="img/002_stirrer/drawing_black_X-Z.svg" alt="① X-Z平面に描く壁の断面" style="width:100%; height:auto; max-height:320px; object-fit:contain;">
+    <figcaption>① X-Z平面のスケッチ（回転で壁を作る）</figcaption>
+  </figure>
+  <figure style="flex:1 1 300px; max-width:440px; margin:0; text-align:center;">
+    <img src="img/002_stirrer/drawing_black_X-Y.svg" alt="② X-Y平面に描く扇形の断面" style="width:100%; height:auto; max-height:320px; object-fit:contain;">
+    <figcaption>② X-Y平面のスケッチ（押し出しで底・羽根まわりを作る）</figcaption>
+  </figure>
+</div>
+
 このように「回転で作る部分」と「押し出しで作る部分」を組み合わせ、最後にPartitionで分割してヘキサメッシュ用のブロック形状に仕上げていく。以降の手順では、この2つのスケッチを順に作成していく。
 
 ---
