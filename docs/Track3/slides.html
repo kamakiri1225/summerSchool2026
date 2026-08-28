@@ -3626,6 +3626,14 @@ Max 49°・スキュネス 0.79 で <code>Mesh OK</code>
 
 <p><img data-src="img/002_stirrer/fullmodel_of13.png"
 alt="回転コピー＋結合で作った全周（360°）フルモデル（半透明のタンク、赤: 羽根、緑: 仕切り板）" /></p>
+<p>このモデルには、羽根まわりを囲む円柱状のセルゾーン
+<code>rotor1</code>・<code>rotor2</code>
+が定義してある。下図でピンクに薄く示した部分がそれで、MRFやスライディングメッシュで<strong>回転させる領域</strong>にあたる。羽根とその周囲をひとまとまりの領域として扱い、その外側の静止領域との間で値を受け渡す。</p>
+</section>
+<section class="slide level2">
+
+<p><img data-src="img/002_stirrer/fullmodel_of13_rotor.png"
+alt="ピンクの薄い円柱がセルゾーン rotor1・rotor2（回転領域）" /></p>
 </section>
 <section class="slide level2">
 
