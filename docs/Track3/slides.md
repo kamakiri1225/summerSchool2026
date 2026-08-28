@@ -421,7 +421,7 @@ SALOMEで直方体モデルを作成し、OpenFOAMで使える境界名つきメ
 
 ### 12. Geometryファイルを保存する
 
-![13. Geometryファイルを保存する](img/001_box/facegroup_p38.png)
+![12. Geometryファイルを保存する](img/001_box/facegroup_p38.png)
 
 - (17) `Save as ...` をクリックする。
 - (18) `Save` をクリックし、SALOMEのプロジェクトファイルとして保存する。
@@ -432,7 +432,7 @@ SALOMEで直方体モデルを作成し、OpenFOAMで使える境界名つきメ
 
 ### 13. 線グループと面グループの役割
 
-![14. 線グループと面グループの一覧](img/001_box/facegroup_p39.png)
+![13. 線グループと面グループの一覧](img/001_box/facegroup_p39.png)
 
 - 確認: ツリーに線グループ（`x` / `y` / `z`）と面グループ（`inlet` / `side` / `topAndbottom` / `outlet`）が揃っていることを確認する。
 - 確認: 線グループはメッシュ分割数を制御するために使う。
