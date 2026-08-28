@@ -950,6 +950,8 @@ alt="OpenFOAM計算結果のParaView可視化" /></p>
 <h2 id="メッシュの品質について">メッシュの品質について</h2>
 <p>メッシュが膨大すぎると計算時間がかかり、品質が悪いと数値拡散が起こる、収束性が悪い、計算が発散するといった問題が起きる。困ったことが起こらないように、計算前に
 <code>checkMesh</code> でメッシュ数と品質を確認する。</p>
+<p><img src="img/001_box/track2_p133.svg"
+alt="計算前の確認事項: checkMeshの出力と各品質指標の意味" /></p>
 <div class="sourceCode" id="cb6"><pre
 class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">checkMesh</span></span></code></pre></div>
 <p><code>checkMesh</code> の結果では、セル数（<code>points</code>
@@ -1016,6 +1018,8 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="
 <hr />
 <h2 id="計算中の確認事項">計算中の確認事項</h2>
 <p>理論式や実験データとの比較も大事だが、計算が異常を起こしていないか確認するのも大事である。</p>
+<p><img src="img/001_box/track2_p134.svg"
+alt="計算中の確認事項: 残差・連続式の誤差・y+・流量の整合性" /></p>
 <table>
 <colgroup>
 <col style="width: 33%" />
