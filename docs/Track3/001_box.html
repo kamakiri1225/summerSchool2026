@@ -705,6 +705,18 @@ alt="境界層対象面を確認する" /></p>
 <li>確認: 壁面近傍を解きたい場合は、壁面側に境界層を入れる。</li>
 </ul>
 <hr />
+<h3
+id="作成したメッシュをstudyに保存する">作成したメッシュをStudyに保存する</h3>
+<p>ここまでのメッシュ作成が終わったら、SALOMEのStudyを保存しておく。</p>
+<p><img src="img/001_box/pdf_p071.svg"
+alt="File &gt; Save As… でStudyを保存する" /></p>
+<ul>
+<li>図の(4) <code>File &gt; Save As...</code> をクリックする。</li>
+<li>図の(5) ファイル名を入力し、<code>Save</code> をクリックする。</li>
+<li>※
+SALOMEは落ちることがあるので、メッシュ設定を進めるたびに保存しておくとよい。</li>
+</ul>
+<hr />
 <h2
 id="余裕がある人向けopenfoam側での計算">（余裕がある人向け）OpenFOAM側での計算</h2>
 <p>SALOMEで作成したメッシュをOpenFOAMへ渡すには、UNV形式で書き出し、OpenFOAMのケースフォルダへ変換・配置する必要がある。全体の流れは以下の通り。</p>
@@ -713,19 +725,7 @@ alt="SALOMEからOpenFOAMへの連携フロー" /></p>
 <hr />
 <h3 id="openfoam用にunv出力する">OpenFOAM用にUNV出力する</h3>
 <hr />
-<h4 id="salomeのstudyを保存する">1. SALOMEのStudyを保存する</h4>
-<p><img src="img/001_box/pdf_p071.svg"
-alt="SALOMEのStudyを保存する" /></p>
-<ul>
-<li><ol start="4" type="1">
-<li><code>File &gt; Save As...</code> をクリックする。</li>
-</ol></li>
-<li><ol start="5" type="1">
-<li>ファイル名を入力し、<code>Save</code> をクリックする。</li>
-</ol></li>
-</ul>
-<hr />
-<h4 id="geometryからメッシュグループを作る">2.
+<h4 id="geometryからメッシュグループを作る">1.
 Geometryからメッシュグループを作る</h4>
 <p><img src="img/001_box/pdf_p072.svg"
 alt="Geometryからメッシュグループを作る" /></p>
@@ -748,7 +748,7 @@ alt="Geometryからメッシュグループを作る" /></p>
 不要な線グループやCompoundグループをUNVに含めると、<code>ideasUnvToFoam</code>でエラーになることがある。</li>
 </ul>
 <hr />
-<h4 id="unv形式でエクスポートする">3. UNV形式でエクスポートする</h4>
+<h4 id="unv形式でエクスポートする">2. UNV形式でエクスポートする</h4>
 <p><img src="img/001_box/pdf_p073.svg"
 alt="UNV形式でエクスポートする" /></p>
 <ul>
