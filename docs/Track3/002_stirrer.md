@@ -546,7 +546,15 @@ OpenFOAMへ渡す面や線を整理するため、Geometry側でグループを�
 - (18) `File` > `Save As...` で名前を付けて保存する。
 - (19) `Save` をクリックする。
 
-### 4. OpenFOAM用にUNV出力する
+## （余裕がある人向け）OpenFOAM側での計算
+
+SALOME で作成したメッシュを OpenFOAM 形式に変換して利用する。全体の流れは以下の通り。
+
+![SALOMEからOpenFOAMへの連携フロー](img/000_salome/salome_to_openfoam_flow.png)
+
+---
+
+### OpenFOAM用にUNV出力する
 
 ![Groups of Edgesを削除する](img/002_stirrer/page_154.svg)
 
@@ -560,17 +568,11 @@ OpenFOAMへ渡す面や線を整理するため、Geometry側でグループを�
 
 ---
 
-## （余裕がある人向け）OpenFOAM側での計算
+### メッシュ変換とバッフル作成
 
 SALOMEから出力した `Mesh_1.unv` は、そのままではOpenFOAMで使えない。UNV形式からOpenFOAM形式へ変換し、スケール変換（mm→m）を行った上で、羽根（wing）と仕切り板（circ）の位置に `topoSet` + `createBaffles` でバッフル（厚みゼロの内部壁）を作成する。
 
-SALOME で作成したメッシュを OpenFOAM 形式に変換して利用する。全体の流れは以下の通り。
-
-![SALOMEからOpenFOAMへの連携フロー](img/000_salome/salome_to_openfoam_flow.png)
-
 - 作業フォルダ: `data/002_Stirrer/sample/mesh/mesh_of13`
-
-### メッシュ変換とバッフル作成
 
 ```bash
 cd data/002_Stirrer/sample/mesh/mesh_of13
