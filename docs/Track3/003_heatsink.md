@@ -34,7 +34,9 @@
 
 ![FreeCADで作成したヒートシンクと流体領域のCADモデル](img/003_heatsink/FreeCADmodel.png)
 
-この演習のOpenFOAM計算は **OpenFOAM 13**（www.openfoam.org 版）で行う。
+この演習のOpenFOAM計算は **OpenFOAM 13**（www.openfoam.org 版）で行う。最終的には、マルチリージョンソルバによる熱流体・固体連成の計算を行う。
+
+![計算過程のアニメーション（速度・温度分布の時間変化）](img/003_heatsink/ani_comp.gif)
 
 ---
 
