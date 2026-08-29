@@ -3817,9 +3817,10 @@ class="math inline">\(x\)</span>・<span class="math inline">\(y\)</span>
 </section>
 <section class="slide level2">
 
-<p><img data-src="img/002_stirrer/hexmesh_tips_p23.png"
+<p><img data-src="img/002_stirrer/pdf_p023.svg"
 alt="移流問題のセットアップ（上30℃・下50℃を右へ流す。形を保ったまま伝搬するはず…）" /></p>
 <p>今回は上図のような2次元領域で、<strong>上側入口を30℃・下側入口を50℃</strong>として右へ流す（拡散なしの純移流、<code>DT=0</code>）。理想的には上下の温度差（<code>y=25</code>の界面）がシャープなまま出口まで運ばれるはずである。</p>
+<p>メッシュは中央部だけ意図的にV字に傾けてある。流れ方向とセルの向きがずれる部分を作ることで、後述の<strong>偽拡散</strong>（斜めメッシュでのなまり）が現れやすくしている。上図でも、傾いた領域に入ったところから界面がぼやけ始めているのが分かる。</p>
 </section>
 <section class="slide level2">
 
