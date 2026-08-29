@@ -43,7 +43,7 @@ SALOMEには、プラットフォーム本体の **SALOME** と、構造解析�
 
 | ステップ | 演習 | 学ぶこと | ファイル |
 |----------|------|----------|----------|
-| 0 | SALOME導入 | SALOME の概要・モジュール・OpenFOAM との連携 | [000 SALOME](000_salome.html) |
+| 0 | SALOME導入 | SALOME の概要・モジュール・OpenFOAM への変換 | [000 SALOME](000_salome.html) |
 | 1 | 基礎練習（Box） | SALOME の基本操作・境界層・OpenFOAM 変換 | [001 Box](001_box.html) |
 | 2 | 撹拌機 | ヘキサメッシュで複雑形状を作成する方法 | [002 Stirrer](002_stirrer.html) |
 | 3 | ヒートシンク | マルチリージョンメッシュ・熱流体固体連成 | [003 Heatsink](003_heatsink.html) |
