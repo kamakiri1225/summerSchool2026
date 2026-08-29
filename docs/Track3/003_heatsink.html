@@ -449,23 +449,30 @@ alt="Create Meshを開く" /></p>
 をクリックする。</li>
 </ol></li>
 </ul>
-<p><img src="img/003_heatsink/page_176.svg"
+<p><img src="img/003_heatsink/pdf_p198.svg"
 alt="テトラメッシュの仮設定をする" /></p>
 <ul>
 <li><ol start="3" type="1">
-<li>Geometryに <code>Partition_1</code>
-が選択されていることを確認する。</li>
+<li><code>Geometry</code> に <code>Partition_1</code>
+が選択されていることを確認する。<code>Create all Groups on Geometry</code>
+にチェックを入れておくと、Geometryで作った面グループがそのままメッシュのグループになる。</li>
 </ol></li>
 <li><ol start="4" type="1">
-<li>3Dタブで <code>Assign a set of automatic hypotheses</code> から
-<code>3D: Tetrahedralization</code> を選ぶ。</li>
+<li>3Dタブの下にある <code>Assign a set of automatic hypotheses</code>
+から <code>3D: Tetrahedralization</code> を選ぶ。</li>
 </ol></li>
 <li><ol start="5" type="1">
-<li>NETGEN 3D ParametersのLengthを
-<code>25</code>（mm）に仮設定する。</li>
+<li><code>Hypothesis Construction</code>
+ダイアログが開くので、<code>Length</code>（分割サイズ）を
+<code>25</code>（mm）にして <code>OK</code>
+をクリックする。ここでは仮設定であり、後で調整する。</li>
 </ol></li>
 <li><ol start="6" type="1">
-<li><code>Apply and Close</code> をクリックする。</li>
+<li><code>Algorithm</code> が
+<code>NETGEN 1D-2D-3D</code>、<code>Hypothesis</code> が
+<code>NETGEN 3D Parameters_1</code>
+になっていることを確認し、<code>Apply and Close</code>
+をクリックする。</li>
 </ol></li>
 </ul>
 <p><img src="img/003_heatsink/page_177.svg"

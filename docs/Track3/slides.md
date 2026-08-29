@@ -2850,12 +2850,12 @@ OpenFOAMでは境界条件は面の名前に対して設定するため、SALOME
 
 ---
 
-![テトラメッシュの仮設定をする](img/003_heatsink/page_176.svg)
+![テトラメッシュの仮設定をする](img/003_heatsink/pdf_p198.svg)
 
-- (3) Geometryに `Partition_1` が選択されていることを確認する。
-- (4) 3Dタブで `Assign a set of automatic hypotheses` から `3D: Tetrahedralization` を選ぶ。
-- (5) NETGEN 3D ParametersのLengthを `25`（mm）に仮設定する。
-- (6) `Apply and Close` をクリックする。
+- (3) `Geometry` に `Partition_1` が選択されていることを確認する。`Create all Groups on Geometry` にチェックを入れておくと、Geometryで作った面グループがそのままメッシュのグループになる。
+- (4) 3Dタブの下にある `Assign a set of automatic hypotheses` から `3D: Tetrahedralization` を選ぶ。
+- (5) `Hypothesis Construction` ダイアログが開くので、`Length`（分割サイズ）を `25`（mm）にして `OK` をクリックする。ここでは仮設定であり、後で調整する。
+- (6) `Algorithm` が `NETGEN 1D-2D-3D`、`Hypothesis` が `NETGEN 3D Parameters_1` になっていることを確認し、`Apply and Close` をクリックする。
 
 
 ---
