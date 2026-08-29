@@ -200,9 +200,9 @@ OpenFOAMでは境界条件は面の名前に対して設定するため、SALOME
 
 ### 1. Meshモジュールへ切り替える
 
-![Meshへ切り替える](img/003_heatsink/page_174.svg)
+![Meshへ切り替える](img/003_heatsink/pdf_p196.svg)
 
-- (1) `Mesh` に変更する。
+- (1) 画面左上のモジュールのプルダウンを `Mesh` に変更する。Mesh画面に切り替わり、Object Browserには `Partition_1` とその配下の面グループがそのまま表示される。
 
 ### 2. メッシュを新規作成する
 

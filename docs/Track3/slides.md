@@ -479,9 +479,9 @@ SALOMEで直方体モデルを作成し、OpenFOAMで使える境界名つきメ
 
 #### 1. Meshモジュールへ切り替える
 
-![Meshモジュールへ切り替える](img/001_box/page_018.svg)
+![Meshモジュールへ切り替える](img/001_box/pdf_p045.svg)
 
-- (1) SALOMEのモジュールを `Mesh` に切り替える。
+- (1) 画面左上のモジュールのプルダウンを `Mesh` に変更する。Mesh画面に切り替わり、Object Browserには先ほど作成した `Box_1` とその面グループがそのまま表示される。
 
 ---
 
@@ -2834,9 +2834,9 @@ OpenFOAMでは境界条件は面の名前に対して設定するため、SALOME
 
 ### 1. Meshモジュールへ切り替える
 
-![Meshへ切り替える](img/003_heatsink/page_174.svg)
+![Meshへ切り替える](img/003_heatsink/pdf_p196.svg)
 
-- (1) `Mesh` に変更する。
+- (1) 画面左上のモジュールのプルダウンを `Mesh` に変更する。Mesh画面に切り替わり、Object Browserには `Partition_1` とその配下の面グループがそのまま表示される。
 
 
 ---
