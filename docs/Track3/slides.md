@@ -2632,10 +2632,10 @@ divSchemes
 
 ### 3. 内部形状を確認する
 
-![透過表示で内部形状を確認する](img/003_heatsink/page_154.svg)
+![透過表示で内部形状を確認する](img/003_heatsink/pdf_p176.svg)
 
-- (5) 背景上で右クリックし `Transparency` をクリックする。
-- (6) `Opaque` を `60%` にし、boxの中にあるheatSink・heatSourceの形状を確認する。
+- (5) オブジェクトブラウザまたは3Dビューで `model` をクリックして選択し、右クリック > `Transparency` をクリックする。
+- (6) `Opaque` のスライダを `60%` にして `Ok` をクリックし、boxの中にあるheatSink・heatSourceの形状を確認する。
 
 ---
 
