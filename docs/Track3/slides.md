@@ -2765,9 +2765,9 @@ OpenFOAMでは境界条件は面の名前に対して設定するため、SALOME
 
 ### 2. basisとの接触面グループを作る
 
-![basisグループを作成する](img/003_heatsink/page_167.svg)
+![basisグループを作成する](img/003_heatsink/pdf_p189.svg)
 
-- (12) `basis` の側面5面を選択して `Add` をクリックする。
+- (12) `Shape Type` を面にし、`Name` に `basis` と入力する。`basis` の側面4面と底面1面の計5面を選択して `Add` をクリックする。
 - (13) `Apply` をクリックする。
 - このグループが、box（流体）側から見たbasisとの連成境界になる。
 
