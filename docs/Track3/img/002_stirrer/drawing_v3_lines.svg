@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="360" height="490" viewBox="0 0 360 490">
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="530" viewBox="0 0 360 530">
   <defs>
     <marker id="arrEnd" markerWidth="9" markerHeight="7" refX="9" refY="3.5" orient="auto" markerUnits="userSpaceOnUse">
       <polygon points="0,0 9,3.5 0,7" fill="#000"/>
@@ -8,7 +8,7 @@
     </marker>
   </defs>
 
-  <rect x="0" y="0" width="360" height="490" fill="#ffffff"/>
+  <rect x="0" y="0" width="360" height="530" fill="#ffffff"/>
 
   <g stroke="#000000" fill="none" stroke-linecap="round" stroke-linejoin="round">
 
@@ -17,11 +17,13 @@
       <!-- 右 110 -->
       <line x1="262" y1="50"  x2="306" y2="50"/>
       <line x1="262" y1="380" x2="306" y2="380"/>
-      <!-- 下 40 -->
-      <line x1="140" y1="382" x2="140" y2="451"/>
-      <line x1="260" y1="382" x2="260" y2="451"/>
-      <!-- 下 15 -->
-      <line x1="185" y1="382" x2="185" y2="421"/>
+      <!-- 下側 10 / 15 / 25 / 35 / 40 -->
+      <line x1="140" y1="382" x2="140" y2="500"/>
+      <line x1="170" y1="382" x2="170" y2="404"/>
+      <line x1="185" y1="382" x2="185" y2="428"/>
+      <line x1="215" y1="382" x2="215" y2="452"/>
+      <line x1="245" y1="382" x2="245" y2="476"/>
+      <line x1="260" y1="382" x2="260" y2="500"/>
       <!-- 左 35 -->
       <line x1="147" y1="275" x2="54"  y2="275"/>
       <line x1="138" y1="380" x2="54"  y2="380"/>
@@ -35,8 +37,11 @@
     <!-- ===== 寸法線 ===== -->
     <g stroke-width="1">
       <line x1="300" y1="50"  x2="300" y2="380" marker-start="url(#arrStart)" marker-end="url(#arrEnd)"/>
-      <line x1="140" y1="445" x2="260" y2="445" marker-start="url(#arrStart)" marker-end="url(#arrEnd)"/>
-      <line x1="140" y1="415" x2="185" y2="415" marker-start="url(#arrStart)" marker-end="url(#arrEnd)"/>
+      <line x1="140" y1="398" x2="170" y2="398" marker-start="url(#arrStart)" marker-end="url(#arrEnd)"/>
+      <line x1="140" y1="422" x2="185" y2="422" marker-start="url(#arrStart)" marker-end="url(#arrEnd)"/>
+      <line x1="140" y1="446" x2="215" y2="446" marker-start="url(#arrStart)" marker-end="url(#arrEnd)"/>
+      <line x1="140" y1="470" x2="245" y2="470" marker-start="url(#arrStart)" marker-end="url(#arrEnd)"/>
+      <line x1="140" y1="494" x2="260" y2="494" marker-start="url(#arrStart)" marker-end="url(#arrEnd)"/>
       <line x1="60"  y1="275" x2="60"  y2="380" marker-start="url(#arrStart)" marker-end="url(#arrEnd)"/>
       <line x1="100" y1="335" x2="100" y2="380" marker-start="url(#arrStart)" marker-end="url(#arrEnd)"/>
       <!-- 3（狭いので矢印は外向き） -->
@@ -71,8 +76,11 @@
 
   <!-- ===== 寸法文字 ===== -->
   <g fill="#000000" font-family="Arial, Helvetica, sans-serif" font-size="16" text-anchor="middle">
-    <text x="200" y="440">40</text>
-    <text x="162" y="410">15</text>
+    <text x="155" y="393">10</text>
+    <text x="162" y="417">15</text>
+    <text x="177" y="441">25</text>
+    <text x="192" y="465">35</text>
+    <text x="200" y="489">40</text>
     <text x="112" y="267" text-anchor="end">3</text>
     <text x="316" y="215" transform="rotate(-90 316 215)">110</text>
     <text x="52"  y="327" transform="rotate(-90 52 327)">35</text>
