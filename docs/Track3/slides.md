@@ -1182,7 +1182,7 @@ functions
 
 <div style="display:flex; flex-wrap:wrap; gap:1.5em; align-items:flex-end; justify-content:center; margin:1.2em 0;">
   <figure style="flex:1 1 240px; max-width:340px; margin:0; text-align:center;">
-    <img src="img/002_stirrer/drawing_v3_lines.svg" alt="① X-Z平面に描く壁の断面" style="width:100%; height:auto; max-height:320px; object-fit:contain;">
+    <img src="img/002_stirrer/drawing_v4_blue.svg" alt="① X-Z平面に描く壁の断面" style="width:100%; height:auto; max-height:320px; object-fit:contain;">
     <figcaption>① X-Z平面のスケッチ（回転で壁を作る）</figcaption>
   </figure>
   <figure style="flex:1 1 300px; max-width:440px; margin:0; text-align:center;">
