@@ -90,9 +90,9 @@
 
 線の色は、どこで作図するかを表している。
 
-- **黒線**: Shaperのスケッチで作成する線。
-- **赤線**: ①と②のどちらか一方で描いていればよい線。①を押し出したときに②の線と一致するため、両方で描く必要はない。
-- **青線**: Geometryモジュールで後から追加する分割線。Shaperで描いてもよいが、今回は練習も兼ねてGeometryでも分割線を入れられることを示すため、あえてGeometry側で追加する。
+- <span style="color:#000000; font-weight:bold;">黒線</span>: Shaperのスケッチで作成する線。
+- <span style="color:#e01b1b; font-weight:bold;">赤線</span>: ①と②のどちらか一方で描いていればよい線。①を押し出したときに②の線と一致するため、両方で描く必要はない。
+- <span style="color:#1560d8; font-weight:bold;">青線</span>: Geometryモジュールで後から追加する分割線。Shaperで描いてもよいが、今回は練習も兼ねてGeometryでも分割線を入れられることを示すため、あえてGeometry側で追加する。
 
 ---
 
