@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="740" height="370" viewBox="0 0 740 370" font-family='"Yu Gothic","Hiragino Kaku Gothic ProN","Meiryo","Noto Sans JP",sans-serif'>
+<rect width="740" height="370" fill="#FFFFFF"/>
+<text x="370" y="34" text-anchor="middle" font-size="17" font-weight="500" fill="#2C2C2A">SALOME 3Dビューのマウス操作（Salome standard controls）</text>
+<text x="108" y="80" text-anchor="middle" font-size="15" font-weight="500" fill="#2C2C2A">回転</text>
+<path d="M68 150 L68 136 Q68 100 104 100 L104 150 Z" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<path d="M148 150 L148 136 Q148 100 112 100 L112 150 Z" fill="#AFA9EC" stroke="#534AB7" stroke-width="1"/>
+<rect x="102" y="108" width="12" height="26" rx="6" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<line x1="68" y1="150" x2="148" y2="150" stroke="#B4B2A9" stroke-width="1"/>
+<rect x="68" y="100" width="80" height="120" rx="36" fill="none" stroke="#5F5E5A" stroke-width="1.5"/>
+<text x="108" y="250" text-anchor="middle" font-size="13" fill="#5F5E5A">Ctrl + 右ボタン</text>
+<text x="108" y="269" text-anchor="middle" font-size="13" fill="#5F5E5A">を押しながらドラッグ</text>
+<text x="283" y="80" text-anchor="middle" font-size="15" font-weight="500" fill="#2C2C2A">移動（パン）</text>
+<path d="M243 150 L243 136 Q243 100 279 100 L279 150 Z" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<path d="M323 150 L323 136 Q323 100 287 100 L287 150 Z" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<rect x="277" y="108" width="12" height="26" rx="6" fill="#AFA9EC" stroke="#534AB7" stroke-width="1"/>
+<line x1="243" y1="150" x2="323" y2="150" stroke="#B4B2A9" stroke-width="1"/>
+<rect x="243" y="100" width="80" height="120" rx="36" fill="none" stroke="#5F5E5A" stroke-width="1.5"/>
+<text x="283" y="250" text-anchor="middle" font-size="13" fill="#5F5E5A">Ctrl + 中ボタン</text>
+<text x="283" y="269" text-anchor="middle" font-size="13" fill="#5F5E5A">を押しながらドラッグ</text>
+<text x="283" y="288" text-anchor="middle" font-size="13" fill="#5F5E5A">※ホイールの押し込み</text>
+<text x="458" y="80" text-anchor="middle" font-size="15" font-weight="500" fill="#2C2C2A">拡大・縮小</text>
+<path d="M418 150 L418 136 Q418 100 454 100 L454 150 Z" fill="#AFA9EC" stroke="#534AB7" stroke-width="1"/>
+<path d="M498 150 L498 136 Q498 100 462 100 L462 150 Z" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<rect x="452" y="108" width="12" height="26" rx="6" fill="#AFA9EC" stroke="#534AB7" stroke-width="1"/>
+<line x1="418" y1="150" x2="498" y2="150" stroke="#B4B2A9" stroke-width="1"/>
+<rect x="418" y="100" width="80" height="120" rx="36" fill="none" stroke="#5F5E5A" stroke-width="1.5"/>
+<text x="458" y="250" text-anchor="middle" font-size="13" fill="#5F5E5A">Ctrl + 左ボタン</text>
+<text x="458" y="269" text-anchor="middle" font-size="13" fill="#5F5E5A">を押しながらドラッグ</text>
+<text x="458" y="288" text-anchor="middle" font-size="13" fill="#5F5E5A">またはホイール回転</text>
+<text x="633" y="80" text-anchor="middle" font-size="15" font-weight="500" fill="#2C2C2A">複数選択</text>
+<path d="M593 150 L593 136 Q593 100 629 100 L629 150 Z" fill="#AFA9EC" stroke="#534AB7" stroke-width="1"/>
+<path d="M673 150 L673 136 Q673 100 637 100 L637 150 Z" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<rect x="627" y="108" width="12" height="26" rx="6" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<line x1="593" y1="150" x2="673" y2="150" stroke="#B4B2A9" stroke-width="1"/>
+<rect x="593" y="100" width="80" height="120" rx="36" fill="none" stroke="#5F5E5A" stroke-width="1.5"/>
+<text x="633" y="250" text-anchor="middle" font-size="13" fill="#5F5E5A">Shift + 左クリック</text>
+<text x="633" y="269" text-anchor="middle" font-size="13" fill="#5F5E5A">Shift + S キーでも可</text>
+<line x1="30" y1="322" x2="710" y2="322" stroke="#B4B2A9" stroke-width="1"/>
+<text x="370" y="346" text-anchor="middle" font-size="12" fill="#5F5E5A">※ Navigation style を「Keyboard free」にすると Ctrl 不要（左＝回転／中＝移動／右＝拡大縮小）</text>
+</svg>

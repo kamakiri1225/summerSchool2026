@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>000 SALOMEとは</title>
+  <title>SALOMEの基本</title>
   <style>
     code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
@@ -127,6 +127,47 @@ alt="SALOMEの主なモジュール一覧" /></p>
 <p>SALOME起動後は、画面左上のプルダウンから使用するモジュールを切り替える。</p>
 <p><img src="img/000_salome/page_017.svg"
 alt="モジュールを切り替える" /></p>
+<hr />
+<h2 id="dビューのマウス操作">3Dビューのマウス操作</h2>
+<p>モジュールを問わず、3Dビューの視点操作は共通である。SALOMEの初期設定（Salome
+standard controls）では、いずれも <strong>Ctrl
+キーを押しながら</strong>マウスボタンをドラッグする。</p>
+<p><img src="img/000_salome/salome_mouse_controls.svg"
+alt="SALOME 3Dビューのマウス操作" /></p>
+<table>
+<thead>
+<tr class="header">
+<th>操作</th>
+<th>やり方</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>回転</td>
+<td>Ctrl + 右ボタンでドラッグ</td>
+</tr>
+<tr class="even">
+<td>移動（パン）</td>
+<td>Ctrl + 中ボタン（ホイールの押し込み）でドラッグ</td>
+</tr>
+<tr class="odd">
+<td>拡大・縮小</td>
+<td>Ctrl + 左ボタンでドラッグ、またはホイール回転</td>
+</tr>
+<tr class="even">
+<td>複数選択</td>
+<td>Shift + 左クリック</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>全体を画面に収めたいときは、3Dビュー上で右クリック &gt;
+<code>Fit All</code>（または3Dビューを選択して Ctrl + F）。</li>
+<li>補足: <code>Preferences</code> &gt; <code>3D Viewer</code> &gt;
+<code>Navigation style</code> を <code>Keyboard free</code>
+に変えると、Ctrl を押さずに 左＝回転／中＝移動／右＝拡大縮小
+で操作できる。他のCADに慣れている場合はこちらの方が使いやすいこともある。</li>
+</ul>
 <hr />
 <h2 id="shaper-モジュール">Shaper モジュール</h2>
 <p>パラメトリック CAD モジュール。従来の Geometry（GEOM）の後継。</p>
