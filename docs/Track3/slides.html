@@ -4359,14 +4359,17 @@ alt="basis_topグループを作成する" /></p>
 
 <h3 id="完成した境界グループを確認する">5.
 完成した境界グループを確認する</h3>
-<p><img data-src="img/003_heatsink/page_172.svg"
-alt="box配下の全境界グループを確認する" /></p>
+<p><img data-src="img/003_heatsink/pdf_p194.svg"
+alt="Partition_1配下の全境界グループを確認する" /></p>
 <ul>
-<li><code>Partition_1</code> の <code>box</code>
-配下に、<code>YMin</code> / <code>ZMax</code> / <code>XMax</code> /
-<code>YMax</code> / <code>basis</code> / <code>XMin</code> /
-<code>heatSink</code> / <code>heatSource</code>
-の8グループが揃ったことを確認する。</li>
+<li><code>Partition_1</code> の配下に、<code>YMin</code> /
+<code>ZMax</code> / <code>XMax</code> / <code>YMax</code> /
+<code>basis</code> / <code>XMin</code> / <code>heatSink</code> /
+<code>heatSource</code> / <code>basis_top</code>
+の9つの面グループが揃ったことを確認する。</li>
+<li>その上にある <code>heatSource</code> / <code>heatSink</code> /
+<code>basis</code> / <code>box</code>
+は、Partitionで分割されたソリッド（リージョン）のグループで、面グループとは別物である。</li>
 </ul>
 </section>
 <section class="slide level2">

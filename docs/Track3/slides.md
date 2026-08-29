@@ -2810,9 +2810,10 @@ OpenFOAMでは境界条件は面の名前に対して設定するため、SALOME
 
 ### 5. 完成した境界グループを確認する
 
-![box配下の全境界グループを確認する](img/003_heatsink/page_172.svg)
+![Partition_1配下の全境界グループを確認する](img/003_heatsink/pdf_p194.svg)
 
-- `Partition_1` の `box` 配下に、`YMin` / `ZMax` / `XMax` / `YMax` / `basis` / `XMin` / `heatSink` / `heatSource` の8グループが揃ったことを確認する。
+- `Partition_1` の配下に、`YMin` / `ZMax` / `XMax` / `YMax` / `basis` / `XMin` / `heatSink` / `heatSource` / `basis_top` の9つの面グループが揃ったことを確認する。
+- その上にある `heatSource` / `heatSink` / `basis` / `box` は、Partitionで分割されたソリッド（リージョン）のグループで、面グループとは別物である。
 
 
 ---
