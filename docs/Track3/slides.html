@@ -4129,13 +4129,19 @@ alt="Explodeでソリッドに分解する" /></p>
 <h3 id="つのソリッドをリネームする">2. 4つのソリッドをリネームする</h3>
 <p><img data-src="img/003_heatsink/page_156.svg"
 alt="ソリッドをリネームする" /></p>
+<p><strong>この章ではこの操作は不要です。</strong>
+FreeCADでモデルを作った時点で各ソリッドに <code>heatSource</code> /
+<code>heatSink</code> / <code>basis</code> / <code>box</code>
+という名前を付けてあり、その名前がSTEPファイルに保存されているため、Explodeした時点で自動的に同じ名前が付く。</p>
 <ul>
 <li><ol start="9" type="1">
-<li>分解された4つのソリッドを右クリック &gt; <code>Rename</code>
-で、それぞれ <code>heatSource</code> / <code>heatSink</code> /
-<code>basis</code> / <code>box</code> に名前を変更する。</li>
+<li>名前が付いていない場合（<code>Solid_1</code>
+のような名前になっている場合）だけ、分解された4つのソリッドを右クリック
+&gt; <code>Rename</code> で、それぞれ <code>heatSource</code> /
+<code>heatSink</code> / <code>basis</code> / <code>box</code>
+に名前を変更する。</li>
 </ol></li>
-<li>リネームしておくことで、後の境界面グループ作成や、OpenFOAM側のリージョン設定で迷わなくなる。</li>
+<li>ここでの名前は、後の境界面グループ作成や、OpenFOAM側のリージョン設定でそのまま使う。上図と同じ名前になっていることを確認しておく。</li>
 </ul>
 </section>
 <section id="geometry-partitionで領域を分割する" class="slide level2">
