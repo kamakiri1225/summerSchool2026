@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="490" viewBox="0 0 360 490">
+  <defs>
+    <marker id="arrEnd" markerWidth="9" markerHeight="7" refX="9" refY="3.5" orient="auto" markerUnits="userSpaceOnUse">
+      <polygon points="0,0 9,3.5 0,7" fill="#000"/>
+    </marker>
+    <marker id="arrStart" markerWidth="9" markerHeight="7" refX="0" refY="3.5" orient="auto" markerUnits="userSpaceOnUse">
+      <polygon points="9,0 0,3.5 9,7" fill="#000"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="360" height="490" fill="#ffffff"/>
+
+  <g stroke="#000000" fill="none" stroke-linecap="round" stroke-linejoin="round">
+
+    <!-- ===== 補助線（寸法補助線） ===== -->
+    <g stroke-width="0.8">
+      <!-- 右 110 -->
+      <line x1="262" y1="50"  x2="306" y2="50"/>
+      <line x1="262" y1="380" x2="306" y2="380"/>
+      <!-- 下 40 -->
+      <line x1="140" y1="382" x2="140" y2="451"/>
+      <line x1="260" y1="382" x2="260" y2="451"/>
+      <!-- 下 15 -->
+      <line x1="185" y1="382" x2="185" y2="421"/>
+      <!-- 左 35 -->
+      <line x1="147" y1="275" x2="54"  y2="275"/>
+      <line x1="138" y1="380" x2="54"  y2="380"/>
+      <!-- 左 15 -->
+      <line x1="147" y1="335" x2="94"  y2="335"/>
+      <!-- 上部 3 -->
+      <line x1="140" y1="333" x2="140" y2="252"/>
+      <line x1="149" y1="273" x2="149" y2="252"/>
+    </g>
+
+    <!-- ===== 寸法線 ===== -->
+    <g stroke-width="1">
+      <line x1="300" y1="50"  x2="300" y2="380" marker-start="url(#arrStart)" marker-end="url(#arrEnd)"/>
+      <line x1="140" y1="445" x2="260" y2="445" marker-start="url(#arrStart)" marker-end="url(#arrEnd)"/>
+      <line x1="140" y1="415" x2="185" y2="415" marker-start="url(#arrStart)" marker-end="url(#arrEnd)"/>
+      <line x1="60"  y1="275" x2="60"  y2="380" marker-start="url(#arrStart)" marker-end="url(#arrEnd)"/>
+      <line x1="100" y1="335" x2="100" y2="380" marker-start="url(#arrStart)" marker-end="url(#arrEnd)"/>
+      <!-- 3（狭いので矢印は外向き） -->
+      <line x1="118" y1="262" x2="140" y2="262" marker-end="url(#arrEnd)"/>
+      <line x1="171" y1="262" x2="149" y2="262" marker-end="url(#arrEnd)"/>
+    </g>
+
+    <!-- ===== 図形（外形・内部線） ===== -->
+    <g stroke-width="2.4">
+      <!-- 外形 -->
+      <path d="M 140 380 L 260 380 L 260 50 L 149 50 L 149 335 L 140 335 Z"/>
+      <!-- 内部の水平線 -->
+      <line x1="149" y1="275" x2="260" y2="275"/>
+      <line x1="149" y1="335" x2="260" y2="335"/>
+      <!-- 内部の垂直線（色付け） -->
+      <g stroke="#e01b1b">
+        <line x1="185" y1="50"  x2="185" y2="380"/>
+        <line x1="149" y1="335" x2="149" y2="380"/>
+      </g>
+    </g>
+  </g>
+
+  <!-- ===== 原点 ===== -->
+  <g stroke="#000000" stroke-width="1.2">
+    <line x1="132" y1="380" x2="148" y2="380"/>
+    <line x1="140" y1="372" x2="140" y2="388"/>
+  </g>
+  <circle cx="140" cy="380" r="3.2" fill="none" stroke="#000000" stroke-width="1.2"/>
+
+  <!-- ===== 寸法文字 ===== -->
+  <g fill="#000000" font-family="Arial, Helvetica, sans-serif" font-size="16" text-anchor="middle">
+    <text x="200" y="440">40</text>
+    <text x="162" y="410">15</text>
+    <text x="112" y="267" text-anchor="end">3</text>
+    <text x="316" y="215" transform="rotate(-90 316 215)">110</text>
+    <text x="52"  y="327" transform="rotate(-90 52 327)">35</text>
+    <text x="92"  y="357" transform="rotate(-90 92 357)">15</text>
+  </g>
+</svg>
