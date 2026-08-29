@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>002 Stirrer: SALOMEで撹拌機のヘキサメッシュを作る</title>
+  <title>撹拌機のメッシュ作成</title>
   <style>
     code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
@@ -218,6 +218,7 @@ style="display:flex; flex-wrap:wrap; gap:1.5em; align-items:flex-end; justify-co
 </figure>
 </div>
 <p>このように「回転で作る部分」と「押し出しで作る部分」を組み合わせ、最後にPartitionで分割してヘキサメッシュ用のブロック形状に仕上げていく。以降の手順では、この2つのスケッチを順に作成していく。</p>
+<p>なお、①の赤線は②を押し出したときにできる線と一致するため、①と②のどちらか一方でスケッチしていればよい。</p>
 <hr />
 <h2 id="モデル作成">モデル作成</h2>
 <h3 id="shaperで断面スケッチを開始する">1.
